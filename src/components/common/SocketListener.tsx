@@ -27,6 +27,8 @@ function SocketListener() {
 
         const handleStatusUpdated = (data: { orderId: number; status: string; }) => {
 
+            console.log("USER RECEIVED order:statusUpdated:", data);
+
             dispatch(
                 addNotification({
                     id: crypto.randomUUID(),
