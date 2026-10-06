@@ -11,6 +11,7 @@ function App() {
 
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
+        console.log(token,'token')
 
         if (!token) {
             return;
