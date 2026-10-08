@@ -15,7 +15,7 @@ function AdminLayout() {
         <div className="min-vh-100 bg-light">
 
             {/* Top Header */}
-            <header className="bg-dark text-white border-bottom">
+            <header className="bg-dark text-white border-bottom sticky-top">
                 <div className="container-fluid px-3 px-md-4">
                     <div className="d-flex align-items-center justify-content-between py-3">
 
@@ -81,12 +81,19 @@ function AdminLayout() {
             </header>
 
             {/* Main Area */}
-            <div className="container-fluid">
+            <div className="container-fluid ">
                 <div className="row">
 
                     {/* Sidebar */}
-                    <aside className="col-md-3 col-lg-2 bg-white border-end min-vh-100 p-3">
-
+                    <aside
+                        className="col-md-3 col-lg-2 bg-white border-end p-3"
+                        style={{
+                            position: "fixed",
+                            top: "88px",
+                            bottom: 0,
+                            overflowY: "auto",
+                        }}
+                    >
                         {/* Navigation heading */}
                         <div className="mb-3">
                             <small className="text-uppercase text-secondary fw-semibold">
@@ -101,10 +108,9 @@ function AdminLayout() {
                                 to="/admin"
                                 end
                                 className={({ isActive }) =>
-                                    `nav-link rounded-3 px-3 py-2 d-flex align-items-center ${
-                                        isActive
-                                            ? "active bg-primary text-white"
-                                            : "text-dark"
+                                    `nav-link rounded-3 px-3 py-2 d-flex align-items-center ${isActive
+                                        ? "active bg-primary text-white"
+                                        : "text-dark"
                                     }`
                                 }
                             >
@@ -116,10 +122,9 @@ function AdminLayout() {
                             <NavLink
                                 to="/admin/orders"
                                 className={({ isActive }) =>
-                                    `nav-link rounded-3 px-3 py-2 d-flex align-items-center ${
-                                        isActive
-                                            ? "active bg-primary text-white"
-                                            : "text-dark"
+                                    `nav-link rounded-3 px-3 py-2 d-flex align-items-center ${isActive
+                                        ? "active bg-primary text-white"
+                                        : "text-dark"
                                     }`
                                 }
                             >
@@ -131,10 +136,9 @@ function AdminLayout() {
                             <NavLink
                                 to="/admin/menu"
                                 className={({ isActive }) =>
-                                    `nav-link rounded-3 px-3 py-2 d-flex align-items-center ${
-                                        isActive
-                                            ? "active bg-primary text-white"
-                                            : "text-dark"
+                                    `nav-link rounded-3 px-3 py-2 d-flex align-items-center ${isActive
+                                        ? "active bg-primary text-white"
+                                        : "text-dark"
                                     }`
                                 }
                             >
@@ -172,11 +176,15 @@ function AdminLayout() {
                             </div>
 
                         </div>
-
                     </aside>
 
                     {/* Main Content */}
-                    <main className="col-md-9 col-lg-10 p-3 p-md-4 p-lg-5">
+                    <main
+                        className="col-md-9 col-lg-10 p-3 p-md-4 p-lg-5"
+                        style={{
+                            marginLeft: "16.666667%",
+                        }}
+                    >
                         <Outlet />
                     </main>
 

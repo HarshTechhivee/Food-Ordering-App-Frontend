@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { fetchAdminMenu, updateAdminMenuAvailabilityThunk, deleteAdminMenu } from "../../store/slices/adminMenuSlice.js";
 import { useAppDispatch, useAppSelector } from "../../store/hooks.js";
 import ConfirmModal from "../../components/common/ConfirmModal";
+import type { MenuQuery, MenuSort, } from "../../types/menu.types.js";
+import Pagination from "../../components/common/Pagination";
 
 export const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
@@ -12,13 +14,37 @@ function MenuManagement() {
 
     const { items, loading, error } = useAppSelector((state) => state.adminMenu);
 
+    const pagination = useAppSelector((state) => state.adminMenu.pagination);
+
     const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
 
+    const [search, setSearch] = useState("");
+
+    const [category, setCategory] = useState("");
+
+    const [sort, setSort] = useState<MenuSort>("newest");
+
+    const [page, setPage] = useState(1);
+
+    const limit = 8;
+
     useEffect(() => {
+        const query: MenuQuery = {
+            page,
+            limit,
+            sort,
+        };
 
-        dispatch(fetchAdminMenu());
+        if (search.trim()) {
+            query.search = search.trim();
+        }
 
-    }, [dispatch]);
+        if (category) {
+            query.category = category;
+        }
+
+        dispatch(fetchAdminMenu(query));
+    }, [dispatch, page, search, category, sort]);
 
     const handleAvailabilityChange = async (id: number, isAvailable: boolean) => {
 
@@ -162,120 +188,334 @@ function MenuManagement() {
                 </div>
             )}
 
+            {/* Filters */}
+            <div className="card border-0 shadow-sm rounded-4 mb-5">
+                <div className="card-body p-4">
+
+                    <div className="row g-3">
+
+                        {/* Search */}
+                        <div className="col-md-5">
+                            <label className="form-label fw-semibold">
+                                Search
+                            </label>
+
+                            <div className="input-group">
+                                <span className="input-group-text bg-white">
+                                    <i className="bi bi-search" />
+                                </span>
+
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Search for food..."
+                                    value={search}
+                                    onChange={(event) => {
+                                        setSearch(event.target.value);
+                                        setPage(1);
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Category */}
+                        <div className="col-md-3">
+                            <label className="form-label fw-semibold">
+                                Category
+                            </label>
+
+                            <select
+                                className="form-select"
+                                value={category}
+                                onChange={(event) => {
+                                    setCategory(event.target.value);
+                                    setPage(1);
+                                }}
+                            >
+                                <option value="">
+                                    All Categories
+                                </option>
+
+                                <option value="Burger">
+                                    Burger
+                                </option>
+
+                                <option value="Pizza">
+                                    Pizza
+                                </option>
+
+                                <option value="Drinks">
+                                    Drinks
+                                </option>
+                            </select>
+                        </div>
+
+                        {/* Sort */}
+                        <div className="col-md-4">
+                            <label className="form-label fw-semibold">
+                                Sort By
+                            </label>
+
+                            <select
+                                className="form-select"
+                                value={sort}
+                                onChange={(event) => {
+                                    setSort(
+                                        event.target.value as MenuSort
+                                    );
+                                    setPage(1);
+                                }}
+                            >
+                                <option value="newest">
+                                    Newest
+                                </option>
+
+                                <option value="price_asc">
+                                    Price: Low to High
+                                </option>
+
+                                <option value="price_desc">
+                                    Price: High to Low
+                                </option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
             <div className="row g-4">
 
                 {items.map((item) => (
+                    <div
+                        className="col-sm-6 col-xl-3"
+                        key={item.id}
+                    >
+                        <div
+                            className="card h-100 border-0 overflow-hidden"
+                            style={{
+                                borderRadius: "20px",
+                                boxShadow: "0 8px 30px rgba(0, 0, 0, 0.08)",
+                            }}
+                        >
 
-                    <div className="col-sm-6 col-xl-3" key={item.id} >
+                            {/* Image + Overlay */}
+                            <div
+                                className="position-relative"
+                                style={{
+                                    height: "280px",
+                                }}
+                            >
 
-                        <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-
-                            {/* Image */}
-
-                            <div className="position-relative">
-
-                                {item.image ?
-                                    (<img src={`${SERVER_URL}${item.image}`} className="w-100"
-                                        alt={item.name} style={{ height: "250px", objectFit: "cover", }}
-                                    />)
-                                    :
-                                    (<div className="bg-light d-flex align-items-center justify-content-center"
-                                        style={{ height: "220px", }} >
+                                {/* Image */}
+                                {item.image ? (
+                                    <img
+                                        src={`${SERVER_URL}${item.image}`}
+                                        alt={item.name}
+                                        className="w-100 h-100"
+                                        style={{
+                                            objectFit: "cover",
+                                        }}
+                                    />
+                                ) : (
+                                    <div
+                                        className="bg-light d-flex align-items-center justify-content-center w-100 h-100"
+                                    >
                                         <i className="bi bi-image text-secondary fs-1" />
-                                    </div>)
-                                }
+                                    </div>
+                                )}
 
-                                {/* Active Status */}
+                                {/* Image gradient */}
+                                <div
+                                    className="position-absolute bottom-0 start-0 w-100"
+                                    style={{
+                                        height: "55%",
+                                        background:
+                                            "linear-gradient(to top, rgba(0,0,0,0.85), transparent)",
+                                    }}
+                                />
 
-                                <span className={`position-absolute top-0 start-0 m-3 badge rounded-pill 
-                                    ${item.isActive ? "text-bg-success" : "text-bg-secondary"}`} >
+                                {/* Active */}
+                                <span
+                                    className={`position-absolute top-0 start-0 m-3 badge rounded-pill px-3 py-2 ${item.isActive
+                                        ? "text-bg-success"
+                                        : "text-bg-secondary"
+                                        }`}
+                                >
+                                    <i
+                                        className={`bi ${item.isActive
+                                            ? "bi-check-circle-fill"
+                                            : "bi-dash-circle-fill"
+                                            } me-1`}
+                                    />
                                     {item.isActive ? "Active" : "Inactive"}
                                 </span>
 
                                 {/* Availability */}
-
-                                <span className={`position-absolute top-0 end-0 m-3 badge rounded-pill 
-                                    ${item.isAvailable ? "text-bg-primary" : "text-bg-danger"}`} >
-                                    {item.isAvailable ? "Available" : "Unavailable"}
+                                <span
+                                    className={`position-absolute top-0 end-0 m-3 badge rounded-pill px-3 py-2 ${item.isAvailable
+                                        ? "text-bg-primary"
+                                        : "text-bg-danger"
+                                        }`}
+                                >
+                                    <i
+                                        className={`bi ${item.isAvailable
+                                            ? "bi-circle-fill"
+                                            : "bi-eye-slash-fill"
+                                            } me-1`}
+                                    />
+                                    {item.isAvailable
+                                        ? "Available"
+                                        : "Unavailable"}
                                 </span>
 
-                            </div>
+                                {/* Image Bottom Content */}
+                                <div className="position-absolute bottom-0 start-0 w-100 p-4 text-white">
 
-
-                            {/* Content */}
-
-                            <div className="card-body p-4">
-
-                                <div className="d-flex justify-content-between align-items-start gap-3 mb-2">
-
-                                    <div>
-
-                                        <h5 className="fw-bold mb-1">
-                                            {item.name}
-                                        </h5>
-
-                                        <span className="badge bg-light text-dark">
+                                    <div className="mb-2">
+                                        <span className="badge bg-white bg-opacity-25 text-white rounded-pill px-3 py-2">
                                             {item.category}
                                         </span>
+                                    </div>
+
+                                    <div className="d-flex justify-content-between align-items-end gap-3">
+
+                                        <h4 className="fw-bold mb-0">
+                                            {item.name}
+                                        </h4>
+
+                                        <strong className="fs-5 text-nowrap">
+                                            ₹{Number(item.price).toFixed(2)}
+                                        </strong>
 
                                     </div>
 
-                                    <strong className="fs-5 text-primary text-nowrap">
-                                        ₹{Number(item.price).toFixed(2)}
-                                    </strong>
-
                                 </div>
-
-
-                                <p className="text-secondary small mb-0">
-                                    {item.description}
-                                </p>
 
                             </div>
 
+                            {/* Content */}
+                            <div className="card-body p-4">
 
-                            {/* Actions */}
+                                <p className="text-secondary mb-2" style={{height:'60px'}}>
+                                    {item.description}
+                                </p>
 
-                            <div className="card-footer bg-white border-0 px-4 pb-4">
+                                {/* Actions */}
+                                <div className="card-footer bg-white border-0 px-4 pb-2">
 
-                                <div className="d-flex gap-2 flex-wrap">
+                                    <div className="border-top pt-3">
 
-                                    <Link to={`/admin/menu/edit/${item.id}`} className="btn btn-outline-primary btn-sm" >
-                                        <i className="bi bi-pencil me-1" />
-                                        Edit
-                                    </Link>
+                                        <div className="d-flex justify-content-around align-items-start">
 
+                                            {/* Edit */}
+                                            <Link
+                                                to={`/admin/menu/edit/${item.id}`}
+                                                className="text-decoration-none text-center"
+                                            >
+                                                <div
+                                                    className="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center mx-auto mb-2"
+                                                    style={{
+                                                        width: "48px",
+                                                        height: "48px",
+                                                    }}
+                                                >
+                                                    <i className="bi bi-pencil fs-5" />
+                                                </div>
 
-                                    {item.isActive && (
-                                        <button type="button"
-                                            className={`btn btn-sm ${item.isAvailable ? "btn-outline-warning" : "btn-outline-success"}`}
-                                            onClick={() => handleAvailabilityChange(item.id, !item.isAvailable)} >
-                                            <i className={`bi ${item.isAvailable ? "bi-eye-slash" : "bi-eye"} me-1`} />
+                                                <small className="text-dark fw-medium">
+                                                    Edit
+                                                </small>
+                                            </Link>
 
-                                            {item.isAvailable ? "Unavailable" : "Available"}
-                                        </button>
-                                    )}
+                                            {/* Availability */}
+                                            {item.isActive && (
+                                                <button
+                                                    type="button"
+                                                    className="border-0 bg-transparent p-0 text-center"
+                                                    onClick={() =>
+                                                        handleAvailabilityChange(
+                                                            item.id,
+                                                            !item.isAvailable
+                                                        )
+                                                    }
+                                                >
+                                                    <div
+                                                        className={`rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 ${item.isAvailable
+                                                            ? "bg-warning-subtle text-warning"
+                                                            : "bg-success-subtle text-success"
+                                                            }`}
+                                                        style={{
+                                                            width: "48px",
+                                                            height: "48px",
+                                                        }}
+                                                    >
+                                                        <i
+                                                            className={`bi ${item.isAvailable
+                                                                ? "bi-eye-slash"
+                                                                : "bi-eye"
+                                                                } fs-5`}
+                                                        />
+                                                    </div>
 
+                                                    <small className="text-dark fw-medium">
+                                                        {item.isAvailable
+                                                            ? "Unavailable"
+                                                            : "Available"}
+                                                    </small>
+                                                </button>
+                                            )}
 
-                                    <button type="button" className="btn btn-outline-danger btn-sm"
-                                        onClick={() => handleDelete(item.id)}
-                                        disabled={!item.isActive}
-                                    >
-                                        <i className="bi bi-trash me-1" />
-                                        Delete
-                                    </button>
+                                            {/* Delete */}
+                                            <button
+                                                type="button"
+                                                className="border-0 bg-transparent p-0 text-center"
+                                                onClick={() => handleDelete(item.id)}
+                                                disabled={!item.isActive}
+                                            >
+                                                <div
+                                                    className={`rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 ${item.isActive
+                                                        ? "bg-danger-subtle text-danger"
+                                                        : "bg-light text-secondary"
+                                                        }`}
+                                                    style={{
+                                                        width: "48px",
+                                                        height: "48px",
+                                                    }}
+                                                >
+                                                    <i className="bi bi-trash fs-5" />
+                                                </div>
+
+                                                <small
+                                                    className={
+                                                        item.isActive
+                                                            ? "text-dark fw-medium"
+                                                            : "text-secondary"
+                                                    }
+                                                >
+                                                    Delete
+                                                </small>
+                                            </button>
+
+                                        </div>
+
+                                    </div>
 
                                 </div>
 
                             </div>
 
                         </div>
-
                     </div>
-
                 ))}
 
             </div>
+
+            <Pagination
+                currentPage={page}
+                totalPages={pagination?.totalPages ?? 0}
+                onPageChange={setPage}
+            />
         </div>
     );
 }

@@ -6,6 +6,7 @@ import { fetchMenu } from "../../store/slices/menuSlice";
 import { SERVER_URL } from "../admin/MenuManagement";
 import Toast from "../../components/common/Toast";
 import type { MenuItem, MenuQuery, MenuSort, } from "../../types/menu.types";
+import Pagination from "../../components/common/Pagination";
 
 export function Menu() {
 
@@ -256,57 +257,98 @@ export function Menu() {
                                 <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
 
                                     {/* Image */}
-                                    <div className="position-relative">
+                                    <div
+                                        className="position-relative"
+                                        style={{
+                                            height: "280px",
+                                        }}
+                                    >
 
-                                        {item.image ?
-                                            (<img src={`${SERVER_URL}${item.image}`} className="w-100"
-                                                alt={item.name} style={{ height: "240px", objectFit: "cover", }}
-                                            />)
-                                            :
-                                            (<div className="bg-light d-flex justify-content-center align-items-center"
-                                                style={{ height: "220px", }} >
-                                                <i className="bi bi-image fs-1 text-secondary" />
-                                            </div>)
-                                        }
+                                        {/* Image */}
+                                        {item.image ? (
+                                            <img
+                                                src={`${SERVER_URL}${item.image}`}
+                                                alt={item.name}
+                                                className="w-100 h-100"
+                                                style={{
+                                                    objectFit: "cover",
+                                                }}
+                                            />
+                                        ) : (
+                                            <div
+                                                className="bg-light d-flex align-items-center justify-content-center w-100 h-100"
+                                            >
+                                                <i className="bi bi-image text-secondary fs-1" />
+                                            </div>
+                                        )}
 
-                                        {/* Category */}
-                                        <span className="badge text-bg-light position-absolute top-0 start-0 m-3 shadow-sm">
-                                            {item.category}
-                                        </span>
+                                        {/* Image gradient */}
+                                        <div
+                                            className="position-absolute bottom-0 start-0 w-100"
+                                            style={{
+                                                height: "55%",
+                                                background:
+                                                    "linear-gradient(to top, rgba(0,0,0,0.85), transparent)",
+                                            }}
+                                        />
 
-                                        {/* Availability */}
-                                        {!item.isAvailable && (
-                                            <span className="badge text-bg-danger position-absolute top-0 end-0 m-3">
-                                                Unavailable
+                                        {cartItem && (
+                                            <span className="position-absolute top-0 start-0 m-3 badge rounded-pill px-3 py-2 text-bg-success">
+                                                In Cart
                                             </span>
                                         )}
+
+                                        {/* Availability */}
+                                        <span
+                                            className={`position-absolute top-0 end-0 m-3 badge rounded-pill px-3 py-2 ${item.isAvailable
+                                                ? "text-bg-primary"
+                                                : "text-bg-danger"
+                                                }`}
+                                        >
+                                            <i
+                                                className={`bi ${item.isAvailable
+                                                    ? "bi-circle-fill"
+                                                    : "bi-eye-slash-fill"
+                                                    } me-1`}
+                                            />
+                                            {item.isAvailable
+                                                ? "Available"
+                                                : "Unavailable"}
+                                        </span>
+
+                                        {/* Image Bottom Content */}
+                                        <div className="position-absolute bottom-0 start-0 w-100 p-4 text-white">
+
+                                            <div className="mb-2">
+                                                <span className="badge bg-black bg-opacity-50 text-white rounded-pill px-3 py-2">
+                                                    {item.category}
+                                                </span>
+                                            </div>
+
+                                            <div className="d-flex justify-content-between align-items-end gap-3">
+
+                                                <h4 className="fw-bold mb-0">
+                                                    {item.name}
+                                                </h4>
+
+                                                <strong className="fs-5 text-nowrap">
+                                                    ₹{Number(item.price).toFixed(2)}
+                                                </strong>
+
+                                            </div>
+
+                                        </div>
+
                                     </div>
 
                                     {/* Content */}
                                     <div className="card-body d-flex flex-column p-4">
 
-                                        <h5 className="fw-bold mb-2">
-                                            {item.name}
-                                        </h5>
-
-                                        <p className="text-secondary small mb-4">
+                                        <p className="text-secondary small mb-3 fs-6">
                                             {item.description}
                                         </p>
 
                                         <div className="mt-auto">
-
-                                            {/* Price */}
-                                            <div className="d-flex justify-content-between align-items-center mb-3">
-                                                <span className="fs-5 fw-bold">
-                                                    ₹{Number(item.price).toFixed(2)}
-                                                </span>
-
-                                                {cartItem && (
-                                                    <span className="badge text-bg-success">
-                                                        In Cart
-                                                    </span>
-                                                )}
-                                            </div>
 
                                             {/* Cart Actions */}
                                             {cartItem ?
@@ -361,44 +403,12 @@ export function Menu() {
 
             {/* Pagination */}
 
-            {!loading && pagination && pagination.totalPages > 1 &&
-                (<div className="d-flex justify-content-center mt-5 pt-3">
+            <Pagination
+                currentPage={page}
+                totalPages={pagination?.totalPages ?? 0}
+                onPageChange={setPage}
+            />
 
-                    <nav aria-label="Menu pagination">
-
-                        <ul className="pagination pagination-lg shadow-sm">
-
-                            <li className={`page-item ${page === 1 ? "disabled" : ""}`} >
-                                <button type="button" className="page-link"
-                                    onClick={() => setPage((current) => Math.max(1, current - 1))} >
-                                    Previous
-                                </button>
-                            </li>
-
-                            {Array.from({ length: pagination.totalPages, }, (_, index) => {
-
-                                const pageNumber = index + 1;
-
-                                return (
-                                    <li key={pageNumber} className={`page-item ${page === pageNumber ? "active" : ""}`} >
-                                        <button type="button" className="page-link" onClick={() => setPage(pageNumber)} >
-                                            {pageNumber}
-                                        </button>
-                                    </li>
-                                );
-                            })}
-
-                            <li className={`page-item ${page === pagination.totalPages ? "disabled" : ""}`} >
-                                <button type="button" className="page-link"
-                                    onClick={() => setPage((current) => Math.min(pagination.totalPages, current + 1))} >
-                                    Next
-                                </button>
-                            </li>
-
-                        </ul>
-                    </nav>
-                </div>
-                )}
         </div>
     );
 }

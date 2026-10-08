@@ -3,11 +3,23 @@ export type OrderStatus =
     | "APPROVED"
     | "OUT_FOR_DELIVERY"
     | "DELIVERED"
-    | "REJECTED";
+    | "REJECTED"
+    | "CANCELLED"   
+
+export type PaymentStatus =
+    | "PENDING"
+    | "PAID"
+    | "FAILED"
+    | "REFUNDED";
 
 export interface CreateOrderItem {
     menuItemId: number;
     quantity: number;
+}
+
+export interface CreateOrderResponse {
+    order: Order;
+    clientSecret: string | null;
 }
 
 export interface CreateOrderInput {
@@ -18,6 +30,7 @@ export interface OrderSummary {
     id: number;
     status: OrderStatus;
     totalAmount: number | string;
+    PaymentStatus: PaymentStatus;
     createdAt: string;
     updatedAt: string;
     itemCount: number;
@@ -40,6 +53,7 @@ export interface Order {
     id: number;
     userId: number;
     status: OrderStatus;
+    paymentStatus: PaymentStatus;
     totalAmount: number | string;
     createdAt: string;
     updatedAt: string;

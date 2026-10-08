@@ -4,6 +4,7 @@ import NotificationBell from "../../components/common/NotificationBell";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchAdminDashboard } from "../../store/slices/adminDashboardSlice";
 import { socket } from "../../services/socket.js";
+import { formatStatus, getStatusPaymentClass } from "../../utils/commonFunction.js";
 
 function AdminDashboard() {
 
@@ -44,7 +45,7 @@ function AdminDashboard() {
 
             {/* Header */}
 
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-5">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
 
                 <div>
                     <span className="badge text-bg-primary mb-2">
@@ -55,7 +56,7 @@ function AdminDashboard() {
                         Dashboard
                     </h2>
 
-                    <p className="text-secondary mb-0">
+                    <p className="text-secondary mb-0 ">
                         Overview of your restaurant activity.
                     </p>
                 </div>
@@ -87,7 +88,7 @@ function AdminDashboard() {
                             <div className="d-flex justify-content-between align-items-start">
 
                                 <div>
-                                    <p className="text-secondary mb-2">
+                                    <p className="text-secondary mb-2 ">
                                         Total Orders
                                     </p>
 
@@ -135,6 +136,139 @@ function AdminDashboard() {
                                     justify-content-center"
                                     style={{ width: "48px", height: "48px", }} >
                                     <i className="bi bi-clock-history fs-5" />
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {/* Paid Orders */}
+
+                <div className="col-sm-6 col-xl-3">
+
+                    <div className="card border-0 shadow-sm rounded-4 h-100">
+
+                        <div className="card-body p-4">
+
+                            <div className="d-flex justify-content-between align-items-start">
+
+                                <div>
+
+                                    <p className="text-secondary mb-2">
+                                        Paid Orders
+                                    </p>
+
+                                    <h2 className="fw-bold mb-0">
+                                        {loading
+                                            ? "..."
+                                            : stats?.paidOrders ?? 0
+                                        }
+                                    </h2>
+
+                                </div>
+
+                                <div
+                                    className="bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center"
+                                    style={{
+                                        width: "48px",
+                                        height: "48px",
+                                    }}
+                                >
+                                    <i className="bi bi-credit-card fs-5" />
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {/* Total Customers */}
+
+                <div className="col-sm-6 col-xl-3">
+
+                    <div className="card border-0 shadow-sm rounded-4 h-100">
+
+                        <div className="card-body p-4">
+
+                            <div className="d-flex justify-content-between align-items-start">
+
+                                <div>
+
+                                    <p className="text-secondary mb-2">
+                                        Total Customers
+                                    </p>
+
+                                    <h2 className="fw-bold mb-0">
+                                        {loading
+                                            ? "..."
+                                            : stats?.totalCustomers ?? 0
+                                        }
+                                    </h2>
+
+                                </div>
+
+                                <div
+                                    className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center"
+                                    style={{
+                                        width: "48px",
+                                        height: "48px",
+                                    }}
+                                >
+                                    <i className="bi bi-people fs-5" />
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {/* Refunded Amount */}
+
+                <div className="col-sm-6 col-xl-3">
+
+                    <div className="card border-0 shadow-sm rounded-4 h-100">
+
+                        <div className="card-body p-4">
+
+                            <div className="d-flex justify-content-between align-items-start">
+
+                                <div>
+
+                                    <p className="text-secondary mb-2">
+                                        Refunded Amount
+                                    </p>
+
+                                    <h2 className="fw-bold mb-0">
+                                        {loading
+                                            ? "..."
+                                            : `₹ ${Number(
+                                                stats?.refundedAmount ?? 0
+                                            ).toFixed(2)}`
+                                        }
+                                    </h2>
+
+                                </div>
+
+                                <div
+                                    className="bg-danger bg-opacity-10 text-danger rounded-3 d-flex align-items-center justify-content-center"
+                                    style={{
+                                        width: "48px",
+                                        height: "48px",
+                                    }}
+                                >
+                                    <i className="bi bi-arrow-counterclockwise fs-5" />
                                 </div>
 
                             </div>
@@ -197,7 +331,7 @@ function AdminDashboard() {
                                     </p>
 
                                     <h2 className="fw-bold mb-0">
-                                        {loading ? "..." : `₹ ${Number(stats?.totalOrderValue ?? 0).toFixed(2)}`}
+                                        {loading ? "..." : `₹ ${Number(stats?.revenue ?? 0).toFixed(2)}`}
                                     </h2>
                                 </div>
 
@@ -228,18 +362,18 @@ function AdminDashboard() {
                         <div className="card-body p-4">
 
                             <div className="mb-4">
-                                <h5 className="fw-bold mb-1">
+                                <h4 className="fw-bold mb-1">
                                     Order Overview
-                                </h5>
+                                </h4>
 
-                                <p className="text-secondary small mb-0">
+                                <p className="text-secondary small mb-0 fs-6">
                                     Current order status breakdown
                                 </p>
                             </div>
 
                             <div className="d-flex flex-column gap-4">
 
-                                <div className="d-flex justify-content-between align-items-center">
+                                {/* <div className="d-flex justify-content-between align-items-center">
                                     <span>
                                         <span className="badge text-bg-warning me-2">
                                             {stats?.orderStatus.PENDING ?? 0}
@@ -248,50 +382,61 @@ function AdminDashboard() {
                                     </span>
 
                                     <i className="bi bi-clock-history text-warning" />
-                                </div>
+                                </div> */}
 
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <span>
+                                    <span style={{ fontSize: '19px' }}>
                                         <span className="badge text-bg-primary me-2">
                                             {stats?.orderStatus.APPROVED ?? 0}
                                         </span>
                                         Approved
                                     </span>
 
-                                    <i className="bi bi-check-circle text-primary" />
+                                    <i className="bi bi-check-circle text-primary fs-5" />
                                 </div>
 
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <span>
+                                    <span style={{ fontSize: '19px' }}>
                                         <span className="badge text-bg-info me-2">
                                             {stats?.orderStatus.OUT_FOR_DELIVERY ?? 0}
                                         </span>
                                         Out for Delivery
                                     </span>
 
-                                    <i className="bi bi-bicycle text-info" />
+                                    <i className="bi bi-bicycle text-info fs-5" />
                                 </div>
 
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <span>
+                                    <span style={{ fontSize: '19px' }}>
                                         <span className="badge text-bg-success me-2">
                                             {stats?.orderStatus.DELIVERED ?? 0}
                                         </span>
                                         Delivered
                                     </span>
 
-                                    <i className="bi bi-house-check text-success" />
+                                    <i className="bi bi-house-check text-success fs-5" />
                                 </div>
 
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <span>
+                                    <span style={{ fontSize: '19px' }}>
                                         <span className="badge text-bg-danger me-2">
                                             {stats?.orderStatus.REJECTED ?? 0}
                                         </span>
                                         Rejected
                                     </span>
 
-                                    <i className="bi bi-x-circle text-danger" />
+                                    <i className="bi bi-x-circle text-danger fs-5" />
+                                </div>
+
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <span style={{ fontSize: '19px' }}>
+                                        <span className="badge text-bg-secondary me-2">
+                                            {stats?.orderStatus.CANCELLED ?? 0}
+                                        </span>
+                                        Cancelled
+                                    </span>
+
+                                    <i className="bi bi-x-circle text-secondary fs-5" />
                                 </div>
 
                             </div>
@@ -313,11 +458,11 @@ function AdminDashboard() {
                             <div className="d-flex justify-content-between align-items-center mb-4">
 
                                 <div>
-                                    <h5 className="fw-bold mb-1">
+                                    <h4 className="fw-bold mb-1">
                                         Recent Orders
-                                    </h5>
+                                    </h4>
 
-                                    <p className="text-secondary small mb-0">
+                                    <p className="text-secondary small mb-0 fs-6">
                                         Latest orders placed by customers
                                     </p>
                                 </div>
@@ -356,13 +501,29 @@ function AdminDashboard() {
 
                                         <div className="text-end">
 
-                                            <div className="fw-semibold mb-1">
+                                            <div className="fw-semibold mb-2">
                                                 ₹ {Number(order.totalAmount).toFixed(2)}
                                             </div>
 
-                                            <span className={`badge rounded-pill ${getStatusClass(order.status)}`} >
-                                                {formatStatus(order.status)}
-                                            </span>
+                                            <div className="d-flex gap-3">
+
+                                                <span
+                                                    className={`badge rounded-pill ${getStatusPaymentClass(
+                                                        order.status
+                                                    )}`}
+                                                >
+                                                    {formatStatus(order.status)}
+                                                </span>
+
+                                                <span
+                                                    className={`badge rounded-pill ${getStatusPaymentClass(
+                                                        order.paymentStatus
+                                                    )}`}
+                                                >
+                                                    {formatStatus(order.paymentStatus)}
+                                                </span>
+
+                                            </div>
 
                                         </div>
 
@@ -390,33 +551,5 @@ function AdminDashboard() {
     );
 }
 
-
-function formatStatus(status: string): string {
-
-    return status.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function getStatusClass(status: string): string {
-
-    switch (status) {
-        case "PENDING":
-            return "text-bg-warning";
-
-        case "APPROVED":
-            return "text-bg-primary";
-
-        case "OUT_FOR_DELIVERY":
-            return "text-bg-info";
-
-        case "DELIVERED":
-            return "text-bg-success";
-
-        case "REJECTED":
-            return "text-bg-danger";
-
-        default:
-            return "text-bg-secondary";
-    }
-}
 
 export default AdminDashboard;

@@ -3,6 +3,7 @@ import api from "./api.js";
 export interface DashboardOrder {
     id: number;
     status: string;
+    paymentStatus: string;
     totalAmount: number | string;
     createdAt: string;
     user: {
@@ -14,7 +15,13 @@ export interface DashboardStats {
     totalOrders: number;
     pendingOrders: number;
     menuItems: number;
-    totalOrderValue: number | string;
+
+    totalOrderValue: number;
+
+    revenue: number;
+    refundedAmount: number;
+    paidOrders: number;
+    totalCustomers: number;
 
     orderStatus: {
         PENDING: number;
@@ -22,6 +29,7 @@ export interface DashboardStats {
         OUT_FOR_DELIVERY: number;
         DELIVERED: number;
         REJECTED: number;
+        CANCELLED: number;
     };
 
     recentOrders: DashboardOrder[];

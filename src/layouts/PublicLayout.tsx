@@ -160,7 +160,8 @@ function PublicLayout() {
 
             {/* Footer */}
             <footer className="border-top bg-light">
-                <div className="container py-4">
+                <div className="container py-2
+                ">
                     <div className="row align-items-center">
 
                         <div className="col-md-6">

@@ -5,12 +5,15 @@ import { useAppDispatch, useAppSelector, } from "../../store/hooks";
 
 import { fetchOrders } from "../../store/slices/orderSlice";
 import type { OrderStatus } from "../../types/order.types";
+import { formatStatus, getStatusPaymentClass } from "../../utils/commonFunction.js";
 
 function Orders() {
 
     const dispatch = useAppDispatch();
 
     const { orders, loading, error, } = useAppSelector((state) => state.orders);
+
+    console.log(orders, 'order from order page')
 
     useEffect(() => {
 
@@ -213,15 +216,27 @@ function Orders() {
                                         </div>
 
                                         {/* Status */}
-                                        <div className="col-md-2 mt-4 mt-md-0">
+                                        <div className="col-md-2 mt-4 mt-md-0 d-flex justify-content-center gap-5">
+                                            <div>
+                                                <small className="text-secondary d-block mb-2">
+                                                    Order
+                                                </small>
 
-                                            <small className="text-secondary d-block mb-2">
-                                                Status
-                                            </small>
+                                                <span className={`badge rounded-pill px-3 py-2 ${getStatusPaymentClass(order.status)}`} >
+                                                    {formatStatus(order.status)}
+                                                </span>
+                                            </div>
 
-                                            <span className={`badge rounded-pill px-3 py-2 ${getStatusClass(order.status)}`} >
-                                                {formatStatus(order.status)}
-                                            </span>
+                                            <div>
+                                                <small className="text-secondary d-block mb-2">
+                                                    Payment
+                                                </small>
+
+                                                <span
+                                                    className={`badge rounded-pill px-3 py-2 ${getStatusPaymentClass(order.PaymentStatus)}`} >
+                                                    {formatStatus(order.PaymentStatus)}
+                                                </span>
+                                            </div>
 
                                         </div>
 
@@ -247,35 +262,6 @@ function Orders() {
             }
         </div>
     );
-}
-
-function formatStatus(status: string): string {
-
-    return status.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
-
-}
-
-function getStatusClass(status: string): string {
-
-    switch (status) {
-        case "PENDING":
-            return "text-bg-warning";
-
-        case "APPROVED":
-            return "text-bg-primary";
-
-        case "OUT_FOR_DELIVERY":
-            return "text-bg-info";
-
-        case "DELIVERED":
-            return "text-bg-success";
-
-        case "REJECTED":
-            return "text-bg-danger";
-
-        default:
-            return "text-bg-secondary";
-    }
 }
 
 export default Orders;

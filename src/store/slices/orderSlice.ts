@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, } from "@reduxjs/toolkit";
 
 import { createOrder, getOrderById, getOrders, } from "../../services/order.api";
 
-import type { CreateOrderInput, Order, OrderSummary, } from "../../types/order.types";
+import type { CreateOrderInput, Order, OrderSummary, CreateOrderResponse } from "../../types/order.types";
 
 interface OrderState {
     orders: OrderSummary[];
@@ -19,7 +19,7 @@ const initialState: OrderState = {
 };
 
 
-export const placeOrder = createAsyncThunk<Order, CreateOrderInput, { rejectValue: string }>("orders/placeOrder",
+export const placeOrder = createAsyncThunk<CreateOrderResponse, CreateOrderInput, { rejectValue: string }>("orders/placeOrder",
 
     async (data, { rejectWithValue }) => {
 

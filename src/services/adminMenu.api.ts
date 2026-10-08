@@ -1,5 +1,5 @@
 import apiClient from "./api.js";
-import type { MenuItem } from "../types/menu.types.js";
+import type { MenuItem, MenuQuery, MenuResponse } from "../types/menu.types.js";
 
 interface ApiResponse<T> {
     success: boolean;
@@ -7,9 +7,14 @@ interface ApiResponse<T> {
     data: T;
 }
 
-export const getAdminMenu = async () => {
+export const getAdminMenu = async (query: MenuQuery) => {
 
-    const response = await apiClient.get<ApiResponse<MenuItem[]>>("/admin/menu");
+    const response = await apiClient.get<ApiResponse<MenuResponse>>(
+        "/admin/menu",
+        {
+            params: query
+        }
+    );
 
     return response.data.data;
 };

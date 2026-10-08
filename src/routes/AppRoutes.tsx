@@ -23,6 +23,9 @@ import UserRoute from "./UserRoute";
 import AdminRoute from "./AdminRoute";
 import PublicRoute from "./PublicRoutes";
 
+import Payment from "../pages/user/Payment";
+import PaymentSuccess from "../pages/user/PaymentSuccess";
+
 import { useAppSelector } from "../store/hooks.js";
 
 function RootRedirect() {
@@ -45,7 +48,7 @@ export default function AppRoutes() {
 
 
             {/* Customer-facing application */}
-            <Route element={<PublicRoute/>}>
+            <Route element={<PublicRoute />}>
                 <Route element={<PublicLayout />}>
 
                     <Route path="/home" element={<Home />} />
@@ -57,6 +60,8 @@ export default function AppRoutes() {
                             <Route path="/cart" element={<Cart />} />
                             <Route path="/orders" element={<Orders />} />
                             <Route path="/orders/:id" element={<OrderDetails />} />
+                            <Route path="/payment/:orderId" element={<Payment />} />
+                            <Route path="/payment-success" element={<PaymentSuccess />} />
 
                         </Route>
                     </Route>

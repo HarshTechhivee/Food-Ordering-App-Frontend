@@ -24,12 +24,16 @@ function Cart() {
                 })
             ).unwrap();
 
-            dispatch(clearCart());
-
-            navigate(`/orders/${result.id}`);
+            navigate(`/payment/${result.order.id}`, {
+                state: {
+                    clientSecret: result.clientSecret,
+                },
+            });
 
         } catch (error) {
+
             console.error(error);
+
         }
     };
 

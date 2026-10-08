@@ -1,6 +1,6 @@
 import apiClient from "./api";
 
-import type { CreateOrderInput, Order, OrderSummary, } from "../types/order.types";
+import type { CreateOrderInput, Order, OrderSummary, CreateOrderResponse } from "../types/order.types";
 
 interface ApiResponse<T> {
     success: boolean;
@@ -8,11 +8,11 @@ interface ApiResponse<T> {
     data: T;
 }
 
-export const createOrder = async (data: CreateOrderInput): Promise<Order> => {
+export const createOrder = async (data: CreateOrderInput): Promise<CreateOrderResponse> => {
 
-    const response = await apiClient.post<ApiResponse<Order>>("/orders", data);
+    const response = await apiClient.post<ApiResponse<CreateOrderResponse>>("/orders", data);
 
-    return response.data.data;
+    return response.data.data
 };
 
 export const getOrders = async (): Promise<OrderSummary[]> => {
@@ -25,6 +25,14 @@ export const getOrders = async (): Promise<OrderSummary[]> => {
 export const getOrderById = async (orderId: number): Promise<Order> => {
 
     const response = await apiClient.get<ApiResponse<Order>>(`/orders/${orderId}`);
+
+    return response.data.data;
+};
+
+
+export const cancelOrder = async (orderId: number) => {
+
+    const response = await apiClient.patch(`/orders/${orderId}/cancel`);
 
     return response.data.data;
 };

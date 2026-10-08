@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { socket } from "../../services/socket.js";
 import { useAppDispatch, useAppSelector, } from "../../store/hooks";
-
+import { cancelOrder } from "../../services/order.api";
 import { fetchOrderById, clearSelectedOrder, clearOrderError, } from "../../store/slices/orderSlice";
 import type { OrderStatus } from "../../types/order.types.js";
+import { formatStatus, getStatusPaymentClass } from "../../utils/commonFunction.js";
 
 function OrderDetails() {
 
@@ -14,7 +15,37 @@ function OrderDetails() {
 
     const dispatch = useAppDispatch();
 
-    const { selectedOrder, loading, error, } = useAppSelector((state) => state.orders); 
+    const [cancelling, setCancelling] = useState(false);
+
+    const { selectedOrder, loading, error, } = useAppSelector((state) => state.orders);
+
+    const handleCancelOrder = async () => {
+
+        if (!id) {
+            return;
+        }
+
+        const confirmed = window.confirm("Are you sure you want to cancel this order?");
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            setCancelling(true);
+
+            await cancelOrder(Number(id));
+
+            await dispatch(fetchOrderById(Number(id))).unwrap();
+
+        } catch (error) {
+            console.error("Failed to cancel order:", error);
+
+            alert("Unable to cancel the order. Please try again.");
+        } finally {
+            setCancelling(false);
+        }
+    };
 
     useEffect(() => {
 
@@ -59,6 +90,30 @@ function OrderDetails() {
             socket.off("order:statusUpdated", handleStatusUpdated);
         };
     }, [dispatch, id]);
+
+    useEffect(() => {
+
+        if (
+            !selectedOrder ||
+            selectedOrder.status !== "CANCELLED" ||
+            selectedOrder.paymentStatus !== "PAID"
+        ) {
+            return;
+        }
+
+        const interval = window.setInterval(() => {
+            dispatch(fetchOrderById(Number(id)));
+        }, 1000);
+
+        return () => {
+            window.clearInterval(interval);
+        };
+
+    }, [
+        selectedOrder,
+        id,
+        dispatch,
+    ]);
 
     if (loading) {
         return (
@@ -180,7 +235,7 @@ function OrderDetails() {
 
                     </div>
 
-                    <span className={`badge rounded-pill fs-6 px-3 py-2 ${getStatusClass(order.status)}`} >
+                    <span className={`badge rounded-pill fs-6 px-3 py-2 ${getStatusPaymentClass(order.status)}`} >
                         {formatStatus(order.status)}
                     </span>
 
@@ -205,6 +260,30 @@ function OrderDetails() {
                             </h5>
 
                             <OrderStatusTimeline status={order.status} />
+
+                            {order.status === "CANCELLED" && (
+                                <div className="alert alert-secondary mt-4 mb-0">
+                                    <i className="bi bi-x-circle me-2" />
+
+                                    <strong>Order Cancelled</strong>
+
+                                    {order.paymentStatus === "REFUNDED" ? (
+                                        <div className="mt-1">
+                                            Your order has been cancelled successfully.
+                                            Your payment has been refunded.
+                                        </div>
+                                    ) : order.paymentStatus === "PAID" ? (
+                                        <div className="mt-1">
+                                            Your order has been cancelled successfully.
+                                            Your payment refund is being processed.
+                                        </div>
+                                    ) : (
+                                        <div className="mt-1">
+                                            Your order has been cancelled successfully.
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                         </div>
 
@@ -382,6 +461,29 @@ function OrderDetails() {
 
                             </div>
 
+                            {order.status === "PENDING" && (
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-danger w-100 mt-4"
+                                    onClick={handleCancelOrder}
+                                    disabled={cancelling}
+                                >
+                                    {cancelling ? (
+                                        <>
+                                            <span
+                                                className="spinner-border spinner-border-sm me-2"
+                                            />
+                                            Cancelling...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="bi bi-x-circle me-2" />
+                                            Cancel Order
+                                        </>
+                                    )}
+                                </button>
+                            )}
+
                         </div>
 
                     </div>
@@ -392,34 +494,6 @@ function OrderDetails() {
 
         </div>
     );
-}
-
-function formatStatus(status: string): string {
-
-    return status.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function getStatusClass(status: string): string {
-
-    switch (status) {
-        case "PENDING":
-            return "text-bg-warning";
-
-        case "APPROVED":
-            return "text-bg-primary";
-
-        case "OUT_FOR_DELIVERY":
-            return "text-bg-info";
-
-        case "DELIVERED":
-            return "text-bg-success";
-
-        case "REJECTED":
-            return "text-bg-danger";
-
-        default:
-            return "text-bg-secondary";
-    }
 }
 
 function OrderStatusTimeline({ status, }: { status: string; }) {
@@ -457,6 +531,10 @@ function OrderStatusTimeline({ status, }: { status: string; }) {
             </div>
         );
     }
+
+    if (status === "CANCELLED") {
+    return null;
+}
 
     return (
         <div className="d-flex flex-column">

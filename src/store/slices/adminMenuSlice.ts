@@ -2,26 +2,28 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import { getAdminMenu, createAdminMenuItem, updateAdminMenuItem, updateAdminMenuAvailability, deleteAdminMenuItem } from "../../services/adminMenu.api.js";
 
-import type { MenuItem } from "../../types/menu.types.js";
+import type { MenuItem, MenuQuery, MenuPagination } from "../../types/menu.types.js";
 
 interface AdminMenuState {
     items: MenuItem[];
+    pagination: MenuPagination | null;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: AdminMenuState = {
     items: [],
+    pagination: null,
     loading: false,
     error: null,
 };
 
 export const fetchAdminMenu = createAsyncThunk("adminMenu/fetchAdminMenu",
 
-    async (_, { rejectWithValue }) => {
+    async (query: MenuQuery, { rejectWithValue }) => {
         try {
 
-            return await getAdminMenu();
+            return await getAdminMenu(query);
 
         } catch (error: any) {
 
@@ -113,7 +115,8 @@ const adminMenuSlice = createSlice({
 
             .addCase(fetchAdminMenu.fulfilled, (state, action) => {
                 state.loading = false;
-                state.items = action.payload;
+                state.items = action.payload.items;
+                state.pagination =  action.payload.pagination
             })
 
             .addCase(fetchAdminMenu.rejected, (state, action) => {
@@ -150,7 +153,7 @@ const adminMenuSlice = createSlice({
                     state.items[index] = action.payload;
                 }
             })
-            
+
             .addCase(updateAdminMenu.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;

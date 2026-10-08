@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks.js";
 import { fetchAdminOrders, updateAdminOrder, } from "../../store/slices/adminOrderSlice.js";
 import { socket } from "../../services/socket.js";
+import { formatStatus, getStatusPaymentClass } from "../../utils/commonFunction.js";
 
 function OrdersManagement() {
 
@@ -199,7 +200,7 @@ function OrdersManagement() {
 
                                     </div>
 
-                                    <span className={`badge rounded-pill align-self-start px-3 py-2 ${getStatusClass(order.status)}`} >
+                                    <span className={`badge rounded-pill align-self-start px-3 py-2 ${getStatusPaymentClass(order.status)}`} >
                                         {formatStatus(order.status)}
                                     </span>
 
@@ -383,34 +384,6 @@ function OrdersManagement() {
             </div>
         </div>
     );
-}
-
-function formatStatus(status: string): string {
-
-    return status.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function getStatusClass(status: string): string {
-    
-    switch (status) {
-        case "PENDING":
-            return "text-bg-warning";
-
-        case "APPROVED":
-            return "text-bg-primary";
-
-        case "OUT_FOR_DELIVERY":
-            return "text-bg-info";
-
-        case "DELIVERED":
-            return "text-bg-success";
-
-        case "REJECTED":
-            return "text-bg-danger";
-
-        default:
-            return "text-bg-secondary";
-    }
 }
 
 export default OrdersManagement;
