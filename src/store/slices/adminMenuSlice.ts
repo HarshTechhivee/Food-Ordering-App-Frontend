@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getAdminMenu, createAdminMenuItem, updateAdminMenuItem, updateAdminMenuAvailability, deleteAdminMenuItem } from "../../services/adminMenu.api.js";
 
 import type { MenuItem, MenuQuery, MenuPagination } from "../../types/menu.types.js";
+import { getApiErrorMessage } from "../../utils/getApiErrorMessage.js";
 
 interface AdminMenuState {
     items: MenuItem[];
@@ -25,9 +26,9 @@ export const fetchAdminMenu = createAsyncThunk("adminMenu/fetchAdminMenu",
 
             return await getAdminMenu(query);
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to fetch menu items");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to fetch menu items'))
         }
     }
 );
@@ -40,9 +41,9 @@ export const createAdminMenu = createAsyncThunk("adminMenu/createAdminMenu",
 
             return await createAdminMenuItem(formData);
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to create menu item");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to create menu item'))
         }
     }
 );
@@ -55,9 +56,9 @@ export const updateAdminMenu = createAsyncThunk("adminMenu/updateAdminMenu",
 
             return await updateAdminMenuItem(id, formData);
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to update menu item");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to update menu item'))
         }
     }
 );
@@ -71,9 +72,9 @@ export const updateAdminMenuAvailabilityThunk = createAsyncThunk("adminMenu/upda
 
             return await updateAdminMenuAvailability(id, isAvailable);
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to update availability");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to update availability'))
         }
     }
 );
@@ -88,9 +89,9 @@ export const deleteAdminMenu = createAsyncThunk("adminMenu/deleteAdminMenu",
 
             return id;
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to delete menu item");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to delete menu item'))
         }
     }
 );
@@ -116,7 +117,7 @@ const adminMenuSlice = createSlice({
             .addCase(fetchAdminMenu.fulfilled, (state, action) => {
                 state.loading = false;
                 state.items = action.payload.items;
-                state.pagination =  action.payload.pagination
+                state.pagination = action.payload.pagination
             })
 
             .addCase(fetchAdminMenu.rejected, (state, action) => {

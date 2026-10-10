@@ -8,6 +8,7 @@ import { useAppDispatch } from "../../store/hooks.js";
 import { getAdminMenuItem, } from "../../services/adminMenu.api.js";
 
 import { updateMenuItemFormSchema, type UpdateMenuItemFormData, } from "../../schemas/menu.schema.js";
+import { getApiErrorMessage } from "../../utils/getApiErrorMessage.js";
 
 
 
@@ -45,9 +46,9 @@ export function EditMenuItem() {
                     isAvailable: item.isAvailable,
                 });
 
-            } catch (error: any) {
+            } catch (error) {
 
-                setError(error.response?.data?.message || "Failed to load menu item");
+                setError(getApiErrorMessage(error, 'Failed to load order'))
 
             } finally {
 

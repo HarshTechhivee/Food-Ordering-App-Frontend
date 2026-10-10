@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { fetchDashboardStats, type DashboardStats, } from "../../services/adminDashboard.api.js";
+import { getApiErrorMessage } from "../../utils/getApiErrorMessage.js";
 
 interface AdminDashboardState {
     stats: DashboardStats | null;
@@ -20,9 +21,9 @@ export const fetchAdminDashboard = createAsyncThunk("adminDashboard/fetchDashboa
         try {
             return await fetchDashboardStats();
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to load dashboard");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to load dashboard'))
         }
     }
 );

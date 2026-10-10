@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice, } from "@reduxjs/toolkit";
 import { getMenu } from "../../services/menu.api";
 
 import type { MenuQuery, MenuResponse, } from "../../types/menu.types";
+import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 
 interface MenuState {
     data: MenuResponse | null;
@@ -24,9 +25,9 @@ export const fetchMenu = createAsyncThunk<MenuResponse, MenuQuery, { rejectValue
         try {
             return await getMenu(query);
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to load menu");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to load menu'))
         }
     }
 );

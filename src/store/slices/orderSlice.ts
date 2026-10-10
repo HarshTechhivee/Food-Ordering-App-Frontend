@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice, } from "@reduxjs/toolkit";
 import { createOrder, getOrderById, getOrders, } from "../../services/order.api";
 
 import type { CreateOrderInput, Order, OrderSummary, CreateOrderResponse } from "../../types/order.types";
+import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 
 interface OrderState {
     orders: OrderSummary[];
@@ -27,9 +28,9 @@ export const placeOrder = createAsyncThunk<CreateOrderResponse, CreateOrderInput
 
             return await createOrder(data);
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to place order");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to place order'))
         }
     }
 );
@@ -43,9 +44,9 @@ export const fetchOrders = createAsyncThunk<OrderSummary[], void, { rejectValue:
 
             return await getOrders();
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to load orders");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to load order'))
         }
     }
 );
@@ -59,9 +60,9 @@ export const fetchOrderById = createAsyncThunk<Order, number, { rejectValue: str
 
             return await getOrderById(orderId);
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to load order");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to load order'))
         }
     }
 );

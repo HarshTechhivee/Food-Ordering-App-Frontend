@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice, } from "@reduxjs/toolkit";
 import { getAdminOrders, rejectOrder, updateAdminOrderStatus, } from "../../services/adminOrder.api.js";
 
 import type { AdminOrder, UpdateOrderStatusInput, } from "../../types/order.types.js";
+import { getApiErrorMessage } from "../../utils/getApiErrorMessage.js";
 
 interface AdminOrderState {
     orders: AdminOrder[];
@@ -24,9 +25,9 @@ export const fetchAdminOrders = createAsyncThunk("adminOrders/fetchAdminOrders",
 
             return await getAdminOrders();
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to fetch orders");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to fetch orders'))
         }
     }
 );
@@ -39,9 +40,9 @@ export const updateAdminOrder = createAsyncThunk("adminOrders/updateAdminOrder",
 
             return await updateAdminOrderStatus(orderId, data);
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to update order");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to update orders'))
         }
     }
 );
@@ -55,9 +56,9 @@ export const rejectUserOrder = createAsyncThunk("adminOrders/rejectOrder",
 
             return await rejectOrder(orderId, rejectionReason);
 
-        } catch (error: any) {
+        } catch (error) {
 
-            return rejectWithValue(error.response?.data?.message || "Failed to reject order");
+            return rejectWithValue(getApiErrorMessage(error, 'Failed to reject orders'))
         }
     }
 );
