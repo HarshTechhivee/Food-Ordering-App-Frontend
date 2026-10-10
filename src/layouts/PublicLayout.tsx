@@ -7,7 +7,7 @@ function PublicLayout() {
 
     const navigate = useNavigate();
 
-    const user = useAppSelector((state) => state.auth.user);
+    const user = useAppSelector((state) => state.auth.user); 
 
     const cartItems = useAppSelector((state) => state.cart.items);
 
@@ -24,7 +24,7 @@ function PublicLayout() {
 
     return (
         <div className="min-vh-100 d-flex flex-column">
-            <nav className="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+            <nav className="navbar navbar-expand-lg bg-white border-bottom sticky-top mt-2">
                 <div className="container">
 
                     {/* Brand */}
@@ -94,14 +94,14 @@ function PublicLayout() {
                             {user && (
                                 <button
                                     type="button"
-                                    className="btn btn-light position-relative"
+                                    className="btn btn-light position-relative cart-button"
                                     onClick={() => navigate("/cart")}
                                     aria-label="Cart"
                                 >
                                     <i className="bi bi-cart3 fs-5" />
 
                                     {cartCount > 0 && (
-                                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        <span className="cart-count">
                                             {cartCount}
                                         </span>
                                     )}
@@ -116,11 +116,7 @@ function PublicLayout() {
                                 <div className="d-flex align-items-center gap-3">
                                     <div className="d-flex align-items-center gap-3">
                                         <div
-                                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                            style={{
-                                                width: "38px",
-                                                height: "38px",
-                                            }}
+                                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center foodhub-icon--38"
                                         >
                                             {user.name?.charAt(0).toUpperCase()}
                                         </div>

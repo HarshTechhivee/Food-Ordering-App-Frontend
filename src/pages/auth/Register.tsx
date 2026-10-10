@@ -66,11 +66,7 @@ function Register() {
                         {/* Brand */}
                         <div className="text-center mb-4">
                             <div
-                                className="bg-primary text-white rounded-4 d-inline-flex align-items-center justify-content-center mb-3"
-                                style={{
-                                    width: "56px",
-                                    height: "56px",
-                                }}
+                                className="bg-primary text-white rounded-4 d-inline-flex align-items-center justify-content-center mb-3 foodhub-icon--56"
                             >
                                 <i className="bi bi-shop fs-3"></i>
                             </div>

@@ -4,7 +4,7 @@ export type OrderStatus =
     | "OUT_FOR_DELIVERY"
     | "DELIVERED"
     | "REJECTED"
-    | "CANCELLED"   
+    | "CANCELLED"
 
 export type PaymentStatus =
     | "PENDING"
@@ -54,6 +54,8 @@ export interface Order {
     userId: number;
     status: OrderStatus;
     paymentStatus: PaymentStatus;
+    rejectionReason: string | null;
+    cancellationReason: string | null;
     totalAmount: number | string;
     createdAt: string;
     updatedAt: string;
@@ -61,21 +63,36 @@ export interface Order {
 }
 
 export interface AdminOrder {
-  id: number;
-  status: OrderStatus;
-  totalAmount: number | string;
-  createdAt: string;
-  updatedAt: string;
-  itemCount: number;
-  user: {
     id: number;
-    name: string;
-    email: string;
-  };
+    status: OrderStatus;
+    totalAmount: number | string;
+    rejectionReason: string | null;
+    cancellationReason: string | null;
+    createdAt: string;
+    updatedAt: string;
+    itemCount: number;
+    user: {
+        id: number;
+        name: string;
+        email: string;
+    };
+}
+
+export interface rejectedOrder {
+    id: number;
+    stripePaymentIntentId: string | null;
+    stripeRefundId: string | null;
+    userId: number;
+    status: OrderStatus;
+    paymentStatus: PaymentStatus;
+    rejectionReason: string | null;
+    totalAmount: number | string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface UpdateOrderStatusInput {
-  status:
+    status:
     | "APPROVED"
     | "REJECTED"
     | "OUT_FOR_DELIVERY"

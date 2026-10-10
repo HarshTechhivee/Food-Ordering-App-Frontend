@@ -52,21 +52,13 @@ function Home() {
                     <div className="carousel-item active">
 
                         <div
-                            className="position-relative text-white"
-                            style={{
-                                minHeight: "680px",
-                                backgroundImage:
-                                    "linear-gradient(90deg, rgba(10,12,15,.95) 0%, rgba(10,12,15,.78) 45%, rgba(10,12,15,.25) 100%), url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1900&q=85')",
-                                backgroundSize: "cover",
-                                backgroundPosition: "center"
-                            }}
+                            className="position-relative text-white home-hero-background home-hero-background--burger"
                         >
 
                             <div className="container">
 
                                 <div
-                                    className="row align-items-center"
-                                    style={{ minHeight: "680px" }}
+                                    className="row align-items-center home-hero-row"
                                 >
 
                                     {/* LEFT CONTENT */}
@@ -163,21 +155,13 @@ function Home() {
                     <div className="carousel-item">
 
                         <div
-                            className="position-relative text-white"
-                            style={{
-                                minHeight: "680px",
-                                backgroundImage:
-                                    "linear-gradient(90deg, rgba(10,12,15,.95) 0%, rgba(10,12,15,.78) 45%, rgba(10,12,15,.25) 100%), url('https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=1900&q=85')",
-                                backgroundSize: "cover",
-                                backgroundPosition: "center"
-                            }}
+                            className="position-relative text-white home-hero-background home-hero-background--pizza"
                         >
 
                             <div className="container">
 
                                 <div
-                                    className="row align-items-center"
-                                    style={{ minHeight: "680px" }}
+                                    className="row align-items-center home-hero-row"
                                 >
 
                                     {/* LEFT CONTENT */}
@@ -274,21 +258,13 @@ function Home() {
                     <div className="carousel-item">
 
                         <div
-                            className="position-relative text-white"
-                            style={{
-                                minHeight: "680px",
-                                backgroundImage:
-                                    "linear-gradient(90deg, rgba(10,12,15,.95) 0%, rgba(10,12,15,.78) 45%, rgba(10,12,15,.25) 100%), url('https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=1900&q=85')",
-                                backgroundSize: "cover",
-                                backgroundPosition: "center"
-                            }}
+                            className="position-relative text-white home-hero-background home-hero-background--drink"
                         >
 
                             <div className="container">
 
                                 <div
-                                    className="row align-items-center"
-                                    style={{ minHeight: "680px" }}
+                                    className="row align-items-center home-hero-row"
                                 >
 
                                     {/* LEFT CONTENT */}
@@ -392,11 +368,7 @@ function Home() {
                 >
 
                     <span
-                        className="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center shadow"
-                        style={{
-                            width: "50px",
-                            height: "50px"
-                        }}
+                        className="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center shadow home-carousel-control-icon"
                     >
                         <i className="bi bi-chevron-left fs-5"></i>
                     </span>
@@ -420,11 +392,7 @@ function Home() {
                 >
 
                     <span
-                        className="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center shadow"
-                        style={{
-                            width: "50px",
-                            height: "50px"
-                        }}
+                        className="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center shadow home-carousel-control-icon"
                     >
                         <i className="bi bi-chevron-right fs-5"></i>
                     </span>
@@ -477,11 +445,7 @@ function Home() {
                                     <img
                                         src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80"
                                         alt="Burger"
-                                        className="w-100"
-                                        style={{
-                                            height: "280px",
-                                            objectFit: "cover"
-                                        }}
+                                        className="w-100 home-featured-image"
                                     />
 
                                     <span className="badge bg-warning text-dark position-absolute top-0 end-0 m-3 rounded-pill px-3 py-2">
@@ -527,11 +491,7 @@ function Home() {
                                     <img
                                         src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80"
                                         alt="Pizza"
-                                        className="w-100"
-                                        style={{
-                                            height: "280px",
-                                            objectFit: "cover"
-                                        }}
+                                        className="w-100 home-featured-image"
                                     />
 
                                     <span className="badge bg-danger position-absolute top-0 end-0 m-3 rounded-pill px-3 py-2">
@@ -577,11 +537,7 @@ function Home() {
                                     <img
                                         src="https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=800&q=80"
                                         alt="Cold Drink"
-                                        className="w-100"
-                                        style={{
-                                            height: "280px",
-                                            objectFit: "cover"
-                                        }}
+                                        className="w-100 home-featured-image"
                                     />
 
                                     <span className="badge bg-primary position-absolute top-0 end-0 m-3 rounded-pill px-3 py-2">
@@ -765,11 +721,7 @@ function Home() {
             ===================================================== */}
 
             <section
-                className="position-relative overflow-hidden text-white"
-                style={{
-                    background:
-                        "linear-gradient(110deg, #17191c, #34383d)"
-                }}
+                className="position-relative overflow-hidden text-white home-final-cta"
             >
 
                 <div className="container py-5">

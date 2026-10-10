@@ -1,113 +1,196 @@
-import { useState } from "react";
 
-import { markAllAsRead, markAsRead, clearNotifications, } from "../../store/slices/notificationSlice.js";
+import { useEffect, useRef, useState } from "react";
 
-import { useAppDispatch, useAppSelector } from "../../store/hooks.js";
+import {
+    markAllAsRead,
+    markAsRead,
+    clearNotifications,
+} from "../../store/slices/notificationSlice.js";
+
+import {
+    useAppDispatch,
+    useAppSelector,
+} from "../../store/hooks.js";
 
 function NotificationBell() {
-    
     const dispatch = useAppDispatch();
 
-    const notifications = useAppSelector((state) => state.notifications.notifications);
+    const notifications = useAppSelector(
+        (state) => state.notifications.notifications
+    );
 
     const [open, setOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    const unreadCount = notifications.filter((notification) => !notification.read).length;
+    const unreadCount = notifications.filter(
+        (notification) => !notification.read
+    ).length;
+
+    useEffect(() => {
+        if (!open) return;
+
+        const handleOutsideClick = (event: MouseEvent) => {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(event.target as Node)
+            ) {
+                setOpen(false);
+            }
+        };
+
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                setOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleOutsideClick);
+        document.addEventListener("keydown", handleEscape);
+
+        return () => {
+            document.removeEventListener("mousedown", handleOutsideClick);
+            document.removeEventListener("keydown", handleEscape);
+        };
+    }, [open]);
+
 
     const handleNotificationClick = (id: string) => {
         dispatch(markAsRead(id));
     };
 
     return (
-        <div className="position-relative">
+        <div
+            ref={containerRef}
+            className="position-relative notification-container"
+        >
             <button
                 type="button"
-                className="btn btn-light position-relative"
+                className="btn notification-bell-button position-relative"
                 onClick={() => setOpen((previous) => !previous)}
+                aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ""}`}
+                aria-expanded={open}
+                aria-haspopup="dialog"
             >
-                <i className="bi bi-bell fs-5"></i>
+                <i className="bi bi-bell fs-5" />
 
                 {unreadCount > 0 && (
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        {unreadCount}
+                    <span className="notification-count">
+                        {unreadCount > 99 ? "99+" : unreadCount}
                     </span>
                 )}
             </button>
 
             {open && (
-                <div
-                    className="position-absolute end-0 mt-2 bg-white border rounded shadow"
-                    style={{
-                        width: "350px",
-                        zIndex: 1050,
-                    }}
+                <section
+                    className="notification-dropdown"
+                    role="dialog"
+                    aria-label="Notifications"
                 >
-                    <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
-                        <h6 className="mb-0">Notifications</h6>
+                    <div className="notification-header">
+                        <div>
+                            <h6 className="mb-1 fw-bold">Notifications</h6>
+                            <small className="text-secondary">
+                                {unreadCount > 0
+                                    ? `${unreadCount} unread notification${unreadCount === 1 ? "" : "s"}`
+                                    : "You're all caught up"}
+                            </small>
+                        </div>
 
                         {notifications.length > 0 && (
-                            <button
-                                type="button"
-                                className="btn btn-sm btn-link text-decoration-none"
-                                onClick={() => dispatch(markAllAsRead())}
-                            >
-                                Mark all as read
-                            </button>
+                            <div className="notification-toolbar">
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-link text-decoration-none p-0"
+                                    disabled={unreadCount === 0}
+                                    onClick={() => dispatch(markAllAsRead())}
+                                >
+                                    Mark all as read
+                                </button>
+                            </div>
                         )}
+
+                        <button
+                            type="button"
+                            className="btn-close flex-shrink-0"
+                            aria-label="Close notifications"
+                            onClick={() => setOpen(false)}
+                        />
                     </div>
 
-                    <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+                    <div className="notification-list">
                         {notifications.length === 0 ? (
-                            <div className="text-center text-muted p-4">
-                                No notifications
+                            <div className="notification-empty">
+                                <div className="notification-empty-icon">
+                                    <i className="bi bi-bell-slash" />
+                                </div>
+                                <h6 className="fw-semibold mb-1">
+                                    No notifications yet
+                                </h6>
+                                <p className="text-secondary small mb-0">
+                                    Updates will appear here.
+                                </p>
                             </div>
                         ) : (
                             notifications.map((notification) => (
-                                <div
+                                <button
                                     key={notification.id}
-                                    className={`p-3 border-bottom ${notification.read ? "bg-white" : "bg-light"
+                                    type="button"
+                                    className={`notification-item ${notification.read ? "" : "unread"
                                         }`}
                                     onClick={() =>
                                         handleNotificationClick(notification.id)
                                     }
-                                    role="button"
                                 >
-                                    <div className="d-flex justify-content-between">
-                                        <strong>{notification.title}</strong>
+                                    <span
+                                        className={`notification-item-icon ${notification.read
+                                            ? "read"
+                                            : "unread"
+                                            }`}
+                                    >
+                                        <i className="bi bi-bell" />
+                                    </span>
 
-                                        {!notification.read && (
-                                            <span className="badge bg-primary">
-                                                New
-                                            </span>
-                                        )}
-                                    </div>
+                                    <span className="notification-item-content">
+                                        <span className="d-flex justify-content-between align-items-start gap-2">
+                                            <strong className="notification-item-title">
+                                                {notification.title}
+                                            </strong>
 
-                                    <div className="small text-muted mt-1">
-                                        {notification.message}
-                                    </div>
+                                            {!notification.read && (
+                                                <span className="notification-unread-dot" />
+                                            )}
+                                        </span>
 
-                                    <div className="small text-secondary mt-2">
-                                        {new Date(
-                                            notification.createdAt
-                                        ).toLocaleTimeString()}
-                                    </div>
-                                </div>
+                                        <span className="notification-message">
+                                            {notification.message}
+                                        </span>
+
+                                        <span className="notification-time">
+                                            {new Date(
+                                                notification.createdAt
+                                            ).toLocaleString()}
+                                        </span>
+                                    </span>
+                                </button>
                             ))
                         )}
                     </div>
 
                     {notifications.length > 0 && (
-                        <div className="p-2 border-top text-center">
+                        <div className="notification-footer">
                             <button
                                 type="button"
                                 className="btn btn-sm btn-outline-danger"
-                                onClick={() => dispatch(clearNotifications())}
+                                onClick={() =>
+                                    dispatch(clearNotifications())
+                                }
                             >
+                                <i className="bi bi-trash3 me-2" />
                                 Clear all
                             </button>
                         </div>
                     )}
-                </div>
+                </section>
             )}
         </div>
     );

@@ -20,3 +20,11 @@ export const updateAdminOrderStatus = async (orderId: number, data: UpdateOrderS
 
     return response.data.data;
 };
+
+export const rejectOrder = async (orderId: number, rejectionReason: string) => {
+
+    const response = await apiClient.patch(`/admin/orders/${orderId}/reject`, { rejectionReason });
+
+    return response.data.data;
+};
+

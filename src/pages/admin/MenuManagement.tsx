@@ -138,8 +138,7 @@ function MenuManagement() {
                     <div className="card-body text-center py-5">
 
                         <div className="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center 
-                            justify-content-center mx-auto mb-3"
-                            style={{ width: "70px", height: "70px", }} >
+                            justify-content-center mx-auto mb-3 foodhub-icon--70">
                             <i className="bi bi-exclamation-circle fs-3" />
                         </div>
 
@@ -162,8 +161,7 @@ function MenuManagement() {
                     <div className="card-body text-center py-5">
 
                         <div className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center 
-                            justify-content-center mx-auto mb-4"
-                            style={{ width: "90px", height: "90px", }} >
+                            justify-content-center mx-auto mb-4 foodhub-icon--90">
                             <i className="bi bi-menu-button-wide fs-1" />
                         </div>
 
@@ -292,19 +290,12 @@ function MenuManagement() {
                         key={item.id}
                     >
                         <div
-                            className="card h-100 border-0 overflow-hidden"
-                            style={{
-                                borderRadius: "20px",
-                                boxShadow: "0 8px 30px rgba(0, 0, 0, 0.08)",
-                            }}
+                            className="card h-100 border-0 overflow-hidden menu-item-card"
                         >
 
                             {/* Image + Overlay */}
                             <div
-                                className="position-relative"
-                                style={{
-                                    height: "280px",
-                                }}
+                                className="position-relative menu-item-image"
                             >
 
                                 {/* Image */}
@@ -313,9 +304,6 @@ function MenuManagement() {
                                         src={`${SERVER_URL}${item.image}`}
                                         alt={item.name}
                                         className="w-100 h-100"
-                                        style={{
-                                            objectFit: "cover",
-                                        }}
                                     />
                                 ) : (
                                     <div
@@ -327,12 +315,7 @@ function MenuManagement() {
 
                                 {/* Image gradient */}
                                 <div
-                                    className="position-absolute bottom-0 start-0 w-100"
-                                    style={{
-                                        height: "55%",
-                                        background:
-                                            "linear-gradient(to top, rgba(0,0,0,0.85), transparent)",
-                                    }}
+                                    className="position-absolute bottom-0 start-0 w-100 menu-item-image-overlay"
                                 />
 
                                 {/* Active */}
@@ -397,7 +380,7 @@ function MenuManagement() {
                             {/* Content */}
                             <div className="card-body p-4">
 
-                                <p className="text-secondary mb-2" style={{height:'60px'}}>
+                                <p className="text-secondary mb-2 menu-item-description">
                                     {item.description}
                                 </p>
 
@@ -414,11 +397,7 @@ function MenuManagement() {
                                                 className="text-decoration-none text-center"
                                             >
                                                 <div
-                                                    className="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center mx-auto mb-2"
-                                                    style={{
-                                                        width: "48px",
-                                                        height: "48px",
-                                                    }}
+                                                    className="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center mx-auto mb-2 foodhub-icon--48"
                                                 >
                                                     <i className="bi bi-pencil fs-5" />
                                                 </div>
@@ -444,11 +423,7 @@ function MenuManagement() {
                                                         className={`rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 ${item.isAvailable
                                                             ? "bg-warning-subtle text-warning"
                                                             : "bg-success-subtle text-success"
-                                                            }`}
-                                                        style={{
-                                                            width: "48px",
-                                                            height: "48px",
-                                                        }}
+                                                            } foodhub-icon--48`}
                                                     >
                                                         <i
                                                             className={`bi ${item.isAvailable
@@ -477,11 +452,7 @@ function MenuManagement() {
                                                     className={`rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 ${item.isActive
                                                         ? "bg-danger-subtle text-danger"
                                                         : "bg-light text-secondary"
-                                                        }`}
-                                                    style={{
-                                                        width: "48px",
-                                                        height: "48px",
-                                                    }}
+                                                        } foodhub-icon--48`}
                                                 >
                                                     <i className="bi bi-trash fs-5" />
                                                 </div>

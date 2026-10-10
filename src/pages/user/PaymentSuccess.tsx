@@ -9,16 +9,21 @@ function PaymentSuccess() {
 
     const dispatch = useAppDispatch();
 
-    const paymentIntentId = searchParams.get("payment_intent");
+    const paymentIntentId =
+        searchParams.get("payment_intent");
 
-    const redirectStatus = searchParams.get("redirect_status");
+    const redirectStatus =
+        searchParams.get("redirect_status");
 
-    const isSuccess = redirectStatus === "succeeded";
+    const isSuccess =
+        redirectStatus === "succeeded";
 
     useEffect(() => {
+
         if (isSuccess) {
             dispatch(clearCart());
         }
+
     }, [isSuccess, dispatch]);
 
     return (
@@ -28,8 +33,8 @@ function PaymentSuccess() {
                     <div className="card border-0 shadow-sm text-center">
                         <div className="card-body p-5">
 
-                            {isSuccess ?
-                                (<>
+                            {isSuccess ? (
+                                <>
                                     <div className="mb-4">
                                         <i className="bi bi-check-circle-fill fs-1 text-success" />
                                     </div>
@@ -40,19 +45,26 @@ function PaymentSuccess() {
 
                                     <p className="text-muted">
                                         Your payment has been completed
-                                        successfully.
+                                        successfully and your order is
+                                        being created.
                                     </p>
 
-                                    <p className="small text-muted">
-                                        Payment ID: {paymentIntentId}
-                                    </p>
+                                    {paymentIntentId && (
+                                        <p className="small text-muted">
+                                            Payment ID:{" "}
+                                            {paymentIntentId}
+                                        </p>
+                                    )}
 
-                                    <Link to="/orders" className="btn btn-primary mt-3" >
+                                    <Link
+                                        to="/orders"
+                                        className="btn btn-primary mt-3"
+                                    >
                                         View Orders
                                     </Link>
-                                </>)
-                                :
-                                (<>
+                                </>
+                            ) : (
+                                <>
                                     <div className="mb-4">
                                         <i className="bi bi-x-circle-fill fs-1 text-danger" />
                                     </div>
@@ -62,14 +74,19 @@ function PaymentSuccess() {
                                     </h2>
 
                                     <p className="text-muted">
-                                        Your payment could not be completed.
+                                        Your payment could not be
+                                        completed. Your cart has been
+                                        kept so you can try again.
                                     </p>
 
-                                    <Link to="/orders" className="btn btn-primary mt-3" >
-                                        View Orders
+                                    <Link
+                                        to="/cart"
+                                        className="btn btn-primary mt-3"
+                                    >
+                                        Back to Cart
                                     </Link>
-                                </>)
-                            }
+                                </>
+                            )}
 
                         </div>
                     </div>

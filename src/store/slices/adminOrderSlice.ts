@@ -1,6 +1,6 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, } from "@reduxjs/toolkit";
 
-import { getAdminOrders, updateAdminOrderStatus, } from "../../services/adminOrder.api.js";
+import { getAdminOrders, rejectOrder, updateAdminOrderStatus, } from "../../services/adminOrder.api.js";
 
 import type { AdminOrder, UpdateOrderStatusInput, } from "../../types/order.types.js";
 
@@ -47,6 +47,23 @@ export const updateAdminOrder = createAsyncThunk("adminOrders/updateAdminOrder",
 );
 
 
+export const rejectUserOrder = createAsyncThunk("adminOrders/rejectOrder",
+
+    async ({ orderId, rejectionReason, }: { orderId: number; rejectionReason: string; }, { rejectWithValue }) => {
+
+        try {
+
+            return await rejectOrder(orderId, rejectionReason);
+
+        } catch (error: any) {
+
+            return rejectWithValue(error.response?.data?.message || "Failed to reject order");
+        }
+    }
+);
+
+
+
 const adminOrderSlice = createSlice({
     name: "adminOrders",
 
@@ -85,7 +102,7 @@ const adminOrderSlice = createSlice({
                 const updatedOrder = action.payload;
 
                 const index = state.orders.findIndex((order) => order.id === updatedOrder.id);
-                
+
                 if (index !== -1) {
                     state.orders[index] = updatedOrder;
                 }

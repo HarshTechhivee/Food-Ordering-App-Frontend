@@ -21,17 +21,15 @@ function ConfirmModal({ show, title, message, confirmText = "Confirm", cancelTex
         <>
             {/* Backdrop */}
             <div
-                className="modal-backdrop fade show" 
-                style={{ zIndex: 1050 }}
+                className="modal-backdrop fade show confirm-modal-backdrop"
             />
 
             {/* Modal */}
             <div
-                className="modal fade show d-block"
+                className="modal fade show d-block confirm-modal"
                 tabIndex={-1}
                 role="dialog"
                 aria-modal="true"
-                style={{ zIndex: 1060 }}
             >
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content border-0 rounded-4 shadow">
@@ -41,11 +39,7 @@ function ConfirmModal({ show, title, message, confirmText = "Confirm", cancelTex
                             <div className="d-flex align-items-center gap-3">
 
                                 <div
-                                    className="bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center"
-                                    style={{
-                                        width: "44px",
-                                        height: "44px",
-                                    }}
+                                    className="bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center foodhub-icon--44"
                                 >
                                     <i className="bi bi-trash3-fill"></i>
                                 </div>

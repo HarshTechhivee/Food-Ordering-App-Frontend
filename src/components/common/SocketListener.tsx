@@ -25,6 +25,32 @@ function SocketListener() {
             );
         };
 
+        const handleCancelOrder = (data: { orderId: number }) => {
+            dispatch(
+                addNotification({
+                    id: crypto.randomUUID(),
+                    type: "CANCEL_ORDER",
+                    title: "Cancel Order",
+                    message: `Order #${data.orderId} has been Cancelled.`,
+                    createdAt: new Date().toISOString(),
+                    read: false,
+                })
+            )
+        }
+
+        const handleRejectOrder = (data: { orderId: number; }) => {
+            dispatch(
+                addNotification({
+                    id: crypto.randomUUID(),
+                    type: "REJECT_ORDER",
+                    title: "Reject Order",
+                    message: `Order #${data.orderId} has been Rejected.`,
+                    createdAt: new Date().toISOString(),
+                    read: false,
+                })
+            )
+        }
+
         const handleStatusUpdated = (data: { orderId: number; status: string; }) => {
 
             console.log("USER RECEIVED order:statusUpdated:", data);
@@ -43,10 +69,14 @@ function SocketListener() {
 
         socket.on("order:new", handleNewOrder);
         socket.on("order:statusUpdated", handleStatusUpdated);
+        socket.on("order:rejected", handleRejectOrder)
+        socket.on("order:cancelled", handleCancelOrder)
 
         return () => {
             socket.off("order:new", handleNewOrder);
             socket.off("order:statusUpdated", handleStatusUpdated);
+            socket.off("order:rejected", handleRejectOrder)
+            socket.off("order:cancelled", handleCancelOrder)
         };
     }, [dispatch]);
 

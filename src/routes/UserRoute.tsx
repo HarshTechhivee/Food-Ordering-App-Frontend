@@ -3,14 +3,12 @@ import { useAppSelector } from "../store/hooks";
 
 function UserRoute() {
     const user = useAppSelector((state) => state.auth.user);
-    
-    const initialized = useAppSelector(
-        (state) => state.auth.initialized
-    );
 
-    if (!initialized) {
-        return <div>Loading...</div>;
-    }
+    // const initialized = useAppSelector((state) => state.auth.initialized);
+
+    // if (!initialized) {
+    //     return <div>Loading...</div>;
+    // }
 
     if (!user) {
         return <Navigate to="/login" replace />;

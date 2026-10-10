@@ -1,43 +1,43 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { decreaseQuantity, increaseQuantity, removeFromCart, } from "../../store/slices/cartSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { clearCart, } from "../../store/slices/cartSlice";
-
-import { placeOrder, } from "../../store/slices/orderSlice";
+import { createPaymentIntent } from "../../services/payment.api";
 
 function Cart() {
+
+    const [loading, setLoading] = useState(false);
 
     const dispatch = useAppDispatch();
 
     const navigate = useNavigate();
 
-    const handlePlaceOrder = async () => {
+    const handleProceedToPayment = async () => {
 
         try {
+            setLoading(true)
 
-            const result = await dispatch(
-                placeOrder({
-                    items: items.map((item) => ({
-                        menuItemId: item.menuItemId,
-                        quantity: item.quantity,
-                    })),
-                })
-            ).unwrap();
 
-            navigate(`/payment/${result.order.id}`, {
+            const result = await createPaymentIntent({
+                items: items.map((item) => ({
+                    menuItemId: item.menuItemId,
+                    quantity: item.quantity,
+                })),
+            });
+
+            navigate("/payment", {
                 state: {
                     clientSecret: result.clientSecret,
                 },
             });
 
         } catch (error) {
-
             console.error(error);
-
+        }
+        finally {
+            setLoading(false)
         }
     };
-
-    const loading = useAppSelector((state) => state.orders.loading);
 
     const items = useAppSelector((state) => state.cart.items);
 
@@ -49,11 +49,7 @@ function Cart() {
                 <div className="text-center py-5">
 
                     <div
-                        className="mx-auto mb-4 rounded-circle bg-light d-flex align-items-center justify-content-center"
-                        style={{
-                            width: "100px",
-                            height: "100px",
-                        }}
+                        className="mx-auto mb-4 rounded-circle bg-light d-flex align-items-center justify-content-center foodhub-icon--100"
                     >
                         <i className="bi bi-cart-x display-6 text-secondary" />
                     </div>
@@ -108,11 +104,10 @@ function Cart() {
 
                                         {item.image ?
                                             (<img src={`${import.meta.env.VITE_SERVER_URL}${item.image}`} alt={item.name}
-                                                className="img-fluid rounded-3 w-100" style={{ height: "90px", objectFit: "cover", }}
+                                                className="img-fluid rounded-3 w-100 cart-item-image"
                                             />)
                                             :
-                                            (<div className="bg-light rounded-3 d-flex align-items-center justify-content-center"
-                                                style={{ height: "90px", }} >
+                                            (<div className="bg-light rounded-3 d-flex align-items-center justify-content-center cart-item-placeholder">
                                                 <i className="bi bi-image text-secondary fs-3" />
                                             </div>)
                                         }
@@ -225,12 +220,21 @@ function Cart() {
                             </div>
 
                             <button type="button" className="btn btn-primary btn-lg w-100"
-                                onClick={handlePlaceOrder} disabled={loading} >
-                                {loading ?
-                                    (<> <span className="spinner-border spinner-border-sm me-2" role="status" /> Placing Order... </>)
-                                    :
-                                    (<> <i className="bi bi-check-circle me-2" /> Place Order </>)
-                                }
+                                onClick={handleProceedToPayment} disabled={loading} >
+                                {loading ? (
+                                    <>
+                                        <span
+                                            className="spinner-border spinner-border-sm me-2"
+                                            role="status"
+                                        />
+                                        Preparing Payment...
+                                    </>
+                                ) : (
+                                    <>
+                                        <i className="bi bi-credit-card me-2" />
+                                        Proceed to Payment
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>

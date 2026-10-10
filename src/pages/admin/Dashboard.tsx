@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import NotificationBell from "../../components/common/NotificationBell";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchAdminDashboard } from "../../store/slices/adminDashboardSlice";
 import { socket } from "../../services/socket.js";
@@ -30,11 +29,15 @@ function AdminDashboard() {
 
         socket.on("order:statusUpdated", handleOrderChange);
 
+        socket.on("order:cancelled", handleOrderChange)
+
         return () => {
 
             socket.off("order:new", handleOrderChange);
 
             socket.off("order:statusUpdated", handleOrderChange);
+
+            socket.off("order:cancelled", handleOrderChange)
 
         };
 
@@ -61,14 +64,47 @@ function AdminDashboard() {
                     </p>
                 </div>
 
-                <NotificationBell />
-
             </div>
 
+            {loading && (
+                <div className="text-center py-5">
+
+                    <div
+                        className="spinner-border text-primary mb-3"
+                        role="status"
+                    >
+                        {/* <span className="visually-hidden">
+                            Loading...
+                        </span> */}
+                    </div>
+
+                    <p className="text-secondary mb-0">
+                        Loading Dashboard...
+                    </p>
+
+                </div>
+            )}
+
             {error && (
-                <div className="alert alert-danger rounded-4 mb-4">
-                    <i className="bi bi-exclamation-circle me-2" />
-                    {error}
+                <div className="card border-0 shadow-sm rounded-4 mb-4">
+
+                    <div className="card-body text-center py-5">
+
+                        <div className="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center 
+                            justify-content-center mx-auto mb-3 foodhub-icon--70">
+                            <i className="bi bi-exclamation-circle fs-3" />
+                        </div>
+
+                        <h5 className="fw-bold mb-2">
+                            Unable to load menu
+                        </h5>
+
+                        <p className="text-secondary mb-0">
+                            {error}
+                        </p>
+
+                    </div>
+
                 </div>
             )}
 
@@ -98,8 +134,7 @@ function AdminDashboard() {
                                 </div>
 
                                 <div className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center 
-                                    justify-content-center"
-                                    style={{ width: "48px", height: "48px", }} >
+                                    justify-content-center foodhub-icon--48">
                                     <i className="bi bi-receipt fs-5" />
                                 </div>
 
@@ -133,8 +168,7 @@ function AdminDashboard() {
                                 </div>
 
                                 <div className="bg-warning bg-opacity-10 text-warning rounded-3 d-flex align-items-center 
-                                    justify-content-center"
-                                    style={{ width: "48px", height: "48px", }} >
+                                    justify-content-center foodhub-icon--48">
                                     <i className="bi bi-clock-history fs-5" />
                                 </div>
 
@@ -172,11 +206,7 @@ function AdminDashboard() {
                                 </div>
 
                                 <div
-                                    className="bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center"
-                                    style={{
-                                        width: "48px",
-                                        height: "48px",
-                                    }}
+                                    className="bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center foodhub-icon--48"
                                 >
                                     <i className="bi bi-credit-card fs-5" />
                                 </div>
@@ -216,11 +246,7 @@ function AdminDashboard() {
                                 </div>
 
                                 <div
-                                    className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center"
-                                    style={{
-                                        width: "48px",
-                                        height: "48px",
-                                    }}
+                                    className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center foodhub-icon--48"
                                 >
                                     <i className="bi bi-people fs-5" />
                                 </div>
@@ -262,11 +288,7 @@ function AdminDashboard() {
                                 </div>
 
                                 <div
-                                    className="bg-danger bg-opacity-10 text-danger rounded-3 d-flex align-items-center justify-content-center"
-                                    style={{
-                                        width: "48px",
-                                        height: "48px",
-                                    }}
+                                    className="bg-danger bg-opacity-10 text-danger rounded-3 d-flex align-items-center justify-content-center foodhub-icon--48"
                                 >
                                     <i className="bi bi-arrow-counterclockwise fs-5" />
                                 </div>
@@ -301,8 +323,7 @@ function AdminDashboard() {
                                 </div>
 
                                 <div className="bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center 
-                                    justify-content-center"
-                                    style={{ width: "48px", height: "48px", }} >
+                                    justify-content-center foodhub-icon--48">
                                     <i className="bi bi-menu-button-wide fs-5" />
                                 </div>
 
@@ -336,8 +357,7 @@ function AdminDashboard() {
                                 </div>
 
                                 <div className="bg-info bg-opacity-10 text-info rounded-3 d-flex align-items-center 
-                                    justify-content-center"
-                                    style={{ width: "48px", height: "48px", }} >
+                                    justify-content-center foodhub-icon--48">
                                     <i className="bi bi-currency-rupee fs-5" />
                                 </div>
 
@@ -373,20 +393,9 @@ function AdminDashboard() {
 
                             <div className="d-flex flex-column gap-4">
 
-                                {/* <div className="d-flex justify-content-between align-items-center">
-                                    <span>
-                                        <span className="badge text-bg-warning me-2">
-                                            {stats?.orderStatus.PENDING ?? 0}
-                                        </span>
-                                        Pending
-                                    </span>
-
-                                    <i className="bi bi-clock-history text-warning" />
-                                </div> */}
-
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <span style={{ fontSize: '19px' }}>
-                                        <span className="badge text-bg-primary me-2">
+                                    <span className="dashboard-status-label">
+                                        <span className="badge text-bg-primary me-4">
                                             {stats?.orderStatus.APPROVED ?? 0}
                                         </span>
                                         Approved
@@ -396,8 +405,8 @@ function AdminDashboard() {
                                 </div>
 
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <span style={{ fontSize: '19px' }}>
-                                        <span className="badge text-bg-info me-2">
+                                    <span className="dashboard-status-label">
+                                        <span className="badge text-bg-info me-4">
                                             {stats?.orderStatus.OUT_FOR_DELIVERY ?? 0}
                                         </span>
                                         Out for Delivery
@@ -407,8 +416,8 @@ function AdminDashboard() {
                                 </div>
 
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <span style={{ fontSize: '19px' }}>
-                                        <span className="badge text-bg-success me-2">
+                                    <span className="dashboard-status-label">
+                                        <span className="badge text-bg-success me-3">
                                             {stats?.orderStatus.DELIVERED ?? 0}
                                         </span>
                                         Delivered
@@ -418,8 +427,8 @@ function AdminDashboard() {
                                 </div>
 
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <span style={{ fontSize: '19px' }}>
-                                        <span className="badge text-bg-danger me-2">
+                                    <span className="dashboard-status-label">
+                                        <span className="badge text-bg-danger me-4">
                                             {stats?.orderStatus.REJECTED ?? 0}
                                         </span>
                                         Rejected
@@ -429,8 +438,8 @@ function AdminDashboard() {
                                 </div>
 
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <span style={{ fontSize: '19px' }}>
-                                        <span className="badge text-bg-secondary me-2">
+                                    <span className="dashboard-status-label">
+                                        <span className="badge text-bg-secondary me-4">
                                             {stats?.orderStatus.CANCELLED ?? 0}
                                         </span>
                                         Cancelled

@@ -29,8 +29,7 @@ function Toast({ message, show, onClose, type = "info", duration = 3000, }: Toas
 
     return (
         <div
-            className="toast-container position-fixed top-0 end-0 p-3"
-            style={{ zIndex: 1080 }}
+            className="toast-container position-fixed top-0 end-0 p-3 foodhub-toast-container"
         >
             <div
                 className={`toast show border-0 shadow ${type === "success"
@@ -58,7 +57,7 @@ function Toast({ message, show, onClose, type = "info", duration = 3000, }: Toas
                                 }`}
                         ></i> 
 
-                        <span style={{textTransform:'capitalize',letterSpacing:'1px'}}>{message}</span>
+                        <span className="toast-message">{message}</span>
                     </div>
 
                     <button

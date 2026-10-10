@@ -29,10 +29,9 @@ export const getOrderById = async (orderId: number): Promise<Order> => {
     return response.data.data;
 };
 
+export const cancelOrder = async (orderId: number, cancellationReason: string) => {
 
-export const cancelOrder = async (orderId: number) => {
-
-    const response = await apiClient.patch(`/orders/${orderId}/cancel`);
+    const response = await apiClient.patch(`/orders/${orderId}/cancel`, { cancellationReason });
 
     return response.data.data;
 };

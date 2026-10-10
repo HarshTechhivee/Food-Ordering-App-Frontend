@@ -258,10 +258,7 @@ export function Menu() {
 
                                     {/* Image */}
                                     <div
-                                        className="position-relative"
-                                        style={{
-                                            height: "280px",
-                                        }}
+                                        className="position-relative menu-item-image"
                                     >
 
                                         {/* Image */}
@@ -270,9 +267,6 @@ export function Menu() {
                                                 src={`${SERVER_URL}${item.image}`}
                                                 alt={item.name}
                                                 className="w-100 h-100"
-                                                style={{
-                                                    objectFit: "cover",
-                                                }}
                                             />
                                         ) : (
                                             <div
@@ -284,12 +278,7 @@ export function Menu() {
 
                                         {/* Image gradient */}
                                         <div
-                                            className="position-absolute bottom-0 start-0 w-100"
-                                            style={{
-                                                height: "55%",
-                                                background:
-                                                    "linear-gradient(to top, rgba(0,0,0,0.85), transparent)",
-                                            }}
+                                            className="position-absolute bottom-0 start-0 w-100 menu-item-image-overlay"
                                         />
 
                                         {cartItem && (

@@ -1,10 +1,20 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks.js";
-import { fetchAdminOrders, updateAdminOrder, } from "../../store/slices/adminOrderSlice.js";
+import { fetchAdminOrders, rejectUserOrder, updateAdminOrder, } from "../../store/slices/adminOrderSlice.js";
 import { socket } from "../../services/socket.js";
 import { formatStatus, getStatusPaymentClass } from "../../utils/commonFunction.js";
 
 function OrdersManagement() {
+
+    const [showRejectModal, setShowRejectModal] = useState(false);
+
+    const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+
+    const [rejectionReason, setRejectionReason] = useState("");
+
+    const [customRejectionReason, setCustomRejectionReason] = useState("");
+
+    const [rejecting, setRejecting] = useState(false);
 
     const dispatch = useAppDispatch();
 
@@ -17,35 +27,21 @@ function OrdersManagement() {
     }, [dispatch]);
 
     useEffect(() => {
+        dispatch(fetchAdminOrders());
 
-        const handleNewOrder = (data: { orderId: number }) => {
-            console.log("New order received:", data);
-
+        const handleOrdersChanged = () => {
             dispatch(fetchAdminOrders());
         };
 
-        socket.on("order:new", handleNewOrder);
-
-        return () => { socket.off("order:new", handleNewOrder); };
-
-    }, [dispatch]);
-
-    useEffect(() => {
-
-        const handleOrderChange = () => { dispatch(fetchAdminOrders()); };
-
-        socket.on("order:new", handleOrderChange);
-
-        socket.on("order:statusUpdated", handleOrderChange);
+        socket.on("order:new", handleOrdersChanged);
+        socket.on("order:cancelled", handleOrdersChanged);
+        socket.on("order:statusUpdated", handleOrdersChanged);
 
         return () => {
-
-            socket.off("order:new", handleOrderChange);
-
-            socket.off("order:statusUpdated", handleOrderChange);
-
+            socket.off("order:new", handleOrdersChanged);
+            socket.off("order:cancelled", handleOrdersChanged);
+            socket.off("order:statusUpdated", handleOrdersChanged);
         };
-
     }, [dispatch]);
 
     const handleStatusChange = async (orderId: number,
@@ -54,6 +50,52 @@ function OrdersManagement() {
 
         dispatch(updateAdminOrder({ orderId, data: { status }, }));
     };
+
+
+    const openRejectModal = (orderId: number) => {
+
+        setSelectedOrderId(orderId);
+        setRejectionReason("");
+        setCustomRejectionReason("");
+        setShowRejectModal(true);
+
+    };
+
+    const handleRejectOrder = async () => {
+
+        if (!selectedOrderId || rejecting) {
+            return;
+        }
+
+        const reason = rejectionReason === "OTHER" ? customRejectionReason.trim() : rejectionReason.trim();
+
+        if (reason.length < 3 || reason.length > 500) {
+            return;
+        }
+
+        try {
+            setRejecting(true);
+
+            await dispatch(
+                rejectUserOrder({
+                    orderId: selectedOrderId,
+                    rejectionReason: reason,
+                })
+            ).unwrap();
+
+            setShowRejectModal(false);
+            setSelectedOrderId(null);
+            setRejectionReason("");
+            setCustomRejectionReason("");
+
+            await dispatch(fetchAdminOrders()).unwrap();
+        } catch (error) {
+            console.error("Failed to reject order:", error);
+        } finally {
+            setRejecting(false);
+        }
+    };
+
 
     return (
         <div>
@@ -80,8 +122,7 @@ function OrdersManagement() {
 
                 <div className="d-flex align-items-center gap-2">
 
-                    <div className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center"
-                        style={{ width: "48px", height: "48px", }} >
+                    <div className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center foodhub-icon--48">
                         <i className="bi bi-receipt fs-5" />
                     </div>
 
@@ -123,8 +164,7 @@ function OrdersManagement() {
                     <div className="card-body text-center py-5">
 
                         <div className="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center 
-                            justify-content-center mx-auto mb-3"
-                            style={{ width: "70px", height: "70px", }} >
+                            justify-content-center mx-auto mb-3 foodhub-icon--70">
                             <i className="bi bi-exclamation-circle fs-3" />
                         </div>
 
@@ -147,8 +187,7 @@ function OrdersManagement() {
                     <div className="card-body text-center py-5">
 
                         <div className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center 
-                            justify-content-center mx-auto mb-4"
-                            style={{ width: "90px", height: "90px", }} >
+                            justify-content-center mx-auto mb-4 foodhub-icon--90">
                             <i className="bi bi-receipt fs-1" />
                         </div>
 
@@ -181,8 +220,7 @@ function OrdersManagement() {
                                     <div className="d-flex align-items-center gap-3">
 
                                         <div className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center 
-                                            justify-content-center"
-                                            style={{ width: "50px", height: "50px", }} >
+                                            justify-content-center foodhub-icon--50">
                                             <i className="bi bi-receipt fs-4" />
                                         </div>
 
@@ -312,6 +350,24 @@ function OrdersManagement() {
 
                                 </div>
 
+                                {(order.status === "CANCELLED" && order.cancellationReason) ||
+                                    (order.status === "REJECTED" && order.rejectionReason) ? (
+                                    <div className="alert alert-danger border rounded-3 mt-2 mb-0">
+                                        <div className="fw-semibold mb-1">
+                                            <i className="bi bi-info-circle me-2 text-primary" />
+                                            {order.status === "CANCELLED"
+                                                ? "Customer cancellation reason"
+                                                : "Rejection reason"}
+                                        </div>
+
+                                        <p className="mb-0 text-secondary">
+                                            {order.status === "CANCELLED"
+                                                ? order.cancellationReason
+                                                : order.rejectionReason}
+                                        </p>
+                                    </div>
+                                ) : null}
+
 
                                 <hr className="my-4" />
 
@@ -347,7 +403,7 @@ function OrdersManagement() {
                                                 </button>
 
                                                 <button type="button" className="btn btn-outline-danger"
-                                                    onClick={() => handleStatusChange(order.id, "REJECTED")} >
+                                                    onClick={() => openRejectModal(order.id)} >
                                                     <i className="bi bi-x-lg me-2" />
                                                     Reject
                                                 </button>
@@ -382,6 +438,154 @@ function OrdersManagement() {
 
                 ))}
             </div>
+
+
+            {showRejectModal && (
+                <div
+                    className="modal fade show d-block"
+                    tabIndex={-1}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="rejectOrderModalTitle"
+                    style={{ backgroundColor: "rgba(15, 23, 42, 0.6)" }}
+                    onClick={(event) => {
+                        if (
+                            event.target === event.currentTarget &&
+                            !rejecting
+                        ) {
+                            setShowRejectModal(false);
+                        }
+                    }}
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                            <div className="modal-body p-4 p-md-5">
+                                <div className="text-center mb-4">
+                                    <div
+                                        className="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+                                        style={{ width: 72, height: 72 }}
+                                    >
+                                        <i className="bi bi-exclamation-triangle fs-1" />
+                                    </div>
+
+                                    <h4
+                                        id="rejectOrderModalTitle"
+                                        className="fw-bold mb-2"
+                                    >
+                                        Reject Order #{selectedOrderId}
+                                    </h4>
+
+                                    <p className="text-secondary mb-0">
+                                        Please select a reason for rejecting this order.
+                                        The customer will be able to see it.
+                                    </p>
+                                </div>
+
+                                <label
+                                    htmlFor="rejectionReason"
+                                    className="form-label fw-semibold"
+                                >
+                                    Reason for rejection
+                                </label>
+
+                                <select
+                                    id="rejectionReason"
+                                    className="form-select rounded-3 py-2"
+                                    value={rejectionReason}
+                                    onChange={(event) => {
+                                        setRejectionReason(event.target.value);
+                                        setCustomRejectionReason("");
+                                    }}
+                                    disabled={rejecting}
+                                >
+                                    <option value="">Select a reason</option>
+                                    <option value="Some items are unavailable">
+                                        Some items are unavailable
+                                    </option>
+                                    <option value="The restaurant is too busy to process this order">
+                                        The restaurant is too busy
+                                    </option>
+                                    <option value="We cannot deliver to the customer's location">
+                                        We cannot deliver to this location
+                                    </option>
+                                    <option value="OTHER">Other reason</option>
+                                </select>
+
+                                {rejectionReason === "OTHER" && (
+                                    <div className="mt-3">
+                                        <label
+                                            htmlFor="customRejectionReason"
+                                            className="form-label fw-semibold"
+                                        >
+                                            Tell us the reason
+                                        </label>
+
+                                        <textarea
+                                            id="customRejectionReason"
+                                            className="form-control rounded-3"
+                                            rows={3}
+                                            maxLength={500}
+                                            placeholder="Enter the reason (3–500 characters)"
+                                            value={customRejectionReason}
+                                            onChange={(event) =>
+                                                setCustomRejectionReason(
+                                                    event.target.value
+                                                )
+                                            }
+                                            disabled={rejecting}
+                                        />
+
+                                        <div className="text-end small text-secondary mt-1">
+                                            {customRejectionReason.length}/500
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="d-flex flex-column flex-sm-row gap-2 mt-4">
+                                    <button
+                                        type="button"
+                                        className="btn btn-light border rounded-3 py-2 flex-fill"
+                                        onClick={() => setShowRejectModal(false)}
+                                        disabled={rejecting}
+                                    >
+                                        Go Back
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-danger rounded-3 py-2 flex-fill"
+                                        onClick={handleRejectOrder}
+                                        disabled={
+                                            rejecting ||
+                                            !rejectionReason ||
+                                            (
+                                                rejectionReason === "OTHER" &&
+                                                (
+                                                    customRejectionReason.trim().length < 3 ||
+                                                    customRejectionReason.trim().length > 500
+                                                )
+                                            )
+                                        }
+                                    >
+                                        {rejecting ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-2" />
+                                                Rejecting...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="bi bi-x-circle me-2" />
+                                                Confirm Rejection
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }

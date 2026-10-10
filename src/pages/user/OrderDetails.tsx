@@ -17,35 +17,47 @@ function OrderDetails() {
 
     const [cancelling, setCancelling] = useState(false);
 
+    const [showCancelModal, setShowCancelModal] = useState(false);
+
+    const [cancellationReason, setCancellationReason] = useState("");
+
+    const [customCancellationReason, setCustomCancellationReason] = useState("");
+
     const { selectedOrder, loading, error, } = useAppSelector((state) => state.orders);
 
     const handleCancelOrder = async () => {
-
-        if (!id) {
+        if (!id || cancelling) {
             return;
         }
 
-        const confirmed = window.confirm("Are you sure you want to cancel this order?");
+        const reason = cancellationReason === "OTHER" ? customCancellationReason.trim() : cancellationReason.trim();
 
-        if (!confirmed) {
+        if (reason.length < 3 || reason.length > 500) {
             return;
         }
 
         try {
             setCancelling(true);
 
-            await cancelOrder(Number(id));
+            await cancelOrder(Number(id), reason);
 
             await dispatch(fetchOrderById(Number(id))).unwrap();
 
-        } catch (error) {
-            console.error("Failed to cancel order:", error);
+            setShowCancelModal(false);
+            setCancellationReason("");
+            setCustomCancellationReason("");
 
+        } catch (error) {
+
+            console.error("Failed to cancel order:", error);
             alert("Unable to cancel the order. Please try again.");
+
         } finally {
             setCancelling(false);
         }
     };
+
+
 
     useEffect(() => {
 
@@ -147,8 +159,7 @@ function OrderDetails() {
                 <div className="text-center py-5">
 
                     <div className="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center 
-                        justify-content-center mx-auto mb-4"
-                        style={{ width: "90px", height: "90px", }} >
+                        justify-content-center mx-auto mb-4 foodhub-icon--90">
                         <i className="bi bi-exclamation-circle fs-1" />
                     </div>
 
@@ -178,8 +189,7 @@ function OrderDetails() {
                 <div className="text-center py-5">
 
                     <div className="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center 
-                        justify-content-center mx-auto mb-4"
-                        style={{ width: "90px", height: "90px", }} >
+                        justify-content-center mx-auto mb-4 foodhub-icon--90">
                         <i className="bi bi-receipt fs-1" />
                     </div>
 
@@ -259,31 +269,81 @@ function OrderDetails() {
                                 Order Status
                             </h5>
 
-                            <OrderStatusTimeline status={order.status} />
+                            <OrderStatusTimeline status={order.status} rejectionReason={order.rejectionReason} />
 
-                            {order.status === "CANCELLED" && (
-                                <div className="alert alert-secondary mt-4 mb-0">
-                                    <i className="bi bi-x-circle me-2" />
 
-                                    <strong>Order Cancelled</strong>
+                            {(order.status === "CANCELLED" || order.status === "REJECTED") && (
+                                <div
+                                    className={`alert ${order.status === "CANCELLED"
+                                            ? "alert-secondary"
+                                            : "alert-danger"
+                                        } mt-4 mb-0`}
+                                >
+                                    <div className="d-flex align-items-start gap-2">
+                                        <i
+                                            className={`bi ${order.status === "CANCELLED"
+                                                    ? "bi-x-circle"
+                                                    : "bi-x-circle"
+                                                }`}
+                                        />
 
-                                    {order.paymentStatus === "REFUNDED" ? (
-                                        <div className="mt-1">
-                                            Your order has been cancelled successfully.
-                                            Your payment has been refunded.
+                                        <div className="flex-grow-1">
+                                            <strong>
+                                                {order.status === "CANCELLED"
+                                                    ? "Order Cancelled"
+                                                    : "Order Rejected"}
+                                            </strong>
+
+                                            <div className="mt-1">
+                                                {order.paymentStatus === "REFUNDED" ? (
+                                                    <>
+                                                        Your order has been{" "}
+                                                        {order.status === "CANCELLED"
+                                                            ? "cancelled"
+                                                            : "rejected"}{" "}
+                                                        successfully. Your payment has been refunded.
+                                                    </>
+                                                ) : order.paymentStatus === "PAID" ? (
+                                                    <>
+                                                        Your order has been{" "}
+                                                        {order.status === "CANCELLED"
+                                                            ? "cancelled"
+                                                            : "rejected"}{" "}
+                                                        successfully. Your payment refund is being processed.
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Your order has been{" "}
+                                                        {order.status === "CANCELLED"
+                                                            ? "cancelled"
+                                                            : "rejected"}{" "}
+                                                        successfully.
+                                                    </>
+                                                )}
+                                            </div>
+
+                                            {(order.status === "CANCELLED"
+                                                ? order.cancellationReason
+                                                : order.rejectionReason) && (
+                                                    <div className="mt-3 pt-3 border-top">
+                                                        <strong>
+                                                            {order.status === "CANCELLED"
+                                                                ? "Cancellation reason"
+                                                                : "Rejection reason"}
+                                                        </strong>
+
+                                                        <p className="mb-0 mt-1">
+                                                            {order.status === "CANCELLED"
+                                                                ? order.cancellationReason
+                                                                : order.rejectionReason}
+                                                        </p>
+                                                    </div>
+                                                )}
                                         </div>
-                                    ) : order.paymentStatus === "PAID" ? (
-                                        <div className="mt-1">
-                                            Your order has been cancelled successfully.
-                                            Your payment refund is being processed.
-                                        </div>
-                                    ) : (
-                                        <div className="mt-1">
-                                            Your order has been cancelled successfully.
-                                        </div>
-                                    )}
+                                    </div>
                                 </div>
                             )}
+
 
                         </div>
 
@@ -320,12 +380,11 @@ function OrderDetails() {
 
                                         {/* Food Image */}
 
-                                        <div className="me-3 flex-shrink-0" style={{ width: "80px", height: "80px", }} >
+                                        <div className="me-3 flex-shrink-0 foodhub-icon--80">
 
                                             {item.menuItem.image ?
                                                 (<img src={`${import.meta.env.VITE_SERVER_URL}${item.menuItem.image}`}
-                                                    alt={item.menuItem.name} className="w-100 h-100 rounded-3"
-                                                    style={{ objectFit: "cover", }} />)
+                                                    alt={item.menuItem.name} className="w-100 h-100 rounded-3 order-item-image" />)
                                                 :
                                                 (<div className="bg-white rounded-3 d-flex align-items-center 
                                                     justify-content-center w-100 h-100" >
@@ -386,8 +445,7 @@ function OrderDetails() {
                             <div className="d-flex align-items-center gap-3 mb-4">
 
                                 <div className="bg-primary bg-opacity-10 text-primary rounded-3 
-                                    d-flex align-items-center justify-content-center"
-                                    style={{ width: "46px", height: "46px", }} >
+                                    d-flex align-items-center justify-content-center foodhub-icon--46">
                                     <i className="bi bi-receipt fs-5" />
                                 </div>
 
@@ -465,7 +523,7 @@ function OrderDetails() {
                                 <button
                                     type="button"
                                     className="btn btn-outline-danger w-100 mt-4"
-                                    onClick={handleCancelOrder}
+                                    onClick={() => { setShowCancelModal(true) }}
                                     disabled={cancelling}
                                 >
                                     {cancelling ? (
@@ -492,11 +550,168 @@ function OrderDetails() {
 
             </div>
 
+
+            {showCancelModal && (
+                <div
+                    className="modal fade show d-block"
+                    tabIndex={-1}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="cancelOrderModalTitle"
+                    style={{ backgroundColor: "rgba(15, 23, 42, 0.6)" }}
+                    onClick={(event) => {
+                        if (
+                            event.target === event.currentTarget &&
+                            !cancelling
+                        ) {
+                            setShowCancelModal(false);
+                        }
+                    }}
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                            <div className="modal-body p-4 p-md-5 text-center">
+                                <div
+                                    className="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4"
+                                    style={{ width: 76, height: 76 }}
+                                >
+                                    <i className="bi bi-exclamation-triangle fs-1" />
+                                </div>
+
+                                <h4
+                                    id="cancelOrderModalTitle"
+                                    className="fw-bold mb-2"
+                                >
+                                    Cancel this order?
+                                </h4>
+
+                                <p className="text-secondary mb-2">
+                                    Are you sure you want to cancel order{" "}
+                                    <strong>#{order.id}</strong>?
+                                </p>
+
+                                <p className="text-secondary small mb-4">
+                                    This action cannot be undone. Your order
+                                    will be cancelled if the request succeeds.
+                                </p>
+
+
+                                <div className="text-start mb-4">
+                                    <label
+                                        htmlFor="cancellationReason"
+                                        className="form-label fw-semibold"
+                                    >
+                                        Why are you cancelling?
+                                    </label>
+
+                                    <select
+                                        id="cancellationReason"
+                                        className="form-select rounded-3 py-2"
+                                        value={cancellationReason}
+                                        onChange={(event) => {
+                                            setCancellationReason(event.target.value);
+                                            setCustomCancellationReason("");
+                                        }}
+                                        disabled={cancelling}
+                                    >
+                                        <option value="">Select a reason</option>
+                                        <option value="I ordered the wrong items">
+                                            I ordered the wrong items
+                                        </option>
+                                        <option value="I placed the order by mistake">
+                                            I placed the order by mistake
+                                        </option>
+                                        <option value="I no longer need this order">
+                                            I no longer need this order
+                                        </option>
+                                        <option value="OTHER">Other reason</option>
+                                    </select>
+
+                                    {cancellationReason === "OTHER" && (
+                                        <div className="mt-3">
+                                            <label
+                                                htmlFor="customCancellationReason"
+                                                className="form-label fw-semibold"
+                                            >
+                                                Tell us the reason
+                                            </label>
+
+                                            <textarea
+                                                id="customCancellationReason"
+                                                className="form-control rounded-3"
+                                                rows={3}
+                                                maxLength={500}
+                                                placeholder="Enter your reason (3–500 characters)"
+                                                value={customCancellationReason}
+                                                onChange={(event) =>
+                                                    setCustomCancellationReason(event.target.value)
+                                                }
+                                                disabled={cancelling}
+                                            />
+
+                                            <div className="text-end small text-secondary mt-1">
+                                                {customCancellationReason.length}/500
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+
+                                <div className="d-flex flex-column flex-sm-row gap-2">
+                                    <button
+                                        type="button"
+                                        className="btn btn-light border rounded-3 py-2 flex-fill"
+                                        onClick={() => setShowCancelModal(false)}
+                                        disabled={cancelling}
+                                    >
+                                        Keep Order
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-danger rounded-3 py-2 flex-fill"
+                                        onClick={handleCancelOrder}
+                                        disabled={
+                                            cancelling ||
+                                            !cancellationReason ||
+                                            (
+                                                cancellationReason === "OTHER" &&
+                                                (
+                                                    customCancellationReason.trim().length < 3 ||
+                                                    customCancellationReason.trim().length > 500
+                                                )
+                                            )
+                                        }
+                                    >
+                                        {cancelling ? (
+                                            <>
+                                                <span
+                                                    className="spinner-border spinner-border-sm me-2"
+                                                    role="status"
+                                                    aria-hidden="true"
+                                                />
+                                                Cancelling...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="bi bi-x-circle me-2" />
+                                                Yes, Cancel Order
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
         </div>
     );
 }
 
-function OrderStatusTimeline({ status, }: { status: string; }) {
+function OrderStatusTimeline({ status, }: { status: string; rejectionReason?: string | null; }) {
 
     const statuses = [
         {
@@ -524,17 +739,12 @@ function OrderStatusTimeline({ status, }: { status: string; }) {
     const currentIndex = statuses.findIndex((item) => item.value === status);
 
     if (status === "REJECTED") {
-        return (
-            <div className="alert alert-danger mb-0">
-                <i className="bi bi-x-circle me-2" />
-                This order has been rejected.
-            </div>
-        );
+        return 
     }
 
     if (status === "CANCELLED") {
-    return null;
-}
+        return null;
+    }
 
     return (
         <div className="d-flex flex-column">
@@ -552,14 +762,12 @@ function OrderStatusTimeline({ status, }: { status: string; }) {
                         <div className="d-flex flex-column align-items-center">
 
                             <div className={`rounded-circle d-flex align-items-center justify-content-center 
-                                ${completed ? "bg-primary text-white" : "bg-light text-secondary"}`}
-                                style={{ width: "46px", height: "46px", flexShrink: 0, }} >
+                                ${completed ? "bg-primary text-white" : "bg-light text-secondary"} foodhub-icon--46 flex-shrink-0`}>
                                 <i className={`bi ${item.icon} fs-5`} />
                             </div>
 
                             {index < statuses.length - 1 && (
-                                <div className={completed ? "bg-primary" : "bg-light"}
-                                    style={{ width: "3px", height: "45px", }} />
+                                <div className={`${completed ? "bg-primary" : "bg-light"} order-status-indicator`} />
                             )}
 
                         </div>

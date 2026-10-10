@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { PaymentElement, useElements, useStripe, } from "@stripe/react-stripe-js";
 
-interface CheckoutFormProps {
-    orderId: string;
-}
-
-function CheckoutForm({ orderId, }: CheckoutFormProps) {
+function CheckoutForm() {
 
     const stripe = useStripe();
     const elements = useElements();
@@ -26,9 +22,10 @@ function CheckoutForm({ orderId, }: CheckoutFormProps) {
 
         const { error } = await stripe.confirmPayment({
             elements,
+
             confirmParams: {
                 return_url:
-                    `${window.location.origin}/payment-success?order_id=${orderId}`,
+                    `${window.location.origin}/payment-success`,
             },
         });
 
@@ -44,6 +41,7 @@ function CheckoutForm({ orderId, }: CheckoutFormProps) {
 
     return (
         <form onSubmit={handleSubmit}>
+
             <PaymentElement />
 
             {error && (
@@ -55,11 +53,17 @@ function CheckoutForm({ orderId, }: CheckoutFormProps) {
             <button
                 type="submit"
                 className="btn btn-primary w-100 mt-4"
-                disabled={!stripe || !elements || loading}
+                disabled={
+                    !stripe ||
+                    !elements ||
+                    loading
+                }
             >
                 {loading ? (
                     <>
-                        <span className="spinner-border spinner-border-sm me-2" />
+                        <span
+                            className="spinner-border spinner-border-sm me-2"
+                        />
                         Processing Payment...
                     </>
                 ) : (
@@ -69,6 +73,7 @@ function CheckoutForm({ orderId, }: CheckoutFormProps) {
                     </>
                 )}
             </button>
+
         </form>
     );
 }

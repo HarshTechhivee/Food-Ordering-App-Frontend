@@ -31,10 +31,20 @@ function Orders() {
 
         };
 
+        const handleRejectOrder = (data: { orderId: number; status: OrderStatus; }) => {
+
+            console.log("Order status updated:", data);
+
+            dispatch(fetchOrders())
+
+        };
+
+        socket.on("order:rejected", handleRejectOrder)
         socket.on("order:statusUpdated", handleStatusUpdated);
 
         return () => {
             socket.off("order:statusUpdated", handleStatusUpdated);
+            socket.off("order:rejected", handleStatusUpdated)
         };
 
     }, [dispatch]);
@@ -117,8 +127,8 @@ function Orders() {
 
                         <div
                             className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center 
-                            justify-content-center mx-auto mb-4"
-                            style={{ width: "90px", height: "90px", }} >
+                            justify-content-center mx-auto mb-4 foodhub-icon--90"
+                        >
                             <i className="bi bi-receipt fs-1" />
                         </div>
 
@@ -160,8 +170,7 @@ function Orders() {
                                             <div className="d-flex align-items-center gap-3">
 
                                                 <div className="bg-primary bg-opacity-10 text-primary rounded-3 
-                                                    d-flex align-items-center justify-content-center"
-                                                    style={{ width: "50px", height: "50px", }}                                                >
+                                                    d-flex align-items-center justify-content-center foodhub-icon--50">
                                                     <i className="bi bi-receipt fs-4" />
                                                 </div>
 

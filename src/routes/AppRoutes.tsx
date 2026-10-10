@@ -60,7 +60,7 @@ export default function AppRoutes() {
                             <Route path="/cart" element={<Cart />} />
                             <Route path="/orders" element={<Orders />} />
                             <Route path="/orders/:id" element={<OrderDetails />} />
-                            <Route path="/payment/:orderId" element={<Payment />} />
+                            <Route path="/payment" element={<Payment />} />
                             <Route path="/payment-success" element={<PaymentSuccess />} />
 
                         </Route>

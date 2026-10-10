@@ -10,7 +10,7 @@ function ProtectedRoute() {
     const initialized = useAppSelector((state) => state.auth.initialized);
 
     if (!initialized) {
-        return <div>Loading...</div>;
+        return;
     }
 
     if (!isAuthenticated) {
