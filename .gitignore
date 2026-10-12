@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
+dist-webpack
 dist-ssr
 *.local
 
@@ -25,3 +26,5 @@ dist-ssr
 
 # Keep environment variables out of version control
 .env
+.env.*
+!.env.example
