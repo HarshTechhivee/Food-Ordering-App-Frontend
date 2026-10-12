@@ -1,7 +1,5 @@
 import axios, { type InternalAxiosRequestConfig, } from "axios";
-
 import refreshClient from "./refreshClient";
-
 import type { RefreshResponse } from "../types/auth.types";
 
 interface RetryableRequestConfig extends InternalAxiosRequestConfig {
@@ -9,7 +7,7 @@ interface RetryableRequestConfig extends InternalAxiosRequestConfig {
 }
 
 const apiClient = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: process.env.API_BASE_URL,
     timeout: 10000,
     withCredentials: true,
 });

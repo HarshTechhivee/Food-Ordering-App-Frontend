@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Webpack build output
+dist-webpack/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
