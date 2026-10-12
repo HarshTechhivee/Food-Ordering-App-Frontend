@@ -34,3 +34,12 @@ jobs:
 
       - name: Build frontend
         run: npm run build
+      
+      - name: Upload Webpack production artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-webpack-dist
+          path: dist-webpack/
+          if-no-files-found: error
+          retention-days: 7
+
