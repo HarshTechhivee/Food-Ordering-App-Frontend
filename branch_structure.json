@@ -1,0 +1,18 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "development",
+    "feature/webpack-setup",
+    "main"
+  ],
+  "parent": {
+    "development": "main",
+    "feature/webpack-setup": "main",
+    "main": null
+  },
+  "order": [
+    "main",
+    "development",
+    "feature/webpack-setup"
+  ]
+}

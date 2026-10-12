@@ -6,7 +6,7 @@ import ConfirmModal from "../../components/common/ConfirmModal";
 import type { MenuQuery, MenuSort, } from "../../types/menu.types.js";
 import Pagination from "../../components/common/Pagination";
 
-export const SERVER_URL = import.meta.env.SERVER_URL;
+export const SERVER_URL = process.env.SERVER_URL;
 
 function MenuManagement() {
 
