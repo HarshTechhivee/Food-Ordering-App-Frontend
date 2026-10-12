@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: ".env.webpack" });
+dotenv.config();
 
 export default {
     mode: "development",
