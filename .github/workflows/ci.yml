@@ -5,9 +5,11 @@ on:
   push:
     branches:
       - development
+      - feature/webpack-setup
   pull_request:
     branches:
       - development
+      - feature/webpack-setup
 
 jobs:
   frontend-checks:
