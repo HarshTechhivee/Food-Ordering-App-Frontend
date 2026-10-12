@@ -103,7 +103,7 @@ function Cart() {
                                     <div className="col-4 col-sm-3 col-md-2">
 
                                         {item.image ?
-                                            (<img src={`${import.meta.env.VITE_SERVER_URL}${item.image}`} alt={item.name}
+                                            (<img src={`${import.meta.env.SERVER_URL}${item.image}`} alt={item.name}
                                                 className="img-fluid rounded-3 w-100 cart-item-image"
                                             />)
                                             :

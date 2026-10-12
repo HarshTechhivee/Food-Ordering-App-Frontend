@@ -383,7 +383,7 @@ function OrderDetails() {
                                         <div className="me-3 flex-shrink-0 foodhub-icon--80">
 
                                             {item.menuItem.image ?
-                                                (<img src={`${import.meta.env.VITE_SERVER_URL}${item.menuItem.image}`}
+                                                (<img src={`${import.meta.env.SERVER_URL}${item.menuItem.image}`}
                                                     alt={item.menuItem.name} className="w-100 h-100 rounded-3 order-item-image" />)
                                                 :
                                                 (<div className="bg-white rounded-3 d-flex align-items-center 
