@@ -127,7 +127,7 @@ export function Menu() {
                                 Category
                             </label>
 
-                            <select className="form-select" value={category}
+                            <select className="form-select menu-filter-select" value={category}
                                 onChange={(event) => {
                                     setCategory(event.target.value);
                                     setPage(1);
@@ -145,7 +145,7 @@ export function Menu() {
                                 Sort By
                             </label>
 
-                            <select className="form-select" value={sort}
+                            <select className="form-select menu-filter-select" value={sort}
                                 onChange={(event) => {
                                     setSort(event.target.value as MenuSort);
                                     setPage(1);
@@ -316,7 +316,7 @@ export function Menu() {
 
                                             <div className="d-flex justify-content-between align-items-end gap-3">
 
-                                                <h4 className="fw-bold mb-0">
+                                                <h4 className="fw-bold mb-0 menu-item-title">
                                                     {item.name}
                                                 </h4>
 

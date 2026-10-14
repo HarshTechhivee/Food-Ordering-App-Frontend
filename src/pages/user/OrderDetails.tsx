@@ -6,6 +6,7 @@ import { cancelOrder } from "../../services/order.api";
 import { fetchOrderById, clearSelectedOrder, clearOrderError, } from "../../store/slices/orderSlice";
 import type { OrderStatus } from "../../types/order.types.js";
 import { formatStatus, getStatusPaymentClass } from "../../utils/commonFunction.js";
+import ConfirmModal from "../../components/common/ConfirmModal.js";
 
 function OrderDetails() {
 
@@ -275,15 +276,15 @@ function OrderDetails() {
                             {(order.status === "CANCELLED" || order.status === "REJECTED") && (
                                 <div
                                     className={`alert ${order.status === "CANCELLED"
-                                            ? "alert-secondary"
-                                            : "alert-danger"
+                                        ? "alert-secondary"
+                                        : "alert-danger"
                                         } mt-4 mb-0`}
                                 >
                                     <div className="d-flex align-items-start gap-2">
                                         <i
                                             className={`bi ${order.status === "CANCELLED"
-                                                    ? "bi-x-circle"
-                                                    : "bi-x-circle"
+                                                ? "bi-x-circle"
+                                                : "bi-x-circle"
                                                 }`}
                                         />
 
@@ -372,15 +373,15 @@ function OrderDetails() {
 
                             </div>
 
-                            <div className="d-flex flex-column gap-3">
+                            <div className="d-flex flex-column gap-3 order-details-items">
 
                                 {order.items.map((item) => (
 
-                                    <div key={item.id} className="d-flex align-items-center p-3 bg-light rounded-4" >
+                                    <div key={item.id} className="d-flex align-items-center p-3 bg-light rounded-4 order-item-row" >
 
                                         {/* Food Image */}
 
-                                        <div className="me-3 flex-shrink-0 foodhub-icon--80">
+                                        <div className="me-3 flex-shrink-0 foodhub-icon--80 order-item-thumbnail">
 
                                             {item.menuItem.image ?
                                                 (<img src={`${process.env.SERVER_URL}${item.menuItem.image}`}
@@ -398,7 +399,7 @@ function OrderDetails() {
 
                                         <div className="flex-grow-1">
 
-                                            <h6 className="fw-bold mb-1">
+                                            <h6 className="fw-bold mb-1 order-item-name">
                                                 {item.menuItem.name}
                                             </h6>
 
@@ -410,13 +411,13 @@ function OrderDetails() {
 
                                         {/* Item Total */}
 
-                                        <div className="text-end ms-3">
+                                        <div className="text-end ms-3 order-item-total">
 
                                             <small className="text-secondary d-block">
                                                 Total
                                             </small>
 
-                                            <strong>
+                                            <strong className="order-item-total-amount">
                                                 ₹ {(Number(item.price) * item.quantity).toFixed(2)}
                                             </strong>
 
@@ -551,160 +552,102 @@ function OrderDetails() {
             </div>
 
 
-            {showCancelModal && (
-                <div
-                    className="modal fade show d-block"
-                    tabIndex={-1}
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="cancelOrderModalTitle"
-                    style={{ backgroundColor: "rgba(15, 23, 42, 0.6)" }}
-                    onClick={(event) => {
-                        if (
-                            event.target === event.currentTarget &&
-                            !cancelling
-                        ) {
-                            setShowCancelModal(false);
-                        }
-                    }}
-                >
-                    <div className="modal-dialog modal-dialog-centered">
-                        <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                            <div className="modal-body p-4 p-md-5 text-center">
-                                <div
-                                    className="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4"
-                                    style={{ width: 76, height: 76 }}
-                                >
-                                    <i className="bi bi-exclamation-triangle fs-1" />
-                                </div>
+            <ConfirmModal
+                show={showCancelModal}
+                centered
+                title="Cancel this order?"
+                icon="bi-exclamation-triangle"
+                confirmIcon="bi-x-circle"
+                confirmText="Yes, Cancel Order"
+                cancelText="Keep Order"
+                loadingText="Cancelling..."
+                confirmButtonClassName="btn-danger rounded-3 py-2"
+                onConfirm={handleCancelOrder}
+                onCancel={() => setShowCancelModal(false)}
+                loading={cancelling}
+                confirmDisabled={
+                    !cancellationReason ||
+                    (
+                        cancellationReason === "OTHER" &&
+                        (
+                            customCancellationReason.trim().length < 3 ||
+                            customCancellationReason.trim().length > 500
+                        )
+                    )
+                }
+            >
+                <div className="text-center">
+                    <p className="text-secondary mb-2">
+                        Are you sure you want to cancel order{" "}
+                        <strong>#{selectedOrder?.id}</strong>?
+                    </p>
 
-                                <h4
-                                    id="cancelOrderModalTitle"
-                                    className="fw-bold mb-2"
-                                >
-                                    Cancel this order?
-                                </h4>
+                    <p className="text-secondary small mb-4">
+                        This action cannot be undone. Your order will be
+                        cancelled if the request succeeds.
+                    </p>
+                </div>
 
-                                <p className="text-secondary mb-2">
-                                    Are you sure you want to cancel order{" "}
-                                    <strong>#{order.id}</strong>?
-                                </p>
+                <div className="text-start">
+                    <label
+                        htmlFor="cancellationReason"
+                        className="form-label fw-semibold"
+                    >
+                        Why are you cancelling?
+                    </label>
 
-                                <p className="text-secondary small mb-4">
-                                    This action cannot be undone. Your order
-                                    will be cancelled if the request succeeds.
-                                </p>
+                    <select
+                        id="cancellationReason"
+                        className="form-select rounded-3 py-2"
+                        value={cancellationReason}
+                        onChange={(event) => {
+                            setCancellationReason(event.target.value);
+                            setCustomCancellationReason("");
+                        }}
+                        disabled={cancelling}
+                    >
+                        <option value="">Select a reason</option>
+                        <option value="I ordered the wrong items">
+                            I ordered the wrong items
+                        </option>
+                        <option value="I placed the order by mistake">
+                            I placed the order by mistake
+                        </option>
+                        <option value="I no longer need this order">
+                            I no longer need this order
+                        </option>
+                        <option value="OTHER">Other reason</option>
+                    </select>
 
+                    {cancellationReason === "OTHER" && (
+                        <div className="mt-3">
+                            <label
+                                htmlFor="customCancellationReason"
+                                className="form-label fw-semibold"
+                            >
+                                Tell us the reason
+                            </label>
 
-                                <div className="text-start mb-4">
-                                    <label
-                                        htmlFor="cancellationReason"
-                                        className="form-label fw-semibold"
-                                    >
-                                        Why are you cancelling?
-                                    </label>
+                            <textarea
+                                id="customCancellationReason"
+                                className="form-control rounded-3"
+                                rows={3}
+                                maxLength={500}
+                                placeholder="Enter your reason (3–500 characters)"
+                                value={customCancellationReason}
+                                onChange={(event) =>
+                                    setCustomCancellationReason(event.target.value)
+                                }
+                                disabled={cancelling}
+                            />
 
-                                    <select
-                                        id="cancellationReason"
-                                        className="form-select rounded-3 py-2"
-                                        value={cancellationReason}
-                                        onChange={(event) => {
-                                            setCancellationReason(event.target.value);
-                                            setCustomCancellationReason("");
-                                        }}
-                                        disabled={cancelling}
-                                    >
-                                        <option value="">Select a reason</option>
-                                        <option value="I ordered the wrong items">
-                                            I ordered the wrong items
-                                        </option>
-                                        <option value="I placed the order by mistake">
-                                            I placed the order by mistake
-                                        </option>
-                                        <option value="I no longer need this order">
-                                            I no longer need this order
-                                        </option>
-                                        <option value="OTHER">Other reason</option>
-                                    </select>
-
-                                    {cancellationReason === "OTHER" && (
-                                        <div className="mt-3">
-                                            <label
-                                                htmlFor="customCancellationReason"
-                                                className="form-label fw-semibold"
-                                            >
-                                                Tell us the reason
-                                            </label>
-
-                                            <textarea
-                                                id="customCancellationReason"
-                                                className="form-control rounded-3"
-                                                rows={3}
-                                                maxLength={500}
-                                                placeholder="Enter your reason (3–500 characters)"
-                                                value={customCancellationReason}
-                                                onChange={(event) =>
-                                                    setCustomCancellationReason(event.target.value)
-                                                }
-                                                disabled={cancelling}
-                                            />
-
-                                            <div className="text-end small text-secondary mt-1">
-                                                {customCancellationReason.length}/500
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-
-                                <div className="d-flex flex-column flex-sm-row gap-2">
-                                    <button
-                                        type="button"
-                                        className="btn btn-light border rounded-3 py-2 flex-fill"
-                                        onClick={() => setShowCancelModal(false)}
-                                        disabled={cancelling}
-                                    >
-                                        Keep Order
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        className="btn btn-danger rounded-3 py-2 flex-fill"
-                                        onClick={handleCancelOrder}
-                                        disabled={
-                                            cancelling ||
-                                            !cancellationReason ||
-                                            (
-                                                cancellationReason === "OTHER" &&
-                                                (
-                                                    customCancellationReason.trim().length < 3 ||
-                                                    customCancellationReason.trim().length > 500
-                                                )
-                                            )
-                                        }
-                                    >
-                                        {cancelling ? (
-                                            <>
-                                                <span
-                                                    className="spinner-border spinner-border-sm me-2"
-                                                    role="status"
-                                                    aria-hidden="true"
-                                                />
-                                                Cancelling...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <i className="bi bi-x-circle me-2" />
-                                                Yes, Cancel Order
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
+                            <div className="text-end small text-secondary mt-1">
+                                {customCancellationReason.length}/500
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
-            )}
+            </ConfirmModal>
 
 
         </div>
@@ -739,7 +682,7 @@ function OrderStatusTimeline({ status, }: { status: string; rejectionReason?: st
     const currentIndex = statuses.findIndex((item) => item.value === status);
 
     if (status === "REJECTED") {
-        return 
+        return
     }
 
     if (status === "CANCELLED") {

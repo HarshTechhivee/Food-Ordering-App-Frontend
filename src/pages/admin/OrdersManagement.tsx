@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks.js";
 import { fetchAdminOrders, rejectUserOrder, updateAdminOrder, } from "../../store/slices/adminOrderSlice.js";
 import { socket } from "../../services/socket.js";
 import { formatStatus, getStatusPaymentClass } from "../../utils/commonFunction.js";
+import ConfirmModal from "../../components/common/ConfirmModal.js";
 
 function OrdersManagement() {
 
@@ -209,18 +210,18 @@ function OrdersManagement() {
 
                     <div className="col-12" key={order.id} >
 
-                        <div className="card border-0 shadow-sm rounded-4">
+                        <div className="card border-0 shadow-sm rounded-4 admin-order-card">
 
-                            <div className="card-body p-4">
+                            <div className="card-body p-3 p-md-4">
 
                                 {/* Order Header */}
 
-                                <div className="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+                                <div className="d-flex align-items-center justify-content-between gap-2 mb-3 admin-order-header">
 
                                     <div className="d-flex align-items-center gap-3">
 
                                         <div className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center 
-                                            justify-content-center foodhub-icon--50">
+                                            justify-content-center foodhub-icon--50 admin-order-icon">
                                             <i className="bi bi-receipt fs-4" />
                                         </div>
 
@@ -238,7 +239,7 @@ function OrdersManagement() {
 
                                     </div>
 
-                                    <span className={`badge rounded-pill align-self-start px-3 py-2 ${getStatusPaymentClass(order.status)}`} >
+                                    <span className={`badge rounded-pill px-3 py-2 admin-order-status ${getStatusPaymentClass(order.status)}`} >
                                         {formatStatus(order.status)}
                                     </span>
 
@@ -247,11 +248,11 @@ function OrdersManagement() {
 
                                 {/* Order Information */}
 
-                                <div className="row g-4 mb-4">
+                                <div className="row g-3 mb-3 admin-order-info">
 
                                     {/* Customer */}
 
-                                    <div className="col-md-4">
+                                    <div className="col-12 col-md-6 col-lg-3">
 
                                         <div className="d-flex align-items-start gap-3">
 
@@ -276,7 +277,7 @@ function OrdersManagement() {
 
                                     {/* Email */}
 
-                                    <div className="col-md-4">
+                                    <div className="col-12 col-md-6 col-lg-3">
 
                                         <div className="d-flex align-items-start gap-3">
 
@@ -301,7 +302,7 @@ function OrdersManagement() {
 
                                     {/* Items */}
 
-                                    <div className="col-sm-6 col-md-2">
+                                    <div className="col-6 col-md-6 col-lg-3">
 
                                         <div className="d-flex align-items-start gap-3">
 
@@ -326,7 +327,7 @@ function OrdersManagement() {
 
                                     {/* Total */}
 
-                                    <div className="col-sm-6 col-md-2">
+                                    <div className="col-6 col-md-6 col-lg-3">
 
                                         <div className="d-flex align-items-start gap-3">
 
@@ -369,12 +370,12 @@ function OrdersManagement() {
                                 ) : null}
 
 
-                                <hr className="my-4" />
+                                <hr className="my-3" />
 
 
                                 {/* Actions */}
 
-                                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 admin-order-footer">
 
                                     <small className="text-secondary">
                                         {order.status === "PENDING"
@@ -392,7 +393,7 @@ function OrdersManagement() {
                                     </small>
 
 
-                                    <div className="d-flex gap-2 flex-wrap">
+                                    <div className="d-flex gap-2 flex-wrap admin-order-actions">
 
                                         {order.status === "PENDING" && (
                                             <>
@@ -440,151 +441,97 @@ function OrdersManagement() {
             </div>
 
 
-            {showRejectModal && (
-                <div
-                    className="modal fade show d-block"
-                    tabIndex={-1}
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="rejectOrderModalTitle"
-                    style={{ backgroundColor: "rgba(15, 23, 42, 0.6)" }}
-                    onClick={(event) => {
-                        if (
-                            event.target === event.currentTarget &&
-                            !rejecting
-                        ) {
-                            setShowRejectModal(false);
-                        }
-                    }}
-                >
-                    <div className="modal-dialog modal-dialog-centered">
-                        <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                            <div className="modal-body p-4 p-md-5">
-                                <div className="text-center mb-4">
-                                    <div
-                                        className="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
-                                        style={{ width: 72, height: 72 }}
-                                    >
-                                        <i className="bi bi-exclamation-triangle fs-1" />
-                                    </div>
+            <ConfirmModal
+                show={showRejectModal}
+                centered
+                title={`Reject Order #${selectedOrderId}`}
+                icon="bi-exclamation-triangle"
+                confirmIcon="bi-x-circle"
+                confirmText="Confirm Rejection"
+                cancelText="Go Back"
+                loadingText="Rejecting..."
+                confirmButtonClassName="btn-danger rounded-3 py-2"
+                onConfirm={handleRejectOrder}
+                onCancel={() => setShowRejectModal(false)}
+                loading={rejecting}
+                confirmDisabled={
+                    !rejectionReason ||
+                    (
+                        rejectionReason === "OTHER" &&
+                        (
+                            customRejectionReason.trim().length < 3 ||
+                            customRejectionReason.trim().length > 500
+                        )
+                    )
+                }
+            >
+                <div className="text-center mb-4">
+                    <p className="text-secondary mb-0">
+                        Please select a reason for rejecting this order.
+                        The customer will be able to see it.
+                    </p>
+                </div>
 
-                                    <h4
-                                        id="rejectOrderModalTitle"
-                                        className="fw-bold mb-2"
-                                    >
-                                        Reject Order #{selectedOrderId}
-                                    </h4>
+                <div>
+                    <label
+                        htmlFor="rejectionReason"
+                        className="form-label fw-semibold"
+                    >
+                        Reason for rejection
+                    </label>
 
-                                    <p className="text-secondary mb-0">
-                                        Please select a reason for rejecting this order.
-                                        The customer will be able to see it.
-                                    </p>
-                                </div>
+                    <select
+                        id="rejectionReason"
+                        className="form-select rounded-3 py-2"
+                        value={rejectionReason}
+                        onChange={(event) => {
+                            setRejectionReason(event.target.value);
+                            setCustomRejectionReason("");
+                        }}
+                        disabled={rejecting}
+                    >
+                        <option value="">Select a reason</option>
+                        <option value="Some items are unavailable">
+                            Some items are unavailable
+                        </option>
+                        <option value="The restaurant is too busy to process this order">
+                            The restaurant is too busy
+                        </option>
+                        <option value="We cannot deliver to the customer's location">
+                            We cannot deliver to this location
+                        </option>
+                        <option value="OTHER">Other reason</option>
+                    </select>
 
-                                <label
-                                    htmlFor="rejectionReason"
-                                    className="form-label fw-semibold"
-                                >
-                                    Reason for rejection
-                                </label>
+                    {rejectionReason === "OTHER" && (
+                        <div className="mt-3">
+                            <label
+                                htmlFor="customRejectionReason"
+                                className="form-label fw-semibold"
+                            >
+                                Tell us the reason
+                            </label>
 
-                                <select
-                                    id="rejectionReason"
-                                    className="form-select rounded-3 py-2"
-                                    value={rejectionReason}
-                                    onChange={(event) => {
-                                        setRejectionReason(event.target.value);
-                                        setCustomRejectionReason("");
-                                    }}
-                                    disabled={rejecting}
-                                >
-                                    <option value="">Select a reason</option>
-                                    <option value="Some items are unavailable">
-                                        Some items are unavailable
-                                    </option>
-                                    <option value="The restaurant is too busy to process this order">
-                                        The restaurant is too busy
-                                    </option>
-                                    <option value="We cannot deliver to the customer's location">
-                                        We cannot deliver to this location
-                                    </option>
-                                    <option value="OTHER">Other reason</option>
-                                </select>
+                            <textarea
+                                id="customRejectionReason"
+                                className="form-control rounded-3"
+                                rows={3}
+                                maxLength={500}
+                                placeholder="Enter the reason (3–500 characters)"
+                                value={customRejectionReason}
+                                onChange={(event) =>
+                                    setCustomRejectionReason(event.target.value)
+                                }
+                                disabled={rejecting}
+                            />
 
-                                {rejectionReason === "OTHER" && (
-                                    <div className="mt-3">
-                                        <label
-                                            htmlFor="customRejectionReason"
-                                            className="form-label fw-semibold"
-                                        >
-                                            Tell us the reason
-                                        </label>
-
-                                        <textarea
-                                            id="customRejectionReason"
-                                            className="form-control rounded-3"
-                                            rows={3}
-                                            maxLength={500}
-                                            placeholder="Enter the reason (3–500 characters)"
-                                            value={customRejectionReason}
-                                            onChange={(event) =>
-                                                setCustomRejectionReason(
-                                                    event.target.value
-                                                )
-                                            }
-                                            disabled={rejecting}
-                                        />
-
-                                        <div className="text-end small text-secondary mt-1">
-                                            {customRejectionReason.length}/500
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="d-flex flex-column flex-sm-row gap-2 mt-4">
-                                    <button
-                                        type="button"
-                                        className="btn btn-light border rounded-3 py-2 flex-fill"
-                                        onClick={() => setShowRejectModal(false)}
-                                        disabled={rejecting}
-                                    >
-                                        Go Back
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        className="btn btn-danger rounded-3 py-2 flex-fill"
-                                        onClick={handleRejectOrder}
-                                        disabled={
-                                            rejecting ||
-                                            !rejectionReason ||
-                                            (
-                                                rejectionReason === "OTHER" &&
-                                                (
-                                                    customRejectionReason.trim().length < 3 ||
-                                                    customRejectionReason.trim().length > 500
-                                                )
-                                            )
-                                        }
-                                    >
-                                        {rejecting ? (
-                                            <>
-                                                <span className="spinner-border spinner-border-sm me-2" />
-                                                Rejecting...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <i className="bi bi-x-circle me-2" />
-                                                Confirm Rejection
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
+                            <div className="text-end small text-secondary mt-1">
+                                {customRejectionReason.length}/500
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
-            )}
+            </ConfirmModal>
 
         </div>
     );

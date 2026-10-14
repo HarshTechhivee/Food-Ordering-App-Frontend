@@ -12,9 +12,10 @@ function Home() {
 
             <section
                 id="heroFoodCarousel"
-                className="carousel slide carousel-fade"
+                className="carousel slide carousel-fade home-food-carousel"
                 data-bs-ride="carousel"
                 data-bs-interval="3000"
+                data-bs-touch="true"
             >
                 {/* Indicators */}
                 <div className="carousel-indicators">
@@ -63,7 +64,7 @@ function Home() {
 
                                     {/* LEFT CONTENT */}
 
-                                    <div className="col-lg-6">
+                                    <div className="col-lg-6 home-hero-content">
 
                                         <span className="badge bg-warning text-dark rounded-pill px-3 py-2 mb-4">
                                             🔥 BEST SELLER
@@ -86,7 +87,7 @@ function Home() {
                                         </p>
 
 
-                                        <div className="d-flex align-items-center gap-4 mb-4">
+                                        <div className="d-flex align-items-center gap-4 mb-4 home-hero-metrics">
 
                                             <div>
                                                 <h3 className="fw-bold mb-0">
@@ -166,7 +167,7 @@ function Home() {
 
                                     {/* LEFT CONTENT */}
 
-                                    <div className="col-lg-6">
+                                    <div className="col-lg-6 home-hero-content">
 
                                         <span className="badge bg-danger rounded-pill px-3 py-2 mb-4">
                                             🍕 CUSTOMER FAVORITE
@@ -189,7 +190,7 @@ function Home() {
                                         </p>
 
 
-                                        <div className="d-flex align-items-center gap-4 mb-4">
+                                        <div className="d-flex align-items-center gap-4 mb-4 home-hero-metrics">
 
                                             <div>
                                                 <h3 className="fw-bold mb-0">
@@ -269,7 +270,7 @@ function Home() {
 
                                     {/* LEFT CONTENT */}
 
-                                    <div className="col-lg-6">
+                                    <div className="col-lg-6 home-hero-content">
 
                                         <span className="badge bg-primary rounded-pill px-3 py-2 mb-4">
                                             🧊 ICE COLD
@@ -292,7 +293,7 @@ function Home() {
                                         </p>
 
 
-                                        <div className="d-flex align-items-center gap-4 mb-4">
+                                        <div className="d-flex align-items-center gap-4 mb-4 home-hero-metrics">
 
                                             <div>
                                                 <h3 className="fw-bold mb-0">

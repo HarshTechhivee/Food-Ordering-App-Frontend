@@ -157,112 +157,95 @@ function Orders() {
                 (<div className="row g-4">
 
                     {orders.map((order) => (
-                        <div key={order.id} className="col-12" >
-                            <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div key={order.id} className="col-12">
+                            <div className="card border-0 shadow-sm rounded-4 overflow-hidden order-card">
+                                <div className="card-body p-3 p-md-4">
+                                    <div className="order-card-grid">
 
-                                <div className="card-body p-4">
-
-                                    <div className="row align-items-center g-4">
-
-                                        {/* Order Info */}
-                                        <div className="col-md-3">
-
-                                            <div className="d-flex align-items-center gap-3">
-
-                                                <div className="bg-primary bg-opacity-10 text-primary rounded-3 
-                                                    d-flex align-items-center justify-content-center foodhub-icon--50">
-                                                    <i className="bi bi-receipt fs-4" />
-                                                </div>
-
-                                                <div>
-                                                    <small className="text-secondary d-block">
-                                                        Order
-                                                    </small>
-
-                                                    <h5 className="fw-bold mb-1">
-                                                        #{order.id}
-                                                    </h5>
-
-                                                    <small className="text-secondary">
-                                                        {new Date(order.createdAt).toLocaleDateString()}
-                                                    </small>
-                                                </div>
-
+                                        {/* Order Information */}
+                                        <div className="order-card-info">
+                                            <div className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center foodhub-icon--50 order-card-icon">
+                                                <i className="bi bi-receipt fs-4" />
                                             </div>
 
-                                        </div>
-
-                                        {/* Items */}
-                                        <div className="col-md-2 mt-4 mt-md-0">
-
-                                            <small className="text-secondary d-block mb-1">
-                                                Items
-                                            </small>
-
-                                            <div className="d-flex align-items-center gap-2">
-
-                                                <i className="bi bi-basket text-primary" />
-
-                                                <strong>
-                                                    {order.itemCount}
-                                                </strong>
-
-                                            </div>
-
-                                        </div>
-
-                                        {/* Total */}
-                                        <div className="col-md-2 mt-4 mt-md-0">
-
-                                            <small className="text-secondary d-block mb-1">
-                                                Total
-                                            </small>
-
-                                            <strong className="fs-5">
-                                                ₹{Number(order.totalAmount).toFixed(2)}
-                                            </strong>
-
-                                        </div>
-
-                                        {/* Status */}
-                                        <div className="col-md-2 mt-4 mt-md-0 d-flex justify-content-center gap-5">
-                                            <div>
-                                                <small className="text-secondary d-block mb-2">
+                                            <div className="min-w-0">
+                                                <small className="text-secondary d-block">
                                                     Order
                                                 </small>
 
-                                                <span className={`badge rounded-pill px-3 py-2 ${getStatusPaymentClass(order.status)}`} >
+                                                <h5 className="fw-bold mb-1">
+                                                    #{order.id}
+                                                </h5>
+
+                                                <small className="text-secondary">
+                                                    {new Date(order.createdAt).toLocaleDateString()}
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        {/* Items */}
+                                        <div className="order-card-field">
+                                            <small className="text-secondary d-block mb-2">
+                                                Items
+                                            </small>
+
+                                            <div className="d-flex align-items-center gap-2 order-card-value">
+                                                <i className="bi bi-basket text-primary" />
+                                                <strong>{order.itemCount}</strong>
+                                            </div>
+                                        </div>
+
+                                        {/* Total */}
+                                        <div className="order-card-field">
+                                            <small className="text-secondary d-block mb-2">
+                                                Total Amount
+                                            </small>
+
+                                            <strong className="fs-5 text-nowrap">
+                                                ₹{Number(order.totalAmount).toFixed(2)}
+                                            </strong>
+                                        </div>
+
+                                        {/* Order and Payment Status */}
+                                        <div className="order-card-statuses">
+                                            <div className="order-card-field">
+                                                <small className="text-secondary d-block mb-2">
+                                                    Order Status
+                                                </small>
+
+                                                <span
+                                                    className={`badge rounded-pill px-3 py-2 ${getStatusPaymentClass(order.status)}`}
+                                                >
                                                     {formatStatus(order.status)}
                                                 </span>
                                             </div>
 
-                                            <div>
+                                            <div className="order-card-field">
                                                 <small className="text-secondary d-block mb-2">
-                                                    Payment
+                                                    Payment Status
                                                 </small>
 
                                                 <span
-                                                    className={`badge rounded-pill px-3 py-2 ${getStatusPaymentClass(order.PaymentStatus)}`} >
+                                                    className={`badge rounded-pill px-3 py-2 ${getStatusPaymentClass(order.PaymentStatus)}`}
+                                                >
                                                     {formatStatus(order.PaymentStatus)}
                                                 </span>
                                             </div>
-
                                         </div>
 
                                         {/* Action */}
-                                        <div className="col-md-3 mt-4 mt-md-0 text-md-end">
-
-                                            <Link to={`/orders/${order.id}`} className="btn btn-outline-primary w-50 " >
+                                        <div className="order-card-action">
+                                            <Link
+                                                to={`/orders/${order.id}`}
+                                                className="btn btn-outline-primary order-view-button"
+                                            >
                                                 View Order
                                                 <i className="bi bi-arrow-right ms-2" />
                                             </Link>
-
                                         </div>
 
                                     </div>
-
                                 </div>
-
                             </div>
                         </div>
                     ))}

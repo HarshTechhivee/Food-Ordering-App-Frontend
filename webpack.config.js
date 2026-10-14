@@ -2,6 +2,8 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import webpack from "webpack";
+import Dotenv from 'dotenv-webpack'
+import CopyPlugin from "copy-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import dotenv from "dotenv";
 
@@ -52,20 +54,20 @@ export default {
     },
 
     plugins: [
-        new webpack.DefinePlugin({
-            "process.env.API_BASE_URL": JSON.stringify(
-                process.env.API_BASE_URL ?? ""
-            ),
-            "process.env.SERVER_URL": JSON.stringify(
-                process.env.SERVER_URL ?? ""
-            ),
-            "process.env.STRIPE_PUBLISHABLE_KEY": JSON.stringify(
-                process.env.STRIPE_PUBLISHABLE_KEY ?? ""
-            ),
-        }),
+
+        new Dotenv(),
 
         new HtmlWebpackPlugin({
             template: "./webpack.index.html",
+        }),
+
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: "public/firebase-messaging-sw.js",
+                    to: "firebase-messaging-sw.js",
+                },
+            ],
         }),
     ],
 
