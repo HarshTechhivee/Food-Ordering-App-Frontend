@@ -53,7 +53,7 @@ function Pagination({ currentPage, totalPages, onPageChange, }: PaginationProps)
 
             <nav aria-label="Menu pagination">
 
-                <ul className="pagination mb-0 shadow-sm">
+                <ul className="pagination mb-0 shadow-sm pagination-responsive">
 
                     {/* Previous */}
                     <li
@@ -71,7 +71,7 @@ function Pagination({ currentPage, totalPages, onPageChange, }: PaginationProps)
                             disabled={currentPage === 1}
                         >
                             <i className="bi bi-chevron-left me-1" />
-                            Previous
+                            <span className="pagination-nav-label">Previous</span>
                         </button>
                     </li>
 
@@ -127,7 +127,7 @@ function Pagination({ currentPage, totalPages, onPageChange, }: PaginationProps)
                             }
                             disabled={currentPage === totalPages}
                         >
-                            Next
+                            <span className="pagination-nav-label">Next</span>
                             <i className="bi bi-chevron-right ms-1" />
                         </button>
                     </li>

@@ -363,7 +363,7 @@ function MenuManagement() {
 
                                     <div className="d-flex justify-content-between align-items-end gap-3">
 
-                                        <h4 className="fw-bold mb-0">
+                                        <h4 className="fw-bold mb-0 menu-item-title">
                                             {item.name}
                                         </h4>
 
@@ -385,11 +385,11 @@ function MenuManagement() {
                                 </p>
 
                                 {/* Actions */}
-                                <div className="card-footer bg-white border-0 px-4 pb-2">
+                                <div className="card-footer bg-white border-0 px-4 pb-2 menu-card-footer">
 
                                     <div className="border-top pt-3">
 
-                                        <div className="d-flex justify-content-around align-items-start">
+                                        <div className="d-flex justify-content-around align-items-start admin-menu-actions">
 
                                             {/* Edit */}
                                             <Link

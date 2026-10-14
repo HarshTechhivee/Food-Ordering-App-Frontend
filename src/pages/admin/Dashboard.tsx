@@ -395,7 +395,7 @@ function AdminDashboard() {
 
                                 <div className="d-flex justify-content-between align-items-center">
                                     <span className="dashboard-status-label">
-                                        <span className="badge text-bg-primary me-4">
+                                        <span className="badge text-bg-primary me-4 dashboard-status-count">
                                             {stats?.orderStatus.APPROVED ?? 0}
                                         </span>
                                         Approved
@@ -406,7 +406,7 @@ function AdminDashboard() {
 
                                 <div className="d-flex justify-content-between align-items-center">
                                     <span className="dashboard-status-label">
-                                        <span className="badge text-bg-info me-4">
+                                        <span className="badge text-bg-info me-4 dashboard-status-count">
                                             {stats?.orderStatus.OUT_FOR_DELIVERY ?? 0}
                                         </span>
                                         Out for Delivery
@@ -417,7 +417,7 @@ function AdminDashboard() {
 
                                 <div className="d-flex justify-content-between align-items-center">
                                     <span className="dashboard-status-label">
-                                        <span className="badge text-bg-success me-3">
+                                        <span className="badge text-bg-success me-3 dashboard-status-count">
                                             {stats?.orderStatus.DELIVERED ?? 0}
                                         </span>
                                         Delivered
@@ -428,7 +428,7 @@ function AdminDashboard() {
 
                                 <div className="d-flex justify-content-between align-items-center">
                                     <span className="dashboard-status-label">
-                                        <span className="badge text-bg-danger me-4">
+                                        <span className="badge text-bg-danger me-4 dashboard-status-count">
                                             {stats?.orderStatus.REJECTED ?? 0}
                                         </span>
                                         Rejected
@@ -439,7 +439,7 @@ function AdminDashboard() {
 
                                 <div className="d-flex justify-content-between align-items-center">
                                     <span className="dashboard-status-label">
-                                        <span className="badge text-bg-secondary me-4">
+                                        <span className="badge text-bg-secondary me-4 dashboard-status-count">
                                             {stats?.orderStatus.CANCELLED ?? 0}
                                         </span>
                                         Cancelled
@@ -462,7 +462,7 @@ function AdminDashboard() {
 
                     <div className="card border-0 shadow-sm rounded-4 h-100">
 
-                        <div className="card-body p-4">
+                        <div className="card-body">
 
                             <div className="d-flex justify-content-between align-items-center mb-4">
 
@@ -478,7 +478,7 @@ function AdminDashboard() {
 
                                 <Link
                                     to="/admin/orders"
-                                    className="btn btn-sm btn-outline-primary"
+                                    className="btn btn-sm btn-outline-primary view-all-button"
                                 >
                                     View All
                                     <i className="bi bi-arrow-right ms-2" />
@@ -491,30 +491,32 @@ function AdminDashboard() {
                                 {stats?.recentOrders.map((order) => (
 
                                     <div key={order.id} className="d-flex align-items-center justify-content-between p-3 bg-light 
-                                        rounded-3" >
-                                        <div>
+                                        rounded-3 dashboard-recent-order" >
 
-                                            <div className="fw-semibold">
-                                                Order #{order.id}
+                                        <div className="dashboard-frontline">
+                                            <div className="dashboard-recent-order-summary">
+
+                                                <div className="fw-semibold">
+                                                    Order #{order.id}
+                                                </div>
+
+                                                <small className="text-secondary">
+                                                    {order.user.name}
+                                                    {" • "}
+                                                    {new Date(
+                                                        order.createdAt
+                                                    ).toLocaleDateString()}
+                                                </small>
+
                                             </div>
-
-                                            <small className="text-secondary">
-                                                {order.user.name}
-                                                {" • "}
-                                                {new Date(
-                                                    order.createdAt
-                                                ).toLocaleDateString()}
-                                            </small>
-
+                                            <div className="fw-semibold">
+                                                ₹{Number(order.totalAmount).toFixed(2)}
+                                            </div>
                                         </div>
 
-                                        <div className="text-end">
+                                        <div className="text-end dashboard-recent-order-status">
 
-                                            <div className="fw-semibold mb-2">
-                                                ₹ {Number(order.totalAmount).toFixed(2)}
-                                            </div>
-
-                                            <div className="d-flex gap-3">
+                                            <div className="d-flex gap-3 dashboard-recent-order-badges">
 
                                                 <span
                                                     className={`badge rounded-pill ${getStatusPaymentClass(

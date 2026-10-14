@@ -97,7 +97,7 @@ function Cart() {
                         <div key={item.menuItemId} className="card border-0 shadow-sm rounded-4 mb-3" >
                             <div className="card-body p-3 p-md-4">
 
-                                <div className="row align-items-center g-3">
+                                <div className="row align-items-center g-3 cart-item-row">
 
                                     {/* Image */}
                                     <div className="col-4 col-sm-3 col-md-2">
@@ -114,8 +114,8 @@ function Cart() {
                                     </div>
 
                                     {/* Information */}
-                                    <div className="col-8 col-sm-9 col-md-4">
-                                        <h5 className="fw-bold mb-1">
+                                    <div className="col-8 col-sm-9 col-md-4 cart-item-info">
+                                        <h5 className="fw-bold mb-1 cart-item-name">
                                             {item.name}
                                         </h5>
 
@@ -126,7 +126,7 @@ function Cart() {
 
                                     {/* Quantity */}
                                     <div className="col-6 col-md-3">
-                                        <div className="d-inline-flex align-items-center border rounded-3 overflow-hidden">
+                                        <div className="d-inline-flex align-items-center border rounded-3 overflow-hidden cart-quantity-control">
 
                                             <button type="button" className="btn btn-light border-0 rounded-0"
                                                 onClick={() => dispatch(decreaseQuantity(item.menuItemId))} >
@@ -147,7 +147,7 @@ function Cart() {
 
                                     {/* Item total */}
                                     <div className="col-4 col-md-2">
-                                        <span className="fw-bold">
+                                        <span className="fw-bold cart-item-total">
                                             ₹{(item.price * item.quantity).toFixed(2)}
                                         </span>
                                     </div>
