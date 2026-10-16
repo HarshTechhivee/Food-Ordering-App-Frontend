@@ -30,3 +30,13 @@ dist-webpack/
 .env
 .env.*
 !.env.example
+
+public/firebase-messaging-sw.js
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
