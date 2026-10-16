@@ -55,7 +55,9 @@ export default {
 
     plugins: [
 
-        new Dotenv(),
+        new Dotenv({
+            systemvars: true,
+        }),
 
         new HtmlWebpackPlugin({
             template: "./webpack.index.html",
