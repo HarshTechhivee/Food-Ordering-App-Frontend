@@ -7,6 +7,7 @@ import { fetchOrderById, clearSelectedOrder, clearOrderError, } from "../../stor
 import type { OrderStatus } from "../../types/order.types.js";
 import { formatStatus, getStatusPaymentClass } from "../../utils/commonFunction.js";
 import ConfirmModal from "../../components/common/ConfirmModal.js";
+import { getMenuImageSrc } from "../../utils/menuImage";
 
 function OrderDetails() {
 
@@ -383,15 +384,17 @@ function OrderDetails() {
 
                                         <div className="me-3 flex-shrink-0 foodhub-icon--80 order-item-thumbnail">
 
-                                            {item.menuItem.image ?
-                                                (<img src={`${process.env.SERVER_URL}${item.menuItem.image}`}
-                                                    alt={item.menuItem.name} className="w-100 h-100 rounded-3 order-item-image" />)
-                                                :
-                                                (<div className="bg-white rounded-3 d-flex align-items-center 
-                                                    justify-content-center w-100 h-100" >
+                                            {getMenuImageSrc(item.menuItem.image) ? (
+                                                <img
+                                                    src={getMenuImageSrc(item.menuItem.image)!}
+                                                    alt={item.menuItem.name}
+                                                    className="w-100 h-100 rounded-3 order-item-image"
+                                                />
+                                            ) : (
+                                                <div className="bg-white rounded-3 d-flex align-items-center justify-content-center w-100 h-100">
                                                     <i className="bi bi-image text-secondary fs-4" />
-                                                </div>)
-                                            }
+                                                </div>
+                                            )}
 
                                         </div>
 

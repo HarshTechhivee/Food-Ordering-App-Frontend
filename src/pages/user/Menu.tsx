@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { addToCart, decreaseQuantity } from "../../store/slices/cartSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchMenu } from "../../store/slices/menuSlice";
-import { SERVER_URL } from "../admin/MenuManagement";
+import { getMenuImageSrc } from "../../utils/menuImage";
 import Toast from "../../components/common/Toast";
 import type { MenuItem, MenuQuery, MenuSort, } from "../../types/menu.types";
 import Pagination from "../../components/common/Pagination";
@@ -262,9 +262,9 @@ export function Menu() {
                                     >
 
                                         {/* Image */}
-                                        {item.image ? (
+                                        {getMenuImageSrc(item.image) ? (
                                             <img
-                                                src={`${SERVER_URL}${item.image}`}
+                                                src={getMenuImageSrc(item.image)!}
                                                 alt={item.name}
                                                 className="w-100 h-100"
                                             />

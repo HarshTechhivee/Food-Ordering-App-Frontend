@@ -5,8 +5,8 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks.js";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import type { MenuQuery, MenuSort, } from "../../types/menu.types.js";
 import Pagination from "../../components/common/Pagination";
+import { getMenuImageSrc } from "../../utils/menuImage";
 
-export const SERVER_URL = process.env.SERVER_URL;
 
 function MenuManagement() {
 
@@ -299,9 +299,9 @@ function MenuManagement() {
                             >
 
                                 {/* Image */}
-                                {item.image ? (
+                                {getMenuImageSrc(item.image) ? (
                                     <img
-                                        src={`${SERVER_URL}${item.image}`}
+                                        src={getMenuImageSrc(item.image)!}
                                         alt={item.name}
                                         className="w-100 h-100"
                                     />

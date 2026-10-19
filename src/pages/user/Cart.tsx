@@ -3,6 +3,7 @@ import { useState } from "react";
 import { decreaseQuantity, increaseQuantity, removeFromCart, } from "../../store/slices/cartSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { createPaymentIntent } from "../../services/payment.api";
+import { getMenuImageSrc } from "../../utils/menuImage";
 
 function Cart() {
 
@@ -102,10 +103,9 @@ function Cart() {
                                     {/* Image */}
                                     <div className="col-4 col-sm-3 col-md-2">
 
-                                        {item.image ?
-                                            (<img src={`${process.env.SERVER_URL}${item.image}`} alt={item.name}
-                                                className="img-fluid rounded-3 w-100 cart-item-image"
-                                            />)
+                                        {getMenuImageSrc(item.image) ?
+                                            (<img src={getMenuImageSrc(item.image)!} alt={item.name}
+                                                className="img-fluid rounded-3 w-100 cart-item-image" />)
                                             :
                                             (<div className="bg-light rounded-3 d-flex align-items-center justify-content-center cart-item-placeholder">
                                                 <i className="bi bi-image text-secondary fs-3" />
