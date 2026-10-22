@@ -68,6 +68,53 @@ export default {
                 {
                     from: "public/firebase-messaging-sw.js",
                     to: "firebase-messaging-sw.js",
+
+                    transform(content) {
+                        const replacements = {
+                            "__FIREBASE_API_KEY__":
+                                process.env.FIREBASE_API_KEY,
+
+                            "__FIREBASE_AUTH_DOMAIN__":
+                                process.env.FIREBASE_AUTH_DOMAIN,
+
+                            "__FIREBASE_PROJECT_ID__":
+                                process.env.FIREBASE_PROJECT_ID,
+
+                            "__FIREBASE_STORAGE_BUCKET__":
+                                process.env.FIREBASE_STORAGE_BUCKET,
+
+                            "__FIREBASE_MESSAGING_SENDER_ID__":
+                                process.env.FIREBASE_MESSAGING_SENDER_ID,
+
+                            "__FIREBASE_APP_ID__":
+                                process.env.FIREBASE_APP_ID,
+                        };
+
+                        let output = content.toString();
+
+                        for (const [placeholder, value] of Object.entries(
+                            replacements
+                        )) {
+                            if (!value) {
+                                throw new Error(
+                                    `Missing Firebase environment variable for ${placeholder}`
+                                );
+                            }
+
+                            output = output.replaceAll(
+                                placeholder,
+                                () => value
+                            );
+                        }
+
+                        if (output.includes("__FIREBASE_")) {
+                            throw new Error(
+                                "Firebase service worker contains unreplaced placeholders"
+                            );
+                        }
+
+                        return output;
+                    },
                 },
             ],
         }),
