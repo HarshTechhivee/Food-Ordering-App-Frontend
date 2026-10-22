@@ -1,12 +1,51 @@
 import apiClient from "./api";
-import { getMessaging, isSupported, type Messaging, } from "firebase/messaging";
 
-import { getToken } from "firebase/messaging";
+import {
+    getMessaging,
+    isSupported,
+    type Messaging,
+    getToken,
+    onMessage,
+} from "firebase/messaging";
 
 import firebaseApp from "../config/firebase";
 
-export async function initializeFirebaseMessaging(): 
-Promise<{ messaging: Messaging | null; serviceWorkerRegistration: ServiceWorkerRegistration | null; }> {
+
+let unsubscribeForegroundMessages: (() => void) | null = null;
+
+function registerForegroundMessageListener(messaging: Messaging, serviceWorkerRegistration: ServiceWorkerRegistration,): void {
+
+    // Prevent duplicate listeners.
+    if (unsubscribeForegroundMessages) {
+        return;
+    }
+
+    unsubscribeForegroundMessages = onMessage(messaging, (payload) => {
+        console.log("Foreground FCM message received:", payload);
+        const title = payload.notification?.title ?? "FoodHub";
+        const body = payload.notification?.body ?? "";
+
+        if (Notification.permission !== "granted") {
+            console.warn(
+                "Browser notification permission is not granted.",
+            );
+            return;
+        }
+
+        void serviceWorkerRegistration
+            .showNotification(title, { body })
+            .catch((error: unknown) => {
+                console.error(
+                    "Failed to display foreground notification:",
+                    error,
+                );
+            });
+    });
+}
+
+
+export async function initializeFirebaseMessaging():
+    Promise<{ messaging: Messaging | null; serviceWorkerRegistration: ServiceWorkerRegistration | null; }> {
 
     if (!("serviceWorker" in navigator)) {
         return {
@@ -76,6 +115,8 @@ export async function enablePushNotifications(): Promise<string | null> {
     if (!messaging || !serviceWorkerRegistration) {
         return null;
     }
+
+    registerForegroundMessageListener(messaging, serviceWorkerRegistration,);
 
     const vapidKey = process.env.FIREBASE_VAPID_KEY;
 
