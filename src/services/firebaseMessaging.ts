@@ -5,8 +5,8 @@ import { getToken } from "firebase/messaging";
 
 import firebaseApp from "../config/firebase";
 
-export async function initializeFirebaseMessaging():
-    Promise<{ messaging: Messaging | null; serviceWorkerRegistration: ServiceWorkerRegistration | null; }> {
+export async function initializeFirebaseMessaging(): 
+Promise<{ messaging: Messaging | null; serviceWorkerRegistration: ServiceWorkerRegistration | null; }> {
 
     if (!("serviceWorker" in navigator)) {
         return {
@@ -24,12 +24,39 @@ export async function initializeFirebaseMessaging():
         };
     }
 
-    const serviceWorkerRegistration = await navigator.serviceWorker.register("/firebase-messaging-sw.js",);
+    // Register the Firebase messaging service worker.
+    await navigator.serviceWorker.register(
+        "/firebase-messaging-sw.js",
+        {
+            updateViaCache: "none",
+        }
+    );
+
+    // Wait until the browser has an active service worker.
+    const serviceWorkerRegistration =
+        await navigator.serviceWorker.ready;
+
+    if (
+        !serviceWorkerRegistration.active ||
+        serviceWorkerRegistration.active.state !== "activated" ||
+        new URL(serviceWorkerRegistration.active.scriptURL).pathname !==
+        "/firebase-messaging-sw.js"
+    ) {
+        throw new Error(
+            "Firebase messaging service worker is not active."
+        );
+    }
 
     const messaging = getMessaging(firebaseApp);
 
-    return { messaging, serviceWorkerRegistration, };
+    console.log("Firebase service worker is active.");
+
+    return {
+        messaging,
+        serviceWorkerRegistration,
+    };
 }
+
 
 
 export async function enablePushNotifications(): Promise<string | null> {
