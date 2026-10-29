@@ -377,7 +377,7 @@ export function Menu() {
                                             {cartItem ?
                                                 (<div className="d-flex gap-2">
 
-                                                    <button type="button" className="btn btn-success flex-grow-1 w-50"
+                                                    <button type="button" className="btn btn-success grow w-50"
                                                         disabled={!item.isAvailable}
                                                         onClick={() => {
                                                             dispatch(
@@ -395,7 +395,7 @@ export function Menu() {
                                                         Add
                                                     </button>
 
-                                                    <button type="button" className="btn btn-outline-danger flex-grow-1 w-50"
+                                                    <button type="button" className="btn btn-outline-danger grow w-50"
                                                         onClick={() => {
                                                             dispatch(
                                                                 decreaseQuantity(item.id)
@@ -433,6 +433,7 @@ export function Menu() {
             />
 
             <MenuReviewsModal
+                key={selectedReviewItem?.id ?? "closed"}
                 menuItem={selectedReviewItem}
                 onClose={() => setSelectedReviewItem(null)}
             />

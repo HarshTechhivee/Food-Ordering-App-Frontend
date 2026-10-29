@@ -78,7 +78,7 @@ function ConfirmModal({
                         <div className={`modal-header border-0 p-4 pb-2 ${centered ? "justify-content-center text-center" : ""}`} >
                             <div className="d-flex align-items-center gap-3 min-w-0">
                                 <div
-                                    className={`bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center foodhub-icon--44 flex-shrink-0 ${centered ? "mx-auto" : ""
+                                    className={`bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center foodhub-icon--44 shrink-0 ${centered ? "mx-auto" : ""
                                         }`}
                                 >
                                     <i className={`bi ${icon}`} aria-hidden="true" />

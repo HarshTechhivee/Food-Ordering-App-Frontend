@@ -290,7 +290,7 @@ function OrderDetails() {
                                                 }`}
                                         />
 
-                                        <div className="flex-grow-1">
+                                        <div className="grow">
                                             <strong>
                                                 {order.status === "CANCELLED"
                                                     ? "Order Cancelled"
@@ -383,7 +383,7 @@ function OrderDetails() {
 
                                         {/* Food Image */}
 
-                                        <div className="me-3 flex-shrink-0 foodhub-icon--80 order-item-thumbnail">
+                                        <div className="me-3 shrink-0 foodhub-icon--80 order-item-thumbnail">
 
                                             {getMenuImageSrc(item.menuItem.image) ? (
                                                 <img
@@ -401,7 +401,7 @@ function OrderDetails() {
 
                                         {/* Food Details */}
 
-                                        <div className="flex-grow-1">
+                                        <div className="grow">
 
                                             <h6 className="fw-bold mb-1 order-item-name">
                                                 {item.menuItem.name}
@@ -558,6 +558,7 @@ function OrderDetails() {
             {order.status === "DELIVERED" && (
                 <div className="mt-4">
                     <OrderReviewSection
+                        key={`${order.id}-${order.review?.id ?? "none"}-${order.review?.updatedAt ?? "new"}`}
                         orderId={order.id}
                         initialReview={order.review ?? null}
                     />
@@ -718,7 +719,7 @@ function OrderStatusTimeline({ status, }: { status: string; rejectionReason?: st
                         <div className="d-flex flex-column align-items-center">
 
                             <div className={`rounded-circle d-flex align-items-center justify-content-center 
-                                ${completed ? "bg-primary text-white" : "bg-light text-secondary"} foodhub-icon--46 flex-shrink-0`}>
+                                ${completed ? "bg-primary text-white" : "bg-light text-secondary"} foodhub-icon--46 shrink-0`}>
                                 <i className={`bi ${item.icon} fs-5`} />
                             </div>
 

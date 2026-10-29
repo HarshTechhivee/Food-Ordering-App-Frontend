@@ -19,7 +19,7 @@ function MenuReviewsModal({ menuItem, onClose, }: MenuReviewsModalProps) {
     const menuItemId = menuItem?.id;
 
     const [result, setResult] = useState<MenuItemReviewResponse | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -67,14 +67,44 @@ function MenuReviewsModal({ menuItem, onClose, }: MenuReviewsModalProps) {
 
     useEffect(() => {
         if (menuItemId === undefined) {
-            setResult(null);
-            setError(null);
             return;
         }
 
-        setResult(null);
-        void loadReviews(1, false);
-    }, [menuItemId, loadReviews]);
+        let cancelled = false;
+
+        const fetchInitialReviews = async () => {
+            try {
+                const response = await getMenuItemReviews(
+                    menuItemId,
+                    1,
+                    REVIEWS_PER_PAGE,
+                );
+
+                if (cancelled) {
+                    return;
+                }
+
+                setResult(response);
+                setError(null);
+            } catch {
+                if (!cancelled) {
+                    setError(
+                        "We couldn't load the reviews. Please try again.",
+                    );
+                }
+            } finally {
+                if (!cancelled) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        void fetchInitialReviews();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [menuItemId]);
 
     // Refresh the open modal if a review changes in another session.
     useEffect(() => {
@@ -209,7 +239,7 @@ function MenuReviewsModal({ menuItem, onClose, }: MenuReviewsModalProps) {
 
                             {result && (
                                 <>
-                                    <div className="bg-light rounded-4 p-4 mb-4 flex-shrink-0">
+                                    <div className="bg-light rounded-4 p-4 mb-4 shrink-0">
                                         <div className="row align-items-center g-3">
                                             <div className="col-auto text-center">
                                                 {summary &&
@@ -270,7 +300,7 @@ function MenuReviewsModal({ menuItem, onClose, }: MenuReviewsModalProps) {
 
                                     {/* Only this section scrolls */}
                                     <div
-                                        className="flex-grow-1"
+                                        className="grow"
                                         style={{ minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", }}
                                     >
 
@@ -301,11 +331,11 @@ function MenuReviewsModal({ menuItem, onClose, }: MenuReviewsModalProps) {
                                                     <div className="d-flex align-items-start gap-3">
                                                         <div className="rounded-circle bg-primary bg-opacity-10 text-primary 
                                                                         d-flex align-items-center justify-content-center 
-                                                                        flex-shrink-0 foodhub-icon--46">
+                                                                        shrink-0 foodhub-icon--46">
                                                             <i className="bi bi-person fs-5" />
                                                         </div>
 
-                                                        <div className="flex-grow-1 min-w-0">
+                                                        <div className="grow min-w-0">
                                                             <div className="d-flex flex-wrap align-items-center 
                                                                             justify-content-between gap-2">
                                                                 <strong>

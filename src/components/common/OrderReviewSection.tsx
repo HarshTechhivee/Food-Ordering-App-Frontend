@@ -1,5 +1,5 @@
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import ConfirmModal from "../common/ConfirmModal";
 import { createOrderReview, deleteOrderReview, updateOrderReview, } from "../../services/review.api";
 import type { OrderReview } from "../../types/order.types";
@@ -24,14 +24,14 @@ function OrderReviewSection({ orderId, initialReview, }: OrderReviewSectionProps
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-    useEffect(() => {
-        setReview(initialReview);
-        setRating(initialReview?.rating ?? 0);
-        setComment(initialReview?.comment ?? "");
-        setIsEditing(false);
-        setError(null);
-        setSuccessMessage(null);
-    }, [orderId, initialReview]);
+    // useEffect(() => {
+    //     setReview(initialReview);
+    //     setRating(initialReview?.rating ?? 0);
+    //     setComment(initialReview?.comment ?? "");
+    //     setIsEditing(false);
+    //     setError(null);
+    //     setSuccessMessage(null);
+    // }, [orderId, initialReview]);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -122,11 +122,11 @@ function OrderReviewSection({ orderId, initialReview, }: OrderReviewSectionProps
             >
                 <div className="card-body p-4 p-md-5">
                     <div className="d-flex align-items-start gap-3 mb-4">
-                        <div className="bg-warning bg-opacity-10 text-warning rounded-3 d-flex align-items-center justify-content-center foodhub-icon--46 flex-shrink-0">
+                        <div className="bg-warning bg-opacity-10 text-warning rounded-3 d-flex align-items-center justify-content-center foodhub-icon--46 shrink-0">
                             <i className="bi bi-star-fill fs-5" />
                         </div>
 
-                        <div className="flex-grow-1">
+                        <div className="grow">
                             <h5
                                 id="order-review-heading"
                                 className="fw-bold mb-1"
