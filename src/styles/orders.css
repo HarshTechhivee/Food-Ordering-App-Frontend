@@ -1,0 +1,127 @@
+.cart-item-row,
+.order-item-row {
+    min-width: 0;
+}
+
+.cart-quantity-control {
+    max-width: 100%;
+}
+
+/* Order card structure */
+.order-card-grid {
+    display: grid;
+    grid-template-columns:
+        minmax(170px, 1.3fr) minmax(70px, 0.55fr) minmax(140px, 0.9fr) minmax(190px, 1.4fr) minmax(130px, 0.9fr);
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.foodhub-icon--50 {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+}
+
+.order-card-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.order-card-field {
+    min-width: 0;
+}
+
+.order-card-value {
+    font-size: 1rem;
+}
+
+.order-card-statuses {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 1rem;
+}
+
+.order-card-statuses .badge {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.order-card-action {
+    min-width: 0;
+}
+
+.order-view-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    white-space: nowrap;
+}
+
+/* Tablet and mobile layout */
+@media (max-width: 991.98px) {
+    .order-card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem 1rem;
+    }
+
+    .order-card-info,
+    .order-card-statuses,
+    .order-card-action {
+        grid-column: 1 / -1;
+    }
+
+    .order-card-statuses {
+        gap: 1rem;
+    }
+}
+
+/* Smaller mobile screens */
+@media (max-width: 359.98px) {
+    .order-card-grid {
+        gap: 1.25rem 0.75rem;
+    }
+
+    .order-card-info {
+        gap: 0.75rem;
+    }
+
+    .order-card-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .order-card-statuses {
+        gap: 0.5rem;
+    }
+
+    .order-card-statuses .badge {
+        padding-inline: 0.5rem !important;
+        font-size: 0.7rem;
+    }
+
+    .order-card-field .fs-5 {
+        font-size: 1rem !important;
+    }
+}
+
+.order-cancel-dialog {
+    max-width: 500px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (max-width: 991.98px) {
+
+    .home-hero-background,
+    .home-hero-row {
+        min-height: 620px;
+    }
+
+    .home-hero-content {
+        padding-right: 3rem;
+    }
+}

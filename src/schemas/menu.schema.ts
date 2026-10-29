@@ -11,6 +11,8 @@ export const menuItemSchema = z.object({
     isActive: z.boolean(),
     createdAt: z.string(),
     updatedAt: z.string(),
+    averageRating: z.number().min(0).max(5).default(0),
+    totalReviews: z.number().int().nonnegative().default(0),
 });
 
 export const menuResponseSchema = z.object({

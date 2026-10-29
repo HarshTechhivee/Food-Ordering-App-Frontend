@@ -1,8 +1,8 @@
-import { createAsyncThunk, createSlice, } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, type PayloadAction, } from "@reduxjs/toolkit";
 
 import { getMenu } from "../../services/menu.api";
 
-import type { MenuQuery, MenuResponse, } from "../../types/menu.types";
+import type { MenuQuery, MenuRatingUpdate, MenuResponse, } from "../../types/menu.types";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 
 interface MenuState {
@@ -41,6 +41,28 @@ const menuSlice = createSlice({
     reducers: {
 
         clearMenuError: (state) => { state.error = null; },
+
+        updateMenuRatingSummaries: (state, action: PayloadAction<MenuRatingUpdate[]>,) => {
+
+            if (!state.data) {
+                return;
+            }
+
+            const updatesById = new Map<number, MenuRatingUpdate>();
+
+            for (const update of action.payload) {
+                updatesById.set(update.menuItemId, update);
+            }
+
+            for (const item of state.data.items) {
+                const update = updatesById.get(item.id);
+
+                if (update) {
+                    item.averageRating = update.averageRating;
+                    item.totalReviews = update.totalReviews;
+                }
+            }
+        },
     },
 
     extraReducers: (builder) => {
@@ -64,6 +86,6 @@ const menuSlice = createSlice({
     },
 });
 
-export const { clearMenuError, } = menuSlice.actions;
+export const { clearMenuError, updateMenuRatingSummaries, } = menuSlice.actions;
 
 export default menuSlice.reducer;

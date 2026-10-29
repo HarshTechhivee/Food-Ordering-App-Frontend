@@ -1,0 +1,75 @@
+@media (max-width: 991.98px) {
+    .public-navbar {
+        margin-top: 0 !important;
+    }
+
+    .public-navbar .navbar-collapse {
+        padding: 0.75rem 0 0.25rem;
+        margin-top: 0.5rem;
+        border-top: 1px solid #edf0f4;
+    }
+
+    .public-navbar-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        gap: 0.25rem;
+        width: 100%;
+        margin: 0;
+    }
+
+    .public-navbar-links .nav-link {
+        padding: 0.65rem 0.35rem;
+        border-radius: 0.65rem;
+        text-align: center;
+    }
+
+    .public-navbar-links .nav-link.active {
+        color: #0d6efd;
+        background: #eef5ff;
+    }
+
+    .public-navbar-actions {
+        display: grid !important;
+        grid-template-columns: 1fr;
+        gap: 0.25rem !important;
+        width: 100%;
+        padding-top: 0.75rem;
+        margin-top: 0.65rem !important;
+        border-top: 1px solid #edf0f4;
+        align-items: center;
+    }
+
+    /* Four evenly spaced items when logged in */
+    .public-navbar-actions--authenticated {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    /* Let the avatar and Logout button occupy separate grid cells */
+    .public-navbar-user-info {
+        display: contents !important;
+    }
+
+    /* Center the user avatar in its cell */
+    .public-navbar-user {
+        justify-content: center;
+    }
+
+    /* Make the action buttons fit their grid cells */
+    .public-navbar-actions .cart-button,
+    .public-navbar-actions .btn-outline-danger {
+        width: 100%;
+        min-width: 0;
+        justify-content: center;
+    }
+
+    /* Keep Logout compact on narrow screens */
+    .public-navbar-actions .btn-outline-danger {
+        white-space: nowrap;
+        padding-inline: 0.25rem;
+        font-size: 0.75rem;
+    }
+
+    .public-navbar-toggler {
+        flex: 0 0 auto;
+    }
+}

@@ -60,7 +60,22 @@ export interface Order {
     createdAt: string;
     updatedAt: string;
     items: OrderItem[];
+    review: OrderReview | null;
 }
+
+export interface OrderReview {
+    id: number;
+    orderId: number;
+    rating: number;
+    comment: string | null;
+    createdAt: string;
+    updatedAt: string;
+    user?: {
+        id: number;
+        name: string;
+    };
+}
+
 
 export interface AdminOrder {
     id: number;

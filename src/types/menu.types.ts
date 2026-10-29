@@ -1,3 +1,4 @@
+
 export interface MenuItem {
     id: number;
     name: string;
@@ -9,6 +10,14 @@ export interface MenuItem {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
+    averageRating?: number;
+    totalReviews?: number;
+}
+
+export interface MenuRatingUpdate {
+    menuItemId: number;
+    averageRating: number;
+    totalReviews: number;
 }
 
 export type MenuSort =

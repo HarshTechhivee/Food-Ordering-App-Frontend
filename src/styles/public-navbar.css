@@ -1,0 +1,202 @@
+/* =========================================================
+   Public navbar: mobile-only header rearrangement + fixed menu
+   Public colors and hover states remain independent of admin UI.
+   ========================================================= */
+@media (max-width: 991.98px) {
+    .public-navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1050;
+        padding: 0;
+        background: #fff;
+    }
+
+    .public-navbar-inner {
+        min-height: 64px;
+        flex-wrap: nowrap;
+        gap: 0.4rem;
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+    }
+
+    .public-navbar-brand {
+        flex: 0 1 auto;
+        min-width: 0;
+        margin-right: auto;
+        font-size: 1.2rem !important;
+        white-space: nowrap;
+    }
+
+    .public-navbar-links {
+        display: none !important;
+    }
+
+    .public-navbar-actions {
+        display: flex !important;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 0.35rem !important;
+        width: auto;
+        margin: 0 !important;
+        padding: 0;
+        border: 0;
+    }
+
+    .public-navbar-actions .cart-button,
+    .public-navbar-actions .notification-bell-button {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+    }
+
+    .public-navbar-avatar {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        font-size: 0.85rem;
+    }
+
+    .public-navbar-user-info {
+        display: flex !important;
+        margin: 0;
+    }
+
+    .public-navbar-logout {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        flex: 0 0 36px;
+        border-radius: 10px;
+    }
+
+    .public-navbar-logout i {
+        margin: 0 !important;
+    }
+
+    .public-navbar-toggler {
+        display: inline-flex;
+        flex: 0 0 36px;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        color: #334155;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        box-shadow: none;
+    }
+
+    .public-navbar-toggler:hover,
+    .public-navbar-toggler:focus-visible {
+        color: #0d6efd;
+        background: #eef5ff;
+        border-color: #b6d4fe;
+        box-shadow: none;
+    }
+
+    .public-mobile-menu {
+        position: fixed;
+        top: 64px;
+        right: 0;
+        left: 0;
+        z-index: 1049;
+        display: none;
+        max-height: calc(100dvh - 64px);
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 1rem max(1rem, calc((100vw - 720px) / 2));
+        background: #fff;
+        border-top: 1px solid #edf0f4;
+        border-bottom: 1px solid #e2e8f0;
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .public-mobile-menu.is-open {
+        display: block;
+    }
+
+    .public-mobile-menu-heading {
+        padding: 0.35rem 0.75rem 0.75rem;
+        color: #94a3b8;
+        font-size: 0.68rem;
+        font-weight: 750;
+        letter-spacing: 1.2px;
+    }
+
+    .public-mobile-menu .nav-link {
+        display: flex;
+        align-items: center;
+        min-height: 46px;
+        padding: 0.7rem 0.9rem;
+        border-radius: 0.65rem;
+        color: #334155;
+        transition: color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .public-mobile-menu .nav-link:not(.active):hover,
+    .public-mobile-menu .nav-link:not(.active):focus-visible {
+        color: #0d6efd;
+        background: #f8faff;
+    }
+
+    .public-mobile-menu .nav-link.active {
+        color: #0d6efd;
+        background: #eef5ff;
+    }
+}
+
+@media (max-width: 359.98px) {
+    .public-navbar-inner {
+        gap: 0.25rem;
+        padding-right: 0.35rem;
+        padding-left: 0.35rem;
+    }
+
+    .public-navbar-brand {
+        font-size: 1.05rem !important;
+        letter-spacing: -0.4px;
+    }
+
+    .public-navbar-actions {
+        gap: 0.25rem !important;
+    }
+
+    .public-navbar-actions .cart-button,
+    .public-navbar-actions .notification-bell-button,
+    .public-navbar-logout,
+    .public-navbar-toggler {
+        width: 32px;
+        height: 34px;
+        flex-basis: 32px;
+    }
+
+    .public-navbar-avatar {
+        width: 29px;
+        height: 29px;
+        flex-basis: 29px;
+    }
+}
+
+@media (min-width: 992px) {
+    .public-navbar-inner {
+        flex-wrap: nowrap;
+    }
+
+    .public-navbar-links {
+        display: flex;
+        align-items: center;
+    }
+
+    .public-mobile-menu,
+    .public-navbar-toggler {
+        display: none !important;
+    }
+}
+

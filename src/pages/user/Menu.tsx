@@ -7,6 +7,7 @@ import { getMenuImageSrc } from "../../utils/menuImage";
 import Toast from "../../components/common/Toast";
 import type { MenuItem, MenuQuery, MenuSort, } from "../../types/menu.types";
 import Pagination from "../../components/common/Pagination";
+import MenuReviewsModal from "../../components/common/MenuReviewsModal";
 
 export function Menu() {
 
@@ -49,6 +50,8 @@ export function Menu() {
     const [sort, setSort] = useState<MenuSort>("newest");
 
     const [page, setPage] = useState(1);
+
+    const [selectedReviewItem, setSelectedReviewItem] = useState<MenuItem | null>(null);
 
     const limit = 8;
 
@@ -333,6 +336,37 @@ export function Menu() {
                                     {/* Content */}
                                     <div className="card-body d-flex flex-column p-4">
 
+
+                                        <button type="button"
+                                            className="btn btn-link link-dark text-decoration-none p-0 mb-3 d-inline-flex 
+                                            align-items-center gap-2 align-self-start menu-rating-button"
+                                            onClick={() => setSelectedReviewItem(item)} aria-label={`View reviews for ${item.name}`}
+                                            disabled={item.totalReviews === 0}
+                                        >
+                                            {(item.totalReviews ?? 0) > 0 ? (
+                                                <>
+                                                    <i className="bi bi-star-fill text-warning" aria-hidden="true" />
+
+                                                    <strong>
+                                                        {Number(item.averageRating ?? 0).toFixed(1)}
+                                                    </strong>
+
+                                                    <span className="text-secondary small">
+                                                        · {item.totalReviews}{" "}
+                                                        {item.totalReviews === 1 ? "review" : "reviews"}
+                                                    </span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <i className="bi bi-star text-warning" aria-hidden="true" />
+
+                                                    <span className="text-secondary small">
+                                                        No reviews yet
+                                                    </span>
+                                                </>
+                                            )}
+                                        </button>
+
                                         <p className="text-secondary small mb-3 fs-6">
                                             {item.description}
                                         </p>
@@ -396,6 +430,11 @@ export function Menu() {
                 currentPage={page}
                 totalPages={pagination?.totalPages ?? 0}
                 onPageChange={setPage}
+            />
+
+            <MenuReviewsModal
+                menuItem={selectedReviewItem}
+                onClose={() => setSelectedReviewItem(null)}
             />
 
         </div>

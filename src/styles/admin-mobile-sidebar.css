@@ -1,0 +1,57 @@
+/* =========================================================
+   Admin mobile sidebar: fixed below the header while content
+   scrolls independently. Desktop sidebar styles are preserved.
+   ========================================================= */
+@media (max-width: 767.98px) {
+
+    .admin-sidebar,
+    .admin-sidebar.d-md-block {
+        position: fixed;
+        top: 73px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1025;
+        width: 100%;
+        height: auto;
+        max-height: calc(100dvh - 73px);
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        background: #fff;
+        border-right: 0;
+        border-bottom: 1px solid var(--admin-border);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .admin-sidebar.is-closed {
+        display: none !important;
+    }
+
+    .admin-sidebar.is-open {
+        display: block !important;
+    }
+
+    .admin-sidebar-inner {
+        position: static;
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        padding: 20px 16px 24px;
+    }
+
+    .admin-sidebar-profile {
+        margin-top: 24px;
+        padding-top: 20px;
+    }
+
+    .admin-content {
+        margin-left: 0;
+        min-height: calc(100vh - 73px);
+        padding: 22px 16px;
+    }
+}

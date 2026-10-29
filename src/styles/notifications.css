@@ -1,0 +1,317 @@
+/* Notification container */
+
+.notification-container {
+    position: relative;
+    z-index: 2000;
+}
+
+/* Bell button: preserve visibility on dark and light headers */
+.cart-button,
+.notification-bell-button {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 13px;
+    background: #fff;
+    color: #334155;
+    transition: background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.notification-bell-button i {
+    display: inline-block;
+    color: inherit;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.notification-bell-button:hover,
+.notification-bell-button:focus-visible {
+    background: #eef2ff;
+    color: #4338ca;
+    border-color: #c7d2fe;
+}
+
+.notification-bell-button:focus-visible {
+    outline: 3px solid rgba(99, 102, 241, 0.3);
+    outline-offset: 2px;
+}
+
+.notification-bell-button:active {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.admin-header .notification-bell-button {
+    background: #fff;
+    color: #334155;
+    border-color: #e2e8f0;
+}
+
+.admin-header .notification-bell-button:hover,
+.admin-header .notification-bell-button:focus-visible {
+    background: #eef2ff;
+    color: #4338ca;
+    border-color: #c7d2fe;
+}
+
+/* Unread count */
+.cart-count,
+.notification-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: #dc3545;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Dropdown panel */
+.notification-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    z-index: 2001;
+    width: 390px;
+    max-width: calc(100vw - 24px);
+    max-height: min(520px, calc(100dvh - 100px));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    overscroll-behavior: contain;
+    border: 1px solid #e8edf4;
+    border-radius: 18px;
+    background: #fff;
+    color: #1f2937;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.22);
+}
+
+/* Header remains visible while the list scrolls */
+.notification-header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 17px 18px;
+    border-bottom: 1px solid #edf0f4;
+    background: #fff;
+}
+
+.notification-header>div:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-header h6 {
+    color: #1f2937;
+}
+
+.notification-toolbar {
+    flex: 0 0 auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.notification-toolbar .btn {
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+
+/* Only the notification list scrolls */
+.notification-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #cbd5e1;
+}
+
+.notification-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Individual notifications */
+.notification-item {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 0;
+    border-bottom: 1px solid #f0f2f5;
+    background: #fff;
+    color: #1f2937;
+    text-align: left;
+    transition: background-color 0.15s ease;
+}
+
+.notification-item:hover {
+    background: #f8fafc;
+}
+
+.notification-item.unread {
+    background: #eff6ff;
+}
+
+.notification-item.unread:hover {
+    background: #e5efff;
+}
+
+.notification-item-icon {
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.notification-item-icon.read {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.notification-item-icon.unread {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.notification-item-content {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.notification-item-title {
+    overflow-wrap: anywhere;
+    font-size: 0.9rem;
+}
+
+.notification-message {
+    color: #64748b;
+    font-size: 0.825rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.notification-time {
+    color: #94a3b8;
+    font-size: 0.72rem;
+}
+
+.notification-unread-dot {
+    flex: 0 0 8px;
+    width: 8px;
+    height: 8px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #2563eb;
+}
+
+/* Empty state */
+.notification-empty {
+    padding: 32px 18px;
+    text-align: center;
+}
+
+.notification-empty-icon {
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    border-radius: 17px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 1.4rem;
+}
+
+/* Footer stays outside the scrollable list */
+.notification-footer {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+    border-top: 1px solid #edf0f4;
+    background: #fff;
+}
+
+@keyframes notification-appear {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Small screens */
+@media (max-width: 575.98px) {
+    .notification-dropdown {
+        position: fixed;
+        top: 76px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+        max-width: none;
+        max-height: calc(100dvh - 92px);
+    }
+
+    .notification-list {
+        max-height: none;
+    }
+
+    .notification-header {
+        flex-wrap: wrap;
+    }
+
+    .notification-toolbar {
+        order: 3;
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .notification-dropdown {
+        animation: none;
+    }
+}

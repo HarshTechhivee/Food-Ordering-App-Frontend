@@ -8,6 +8,7 @@ import type { OrderStatus } from "../../types/order.types.js";
 import { formatStatus, getStatusPaymentClass } from "../../utils/commonFunction.js";
 import ConfirmModal from "../../components/common/ConfirmModal.js";
 import { getMenuImageSrc } from "../../utils/menuImage";
+import OrderReviewSection from "../../components/common/OrderReviewSection.js";
 
 function OrderDetails() {
 
@@ -553,6 +554,15 @@ function OrderDetails() {
                 </div>
 
             </div>
+
+            {order.status === "DELIVERED" && (
+                <div className="mt-4">
+                    <OrderReviewSection
+                        orderId={order.id}
+                        initialReview={order.review ?? null}
+                    />
+                </div>
+            )}
 
 
             <ConfirmModal
