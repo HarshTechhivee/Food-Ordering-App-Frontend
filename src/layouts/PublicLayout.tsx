@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks.js";
 import { logout } from "../store/slices/authSlice.js";
 import NotificationBell from "../components/common/NotificationBell.js";
 import PushNotificationPrompt from "../components/common/PushNotificationPrompt.js";
+import FloatingAIChatbot from "../components/AI/FloatingAIChatbot.js";
 
 function PublicLayout() {
     const navigate = useNavigate();
@@ -147,7 +148,7 @@ function PublicLayout() {
                 </div>
             </nav>
 
-            <main className="flex-grow-1">
+            <main className="grow">
                 <Outlet />
             </main>
 
@@ -164,6 +165,8 @@ function PublicLayout() {
                     </div>
                 </div>
             </footer>
+
+            {user && <FloatingAIChatbot userKey={user.email} />}
         </div>
     );
 }
