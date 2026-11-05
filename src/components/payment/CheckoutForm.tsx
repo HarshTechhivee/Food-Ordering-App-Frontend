@@ -40,19 +40,22 @@ function CheckoutForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="fh-checkout-form" onSubmit={handleSubmit}>
 
-            <PaymentElement />
+            <div className="fh-payment-element">
+                <PaymentElement />
+            </div>
 
             {error && (
-                <div className="alert alert-danger mt-3">
+                <div className="fh-payment-form-error" role="alert">
+                    <i className="bi bi-exclamation-circle" aria-hidden="true" />
                     {error}
                 </div>
             )}
 
             <button
                 type="submit"
-                className="btn btn-primary w-100 mt-4"
+                className="foodhub-button-primary fh-payment-submit"
                 disabled={
                     !stripe ||
                     !elements ||
@@ -63,6 +66,8 @@ function CheckoutForm() {
                     <>
                         <span
                             className="spinner-border spinner-border-sm me-2"
+                            role="status"
+                            aria-label="Processing payment"
                         />
                         Processing Payment...
                     </>

@@ -6,6 +6,7 @@ export interface DashboardOrder {
     paymentStatus: string;
     totalAmount: number | string;
     createdAt: string;
+    itemCount?: number;
     user: {
         name: string;
     };

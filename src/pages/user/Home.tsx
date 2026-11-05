@@ -1,775 +1,393 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getMenu } from "../../services/menu.api";
+import type { MenuItem } from "../../types/menu.types";
+import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
+import { getMenuImageSrc } from "../../utils/menuImage";
+import "./Home.css";
+
+const heroImages = [
+    {
+        src: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=85",
+        alt: "A freshly prepared burger",
+        className: "fh-home-hero-image--burger",
+    },
+    {
+        src: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=1200&q=85",
+        alt: "A freshly prepared pizza",
+        className: "fh-home-hero-image--pizza",
+    },
+    {
+        src: "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=1200&q=85",
+        alt: "A cold drink served over ice",
+        className: "fh-home-hero-image--drink",
+    },
+];
 
 function Home() {
     const navigate = useNavigate();
+    const [featuredItems, setFeaturedItems] = useState<MenuItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let isCurrent = true;
+
+        getMenu({ page: 1, limit: 3, sort: "newest" })
+            .then((response) => {
+                if (isCurrent) {
+                    setFeaturedItems(response.items.slice(0, 3));
+                }
+            })
+            .catch((requestError: unknown) => {
+                if (isCurrent) {
+                    setError(
+                        getApiErrorMessage(requestError, "Failed to load menu")
+                    );
+                }
+            })
+            .finally(() => {
+                if (isCurrent) {
+                    setLoading(false);
+                }
+            });
+
+        return () => {
+            isCurrent = false;
+        };
+    }, []);
 
     return (
-        <div>
-
-            {/* =====================================================
-                HERO
-            ===================================================== */}
-
+        <div className="fh-home">
             <section
                 id="heroFoodCarousel"
-                className="carousel slide carousel-fade home-food-carousel"
+                className="carousel slide carousel-fade fh-home-hero"
                 data-bs-ride="carousel"
-                data-bs-interval="3000"
+                data-bs-interval="5000"
                 data-bs-touch="true"
+                aria-label="FoodHub introduction"
             >
-                {/* Indicators */}
-                <div className="carousel-indicators">
-
-                    <button
-                        type="button"
-                        data-bs-target="#heroFoodCarousel"
-                        data-bs-slide-to="0"
-                        className="active"
-                        aria-current="true"
-                    ></button>
-
-                    <button
-                        type="button"
-                        data-bs-target="#heroFoodCarousel"
-                        data-bs-slide-to="1"
-                    ></button>
-
-                    <button
-                        type="button"
-                        data-bs-target="#heroFoodCarousel"
-                        data-bs-slide-to="2"
-                    ></button>
-
+                <div className="carousel-indicators fh-home-indicators">
+                    {heroImages.map((image, index) => (
+                        <button
+                            key={image.className}
+                            type="button"
+                            data-bs-target="#heroFoodCarousel"
+                            data-bs-slide-to={index}
+                            className={index === 0 ? "active" : ""}
+                            aria-label={`Show food image ${index + 1}`}
+                            aria-current={index === 0 ? "true" : undefined}
+                        />
+                    ))}
                 </div>
-
 
                 <div className="carousel-inner">
-
-
-                    {/* =====================================================
-            SLIDE 1 - BURGER
-        ===================================================== */}
-
-                    <div className="carousel-item active">
-
+                    {heroImages.map((image, index) => (
                         <div
-                            className="position-relative text-white home-hero-background home-hero-background--burger"
+                            className={`carousel-item ${index === 0 ? "active" : ""}`}
+                            key={image.className}
                         >
-
-                            <div className="container">
-
-                                <div
-                                    className="row align-items-center home-hero-row"
-                                >
-
-                                    {/* LEFT CONTENT */}
-
-                                    <div className="col-lg-6 home-hero-content">
-
-                                        <span className="badge bg-warning text-dark rounded-pill px-3 py-2 mb-4">
-                                            🔥 BEST SELLER
+                            <div className="fh-home-hero-panel">
+                                <div className="container fh-home-hero-container">
+                                    <div className="fh-home-hero-copy">
+                                        <span className="fh-home-eyebrow">
+                                            <span aria-hidden="true" />
+                                            GOOD FOOD, YOUR WAY
                                         </span>
-
-                                        <h1 className="display-1 fw-bold lh-1 mb-4">
-
-                                            Juicy
+                                        <h1>
+                                            Make room for
                                             <br />
-
-                                            <span className="text-warning">
-                                                Classic Burger.
-                                            </span>
-
+                                            <span>something delicious.</span>
                                         </h1>
-
-                                        <p className="lead text-white-50 mb-4">
-                                            A juicy grilled burger with melted cheese,
-                                            fresh vegetables and our special sauce.
+                                        <p>
+                                            Find the dish that sounds just right.
+                                            Your next favorite is waiting in the
+                                            FoodHub menu.
                                         </p>
-
-
-                                        <div className="d-flex align-items-center gap-4 mb-4 home-hero-metrics">
-
-                                            <div>
-                                                <h3 className="fw-bold mb-0">
-                                                    ₹199
-                                                </h3>
-
-                                                <small className="text-white-50">
-                                                    Starting price
-                                                </small>
-                                            </div>
-
-
-                                            <div className="vr"></div>
-
-
-                                            <div>
-                                                <h5 className="fw-bold mb-0">
-                                                    ⭐ 4.9
-                                                </h5>
-
-                                                <small className="text-white-50">
-                                                    Excellent
-                                                </small>
-                                            </div>
-
-
-                                            <div className="vr"></div>
-
-
-                                            <div>
-                                                <h5 className="fw-bold mb-0">
-                                                    30 min
-                                                </h5>
-
-                                                <small className="text-white-50">
-                                                    Delivery
-                                                </small>
-                                            </div>
-
-                                        </div>
-
-
                                         <button
-                                            className="btn btn-warning btn-lg rounded-3 px-4 fw-bold"
+                                            type="button"
+                                            className="foodhub-button-primary fh-home-hero-cta"
                                             onClick={() => navigate("/menu")}
                                         >
-                                            Explore Menu
-                                            <i className="bi bi-arrow-right ms-2"></i>
+                                            Explore the menu
+                                            <i
+                                                className="bi bi-arrow-up-right"
+                                                aria-hidden="true"
+                                            />
                                         </button>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    {/* =====================================================
-            SLIDE 2 - PIZZA
-        ===================================================== */}
-
-                    <div className="carousel-item">
-
-                        <div
-                            className="position-relative text-white home-hero-background home-hero-background--pizza"
-                        >
-
-                            <div className="container">
-
-                                <div
-                                    className="row align-items-center home-hero-row"
-                                >
-
-                                    {/* LEFT CONTENT */}
-
-                                    <div className="col-lg-6 home-hero-content">
-
-                                        <span className="badge bg-danger rounded-pill px-3 py-2 mb-4">
-                                            🍕 CUSTOMER FAVORITE
-                                        </span>
-
-                                        <h1 className="display-1 fw-bold lh-1 mb-4">
-
-                                            Hot &
-                                            <br />
-
-                                            <span className="text-warning">
-                                                Cheesy Pizza.
-                                            </span>
-
-                                        </h1>
-
-                                        <p className="lead text-white-50 mb-4">
-                                            Crispy golden crust topped with rich cheese,
-                                            fresh ingredients and delicious pizza sauce.
-                                        </p>
-
-
-                                        <div className="d-flex align-items-center gap-4 mb-4 home-hero-metrics">
-
-                                            <div>
-                                                <h3 className="fw-bold mb-0">
-                                                    ₹299
-                                                </h3>
-
-                                                <small className="text-white-50">
-                                                    Starting price
-                                                </small>
-                                            </div>
-
-
-                                            <div className="vr"></div>
-
-
-                                            <div>
-                                                <h5 className="fw-bold mb-0">
-                                                    ⭐ 5.0
-                                                </h5>
-
-                                                <small className="text-white-50">
-                                                    Excellent
-                                                </small>
-                                            </div>
-
-
-                                            <div className="vr"></div>
-
-
-                                            <div>
-                                                <h5 className="fw-bold mb-0">
-                                                    30 min
-                                                </h5>
-
-                                                <small className="text-white-50">
-                                                    Delivery
-                                                </small>
-                                            </div>
-
+                                        <div className="fh-home-hero-note">
+                                            <i
+                                                className="bi bi-heart"
+                                                aria-hidden="true"
+                                            />
+                                            <span>A little joy in every order</span>
                                         </div>
-
-
-                                        <button
-                                            className="btn btn-warning btn-lg rounded-3 px-4 fw-bold"
-                                            onClick={() => navigate("/menu")}
-                                        >
-                                            Explore Menu
-                                            <i className="bi bi-arrow-right ms-2"></i>
-                                        </button>
-
                                     </div>
 
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    {/* =====================================================
-            SLIDE 3 - COLD DRINK
-        ===================================================== */}
-
-                    <div className="carousel-item">
-
-                        <div
-                            className="position-relative text-white home-hero-background home-hero-background--drink"
-                        >
-
-                            <div className="container">
-
-                                <div
-                                    className="row align-items-center home-hero-row"
-                                >
-
-                                    {/* LEFT CONTENT */}
-
-                                    <div className="col-lg-6 home-hero-content">
-
-                                        <span className="badge bg-primary rounded-pill px-3 py-2 mb-4">
-                                            🧊 ICE COLD
-                                        </span>
-
-                                        <h1 className="display-1 fw-bold lh-1 mb-4">
-
-                                            Refreshing
-                                            <br />
-
-                                            <span className="text-warning">
-                                                Cold Drinks.
-                                            </span>
-
-                                        </h1>
-
-                                        <p className="lead text-white-50 mb-4">
-                                            Ice-cold refreshing drinks that perfectly
-                                            complete your favorite meal.
-                                        </p>
-
-
-                                        <div className="d-flex align-items-center gap-4 mb-4 home-hero-metrics">
-
-                                            <div>
-                                                <h3 className="fw-bold mb-0">
-                                                    ₹79
-                                                </h3>
-
-                                                <small className="text-white-50">
-                                                    Starting price
-                                                </small>
-                                            </div>
-
-
-                                            <div className="vr"></div>
-
-
-                                            <div>
-                                                <h5 className="fw-bold mb-0">
-                                                    ⭐ 4.7
-                                                </h5>
-
-                                                <small className="text-white-50">
-                                                    Excellent
-                                                </small>
-                                            </div>
-
-
-                                            <div className="vr"></div>
-
-
-                                            <div>
-                                                <h5 className="fw-bold mb-0">
-                                                    Ice Cold
-                                                </h5>
-
-                                                <small className="text-white-50">
-                                                    Always Fresh
-                                                </small>
-                                            </div>
-
+                                    <div className="fh-home-hero-visual">
+                                        <div className="fh-home-hero-image-wrap">
+                                            <img
+                                                src={image.src}
+                                                alt={image.alt}
+                                                className={`fh-home-hero-image ${image.className}`}
+                                            />
                                         </div>
-
-
-                                        <button
-                                            className="btn btn-warning btn-lg rounded-3 px-4 fw-bold"
-                                            onClick={() => navigate("/menu")}
+                                        <div
+                                            className="fh-home-hero-sticker"
+                                            aria-hidden="true"
                                         >
-                                            Explore Menu
-                                            <i className="bi bi-arrow-right ms-2"></i>
-                                        </button>
-
+                                            <i className="bi bi-egg-fried" />
+                                            <span>Made for<br />your cravings</span>
+                                        </div>
+                                        <span
+                                            className="fh-home-hero-sparkle fh-home-hero-sparkle--one"
+                                            aria-hidden="true"
+                                        >
+                                            ✳
+                                        </span>
+                                        <span
+                                            className="fh-home-hero-sparkle fh-home-hero-sparkle--two"
+                                            aria-hidden="true"
+                                        >
+                                            ✦
+                                        </span>
                                     </div>
-
                                 </div>
-
                             </div>
-
                         </div>
-
-                    </div>
-
+                    ))}
                 </div>
 
-
-                {/* =====================================================
-        PREVIOUS BUTTON
-    ===================================================== */}
-
                 <button
-                    className="carousel-control-prev"
+                    className="carousel-control-prev fh-home-carousel-control"
                     type="button"
                     data-bs-target="#heroFoodCarousel"
                     data-bs-slide="prev"
+                    aria-label="Previous featured image"
                 >
-
-                    <span
-                        className="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center shadow home-carousel-control-icon"
-                    >
-                        <i className="bi bi-chevron-left fs-5"></i>
+                    <span className="fh-home-control-icon" aria-hidden="true">
+                        <i className="bi bi-arrow-left" />
                     </span>
-
-                    <span className="visually-hidden">
-                        Previous
-                    </span>
-
                 </button>
-
-
-                {/* =====================================================
-        NEXT BUTTON
-    ===================================================== */}
-
                 <button
-                    className="carousel-control-next"
+                    className="carousel-control-next fh-home-carousel-control"
                     type="button"
                     data-bs-target="#heroFoodCarousel"
                     data-bs-slide="next"
+                    aria-label="Next featured image"
                 >
-
-                    <span
-                        className="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center shadow home-carousel-control-icon"
-                    >
-                        <i className="bi bi-chevron-right fs-5"></i>
+                    <span className="fh-home-control-icon" aria-hidden="true">
+                        <i className="bi bi-arrow-right" />
                     </span>
-
-                    <span className="visually-hidden">
-                        Next
-                    </span>
-
                 </button>
-
             </section>
 
-
-            {/* =====================================================
-                FOOD CATEGORY
-            ===================================================== */}
-
-            <section className="bg-light pt-5">
-
-                <div className="container py-3">
-
-                    <div className="text-center mb-5">
-
-                        <span className="badge rounded-pill bg-warning text-dark px-3 py-2 mb-3">
-                            OUR FAVORITES
-                        </span>
-
-                        <h2 className="display-5 fw-bold">
-                            Made for your
-                            <span className="text-warning"> cravings.</span>
-                        </h2>
-
-                        <p className="text-secondary">
-                            Pick your favorite and let us handle the rest.
-                        </p>
-
-                    </div>
-
-
-                    <div className="row g-4">
-
-                        {/* BURGER */}
-
-                        <div className="col-md-4">
-
-                            <div className="card border-0 rounded-4 overflow-hidden shadow-sm h-100">
-
-                                <div className="position-relative">
-
-                                    <img
-                                        src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80"
-                                        alt="Burger"
-                                        className="w-100 home-featured-image"
-                                    />
-
-                                    <span className="badge bg-warning text-dark position-absolute top-0 end-0 m-3 rounded-pill px-3 py-2">
-                                        Popular
-                                    </span>
-
-                                </div>
-
-                                <div className="card-body p-4">
-
-                                    <div className="d-flex justify-content-between">
-
-                                        <h4 className="fw-bold">
-                                            Classic Burger
-                                        </h4>
-
-                                        <span className="fw-bold text-warning">
-                                            ₹199
-                                        </span>
-
-                                    </div>
-
-                                    <p className="text-secondary mb-0">
-                                        Juicy grilled patty with fresh
-                                        vegetables and melted cheese.
-                                    </p>
-
-                                </div>
-
-                            </div>
-
+            <section className="fh-home-featured" aria-labelledby="fh-home-featured-title">
+                <div className="container">
+                    <div className="fh-home-section-heading">
+                        <div>
+                            <span className="fh-home-eyebrow">FROM OUR MENU</span>
+                            <h2 id="fh-home-featured-title">
+                                Made for your <span>cravings.</span>
+                            </h2>
+                            <p>
+                                Take a look at a few of the dishes on the menu.
+                            </p>
                         </div>
-
-
-                        {/* PIZZA */}
-
-                        <div className="col-md-4">
-
-                            <div className="card border-0 rounded-4 overflow-hidden shadow-sm h-100">
-
-                                <div className="position-relative">
-
-                                    <img
-                                        src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80"
-                                        alt="Pizza"
-                                        className="w-100 home-featured-image"
-                                    />
-
-                                    <span className="badge bg-danger position-absolute top-0 end-0 m-3 rounded-pill px-3 py-2">
-                                        Best Seller
-                                    </span>
-
-                                </div>
-
-                                <div className="card-body p-4">
-
-                                    <div className="d-flex justify-content-between">
-
-                                        <h4 className="fw-bold">
-                                            Cheese Pizza
-                                        </h4>
-
-                                        <span className="fw-bold text-warning">
-                                            ₹299
-                                        </span>
-
-                                    </div>
-
-                                    <p className="text-secondary mb-0">
-                                        Crispy crust, melted cheese and
-                                        delicious fresh toppings.
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        {/* DRINK */}
-
-                        <div className="col-md-4">
-
-                            <div className="card border-0 rounded-4 overflow-hidden shadow-sm h-100">
-
-                                <div className="position-relative">
-
-                                    <img
-                                        src="https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=800&q=80"
-                                        alt="Cold Drink"
-                                        className="w-100 home-featured-image"
-                                    />
-
-                                    <span className="badge bg-primary position-absolute top-0 end-0 m-3 rounded-pill px-3 py-2">
-                                        Refreshing
-                                    </span>
-
-                                </div>
-
-                                <div className="card-body p-4">
-
-                                    <div className="d-flex justify-content-between">
-
-                                        <h4 className="fw-bold">
-                                            Cold Drinks
-                                        </h4>
-
-                                        <span className="fw-bold text-warning">
-                                            ₹79
-                                        </span>
-
-                                    </div>
-
-                                    <p className="text-secondary mb-0">
-                                        Ice-cold refreshing drinks perfect
-                                        with your favorite meal.
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    {/* SECOND BUTTON */}
-
-                    {/* <div className="text-center mt-5">
-
                         <button
-                            className="btn btn-dark btn-lg rounded-3 px-4 fw-semibold"
+                            type="button"
+                            className="foodhub-button-secondary fh-home-view-menu"
                             onClick={() => navigate("/menu")}
                         >
-                            View Full Menu
-                            <i className="bi bi-arrow-right ms-2"></i>
+                            View full menu
+                            <i className="bi bi-arrow-up-right" aria-hidden="true" />
                         </button>
-
-                    </div> */}
-
-                </div>
-
-            </section>
-
-
-            {/* =====================================================
-                WHY US
-            ===================================================== */}
-
-            <section className="bg-white pb-5">
-
-                <div className="container py-5">
-
-                    <div className="row align-items-center">
-
-                        <div className="col-lg-6 mb-5 mb-lg-0">
-
-                            <span className="badge rounded-pill bg-warning text-dark px-3 py-2 mb-3">
-                                WHY FOODHUB?
-                            </span>
-
-                            <h2 className="display-5 fw-bold">
-                                Simple food.
-                                <br />
-                                <span className="text-warning">
-                                    Serious taste.
-                                </span>
-                            </h2>
-
-                            <p className="text-secondary lead">
-                                We believe great food doesn't need to be
-                                complicated. Fresh ingredients, great recipes
-                                and fast delivery.
-                            </p>
-
-                        </div>
-
-
-                        <div className="col-lg-6">
-
-                            <div className="row g-3">
-
-                                <div className="col-6">
-
-                                    <div className="bg-light rounded-4 p-4 text-center">
-
-                                        <i className="bi bi-heart-fill text-danger fs-2"></i>
-
-                                        <h6 className="fw-bold mt-3">
-                                            Made With Care
-                                        </h6>
-
-                                        <small className="text-secondary">
-                                            Fresh ingredients
-                                        </small>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div className="col-6">
-
-                                    <div className="bg-light rounded-4 p-4 text-center">
-
-                                        <i className="bi bi-lightning-charge-fill text-warning fs-2"></i>
-
-                                        <h6 className="fw-bold mt-3">
-                                            Fast Delivery
-                                        </h6>
-
-                                        <small className="text-secondary">
-                                            Under 30 minutes
-                                        </small>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div className="col-6">
-
-                                    <div className="bg-light rounded-4 p-4 text-center">
-
-                                        <i className="bi bi-star-fill text-primary fs-2"></i>
-
-                                        <h6 className="fw-bold mt-3">
-                                            Great Quality
-                                        </h6>
-
-                                        <small className="text-secondary">
-                                            4.9 customer rating
-                                        </small>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div className="col-6">
-
-                                    <div className="bg-light rounded-4 p-4 text-center">
-
-                                        <i className="bi bi-bag-heart-fill text-success fs-2"></i>
-
-                                        <h6 className="fw-bold mt-3">
-                                            Easy Ordering
-                                        </h6>
-
-                                        <small className="text-secondary">
-                                            Simple & quick
-                                        </small>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
                     </div>
 
-                </div>
-
-            </section>
-
-
-            {/* =====================================================
-                FINAL CTA
-            ===================================================== */}
-
-            <section
-                className="position-relative overflow-hidden text-white home-final-cta"
-            >
-
-                <div className="container py-5">
-
-                    <div className="row align-items-center py-4">
-
-                        <div className="col-lg-8">
-
-                            <span className="badge bg-warning text-dark rounded-pill px-3 py-2 mb-3">
-                                HUNGRY?
-                            </span>
-
-                            <h2 className="display-5 fw-bold">
-                                Your next favorite meal
-                                <br />
-                                is waiting.
-                            </h2>
-
-                            <p className="text-white-50 lead mb-0">
-                                Burgers. Pizza. Drinks.
-                                <br />
-                                Everything delicious in one place.
-                            </p>
-
+                    {loading && (
+                        <div
+                            className="fh-home-featured-state"
+                            role="status"
+                            aria-live="polite"
+                        >
+                            <span className="spinner-border" aria-hidden="true" />
+                            <span>Loading the menu…</span>
                         </div>
+                    )}
 
-
-                        <div className="col-lg-4 text-lg-end mt-4 mt-lg-0">
-
-                            {/* THIRD AND FINAL BUTTON */}
-
+                    {!loading && error && (
+                        <div className="fh-home-featured-state fh-home-featured-error" role="alert">
+                            <i className="bi bi-exclamation-circle" aria-hidden="true" />
+                            <span>{error}</span>
                             <button
-                                className="btn btn-warning btn-lg rounded-3 px-5 fw-bold"
+                                type="button"
+                                className="foodhub-button-secondary"
                                 onClick={() => navigate("/menu")}
                             >
-                                Order Now
-                                <i className="bi bi-arrow-right ms-2"></i>
+                                Open menu
                             </button>
-
                         </div>
+                    )}
 
-                    </div>
+                    {!loading && !error && featuredItems.length > 0 && (
+                        <div className="fh-home-dish-grid">
+                            {featuredItems.map((item) => {
+                                const imageSrc = getMenuImageSrc(item.image);
 
+                                return (
+                                    <article className="fh-home-dish-card" key={item.id}>
+                                        <div className="fh-home-dish-image-wrap">
+                                            {imageSrc ? (
+                                                <img
+                                                    src={imageSrc}
+                                                    alt={item.name}
+                                                    className="fh-home-dish-image"
+                                                    loading="lazy"
+                                                />
+                                            ) : (
+                                                <div
+                                                    className="fh-home-dish-image-placeholder"
+                                                    aria-label="No image available"
+                                                    role="img"
+                                                >
+                                                    <i className="bi bi-egg-fried" aria-hidden="true" />
+                                                </div>
+                                            )}
+                                            <span className="fh-home-dish-category">
+                                                {item.category}
+                                            </span>
+                                        </div>
+                                        <div className="fh-home-dish-content">
+                                            <div className="fh-home-dish-title-row">
+                                                <h3>{item.name}</h3>
+                                                <span className="fh-home-dish-price">
+                                                    ₹{Number(item.price).toFixed(2)}
+                                                </span>
+                                            </div>
+                                            <p>{item.description}</p>
+                                            <div className="fh-home-dish-meta">
+                                                {typeof item.averageRating === "number" &&
+                                                    typeof item.totalReviews === "number" &&
+                                                    item.totalReviews > 0 && (
+                                                        <span>
+                                                            <i className="bi bi-star-fill" aria-hidden="true" />
+                                                            {item.averageRating.toFixed(1)}
+                                                            <span className="fh-home-review-count">
+                                                                ({item.totalReviews})
+                                                            </span>
+                                                        </span>
+                                                    )}
+                                                <span
+                                                    className={
+                                                        item.isAvailable
+                                                            ? "fh-home-availability"
+                                                            : "fh-home-availability fh-home-availability--off"
+                                                    }
+                                                >
+                                                    <span aria-hidden="true" />
+                                                    {item.isAvailable ? "Available" : "Unavailable"}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </article>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {!loading && !error && featuredItems.length === 0 && (
+                        <div className="fh-home-featured-state">
+                            <i className="bi bi-basket" aria-hidden="true" />
+                            <span>There are no menu items to feature right now.</span>
+                            <button
+                                type="button"
+                                className="foodhub-button-secondary"
+                                onClick={() => navigate("/menu")}
+                            >
+                                Browse menu
+                            </button>
+                        </div>
+                    )}
                 </div>
-
             </section>
 
+            <section className="fh-home-how" aria-labelledby="fh-home-how-title">
+                <div className="container fh-home-how-layout">
+                    <div className="fh-home-how-copy">
+                        <span className="fh-home-eyebrow">A SIMPLE WAY TO ORDER</span>
+                        <h2 id="fh-home-how-title">
+                            Good food is just a <span>few steps away.</span>
+                        </h2>
+                        <p>
+                            Browse the menu, choose what sounds good, and place
+                            your order—all in one place.
+                        </p>
+                        <button
+                            type="button"
+                            className="foodhub-button-primary"
+                            onClick={() => navigate("/menu")}
+                        >
+                            Find your next meal
+                            <i className="bi bi-arrow-right" aria-hidden="true" />
+                        </button>
+                    </div>
+                    <div className="fh-home-steps" aria-label="How ordering works">
+                        <div className="fh-home-step">
+                            <span className="fh-home-step-number">01</span>
+                            <span className="fh-home-step-icon" aria-hidden="true">
+                                <i className="bi bi-search" />
+                            </span>
+                            <div>
+                                <h3>Explore</h3>
+                                <p>Find dishes on the FoodHub menu.</p>
+                            </div>
+                        </div>
+                        <div className="fh-home-step">
+                            <span className="fh-home-step-number">02</span>
+                            <span className="fh-home-step-icon" aria-hidden="true">
+                                <i className="bi bi-bag-heart" />
+                            </span>
+                            <div>
+                                <h3>Choose</h3>
+                                <p>Add your picks to your cart.</p>
+                            </div>
+                        </div>
+                        <div className="fh-home-step">
+                            <span className="fh-home-step-number">03</span>
+                            <span className="fh-home-step-icon" aria-hidden="true">
+                                <i className="bi bi-emoji-smile" />
+                            </span>
+                            <div>
+                                <h3>Enjoy</h3>
+                                <p>Place your order when you’re ready.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section className="fh-home-cta">
+                <div className="container">
+                    <div className="fh-home-cta-panel">
+                        <div>
+                            <span className="fh-home-eyebrow">YOUR NEXT BITE</span>
+                            <h2>Find something delicious.</h2>
+                            <p>Explore the menu and choose what you’re craving.</p>
+                        </div>
+                        <button
+                            type="button"
+                            className="fh-home-cta-button"
+                            onClick={() => navigate("/menu")}
+                        >
+                            Explore the menu
+                            <i className="bi bi-arrow-right" aria-hidden="true" />
+                        </button>
+                        <span className="fh-home-cta-decoration" aria-hidden="true">
+                            ✳
+                        </span>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 }

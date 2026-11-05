@@ -5,6 +5,8 @@ import { logout } from "../store/slices/authSlice.js";
 import NotificationBell from "../components/common/NotificationBell.js";
 import PushNotificationPrompt from "../components/common/PushNotificationPrompt.js";
 import FloatingAIChatbot from "../components/AI/FloatingAIChatbot.js";
+import "../styles/public-footer.css";
+import "../styles/customer-notifications.css";
 
 function PublicLayout() {
     const navigate = useNavigate();
@@ -37,7 +39,7 @@ function PublicLayout() {
     };
 
     return (
-        <div className="min-vh-100 d-flex flex-column">
+        <div className="min-vh-100 d-flex flex-column foodhub-customer-app">
             {user && <PushNotificationPrompt userKey={user.email} />}
 
             <nav className="navbar navbar-expand-lg bg-white border-bottom sticky-top public-navbar">
@@ -103,7 +105,7 @@ function PublicLayout() {
                                 </button>
                             </>
                         ) : (
-                            <button type="button" className="btn btn-dark px-4" onClick={handleLoginClick}>
+                            <button type="button" className="btn btn-dark px-4 foodhub-button-primary" onClick={handleLoginClick}>
                                 Login
                             </button>
                         )}
@@ -152,17 +154,21 @@ function PublicLayout() {
                 <Outlet />
             </main>
 
-            <footer className="border-top bg-light">
-                <div className="container py-2">
-                    <div className="row align-items-center">
-                        <div className="col-md-6">
-                            <span className="fw-bold">Food<span className="text-primary">Hub</span></span>
-                            <span className="text-secondary ms-2">Delicious food, made simple.</span>
-                        </div>
-                        <div className="col-md-6 text-md-end mt-3 mt-md-0">
-                            <span className="text-secondary small">© {new Date().getFullYear()} FoodHub</span>
-                        </div>
+            <footer className="public-footer">
+                <div className="container public-footer-inner">
+                    <div className="public-footer-brand">
+                        <NavLink to="/home" className="public-footer-logo">
+                            Food<span>Hub</span>
+                        </NavLink>
+                        <p>Delicious food, made simple.</p>
                     </div>
+                    <nav className="public-footer-links" aria-label="Footer navigation">
+                        <NavLink to="/home">Home</NavLink>
+                        <NavLink to="/menu">Menu</NavLink>
+                    </nav>
+                    <span className="public-footer-copyright">
+                        © {new Date().getFullYear()} FoodHub
+                    </span>
                 </div>
             </footer>
 

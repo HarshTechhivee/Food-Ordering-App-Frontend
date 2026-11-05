@@ -4,563 +4,347 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchAdminDashboard } from "../../store/slices/adminDashboardSlice";
 import { socket } from "../../services/socket.js";
 import { formatStatus, getStatusPaymentClass } from "../../utils/commonFunction.js";
+import type { DashboardOrder, DashboardStats } from "../../services/adminDashboard.api.js";
 
-function AdminDashboard() {
+const formatCount = (value: number | undefined) =>
+    new Intl.NumberFormat("en-IN").format(value ?? 0);
 
-    const dispatch = useAppDispatch();
+const formatCurrency = (value: number | string | undefined) =>
+    new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 2,
+    }).format(Number(value ?? 0));
 
-    const { stats, loading, error, } = useAppSelector((state) => state.adminDashboard);
+const orderStatuses = [
+    { key: "DELIVERED", label: "Delivered", color: "#25A55B" },
+    { key: "APPROVED", label: "Approved", color: "#EAB308" },
+    { key: "OUT_FOR_DELIVERY", label: "Out for Delivery", color: "#249CCB" },
+    { key: "PENDING", label: "Pending", color: "#F07818" },
+    { key: "CANCELLED", label: "Cancelled", color: "#9B948E" },
+    { key: "REJECTED", label: "Rejected", color: "#E34B43" },
+] as const;
 
-    useEffect(() => {
-
-        dispatch(fetchAdminDashboard());
-
-    }, [dispatch]);
-
-    useEffect(() => {
-
-        const handleOrderChange = () => {
-
-            dispatch(fetchAdminDashboard());
-
-        };
-
-        socket.on("order:new", handleOrderChange);
-
-        socket.on("order:statusUpdated", handleOrderChange);
-
-        socket.on("order:cancelled", handleOrderChange)
-
-        return () => {
-
-            socket.off("order:new", handleOrderChange);
-
-            socket.off("order:statusUpdated", handleOrderChange);
-
-            socket.off("order:cancelled", handleOrderChange)
-
-        };
-
-    }, [dispatch]);
+function OrdersOverview({ stats }: { stats: DashboardStats | null }) {
+    const values = orderStatuses.map((status) => ({
+        ...status,
+        value: stats?.orderStatus[status.key] ?? 0,
+    }));
+    const statusTotal = values.reduce((total, status) => total + status.value, 0);
+    const radius = 64;
+    const circumference = 2 * Math.PI * radius;
+    let offset = 0;
 
     return (
-        <div>
-
-            {/* Header */}
-
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
-
-                <div>
-                    <span className="badge text-bg-primary mb-2">
-                        Admin Panel
-                    </span>
-
-                    <h2 className="display-6 fw-bold mb-1">
-                        Dashboard
-                    </h2>
-
-                    <p className="text-secondary mb-0 ">
-                        Overview of your restaurant activity.
-                    </p>
+        <section className="card admin-dashboard-panel" aria-labelledby="admin-orders-overview-title">
+            <div className="card-body">
+                <div className="admin-dashboard-panel-heading">
+                    <div>
+                        <h2 id="admin-orders-overview-title">Orders Overview</h2>
+                        <p>Current order status breakdown</p>
+                    </div>
                 </div>
 
-            </div>
-
-            {loading && (
-                <div className="text-center py-5">
-
+                <div className="admin-dashboard-overview-content">
                     <div
-                        className="spinner-border text-primary mb-3"
-                        role="status"
+                        className="admin-dashboard-donut"
+                        role="img"
+                        aria-label={`Orders overview: ${formatCount(stats?.totalOrders)} total orders`}
                     >
-                        {/* <span className="visually-hidden">
-                            Loading...
-                        </span> */}
-                    </div>
-
-                    <p className="text-secondary mb-0">
-                        Loading Dashboard...
-                    </p>
-
-                </div>
-            )}
-
-            {error && (
-                <div className="card border-0 shadow-sm rounded-4 mb-4">
-
-                    <div className="card-body text-center py-5">
-
-                        <div className="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center 
-                            justify-content-center mx-auto mb-3 foodhub-icon--70">
-                            <i className="bi bi-exclamation-circle fs-3" />
+                        <svg viewBox="0 0 160 160" aria-hidden="true">
+                            <circle className="admin-dashboard-donut-track" cx="80" cy="80" r={radius} />
+                            {statusTotal > 0 && values.map((status) => {
+                                if (status.value === 0) {
+                                    return null;
+                                }
+                                const length = (status.value / statusTotal) * circumference;
+                                const segment = (
+                                    <circle
+                                        key={status.key}
+                                        cx="80"
+                                        cy="80"
+                                        r={radius}
+                                        fill="none"
+                                        stroke={status.color}
+                                        strokeWidth="17"
+                                        strokeDasharray={`${length} ${circumference - length}`}
+                                        strokeDashoffset={-offset}
+                                        transform="rotate(-90 80 80)"
+                                    />
+                                );
+                                offset += length;
+                                return segment;
+                            })}
+                        </svg>
+                        <div className="admin-dashboard-donut-center">
+                            <strong>{formatCount(stats?.totalOrders)}</strong>
+                            <span>Orders</span>
                         </div>
-
-                        <h5 className="fw-bold mb-2">
-                            Unable to load menu
-                        </h5>
-
-                        <p className="text-secondary mb-0">
-                            {error}
-                        </p>
-
                     </div>
 
+                    <ul className="admin-dashboard-legend">
+                        {values.map((status) => (
+                            <li key={status.key}>
+                                <span className="admin-dashboard-legend-label">
+                                    <i style={{ backgroundColor: status.color }} aria-hidden="true" />
+                                    {status.label}
+                                </span>
+                                <strong>{formatCount(status.value)}</strong>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
-            )}
-
-
-            {/* Statistics */}
-
-            <div className="row g-4">
-
-                {/* Total Orders */}
-
-                <div className="col-sm-6 col-xl-3">
-
-                    <div className="card border-0 shadow-sm rounded-4 h-100">
-
-                        <div className="card-body p-4">
-
-                            <div className="d-flex justify-content-between align-items-start">
-
-                                <div>
-                                    <p className="text-secondary mb-2 ">
-                                        Total Orders
-                                    </p>
-
-                                    <h2 className="fw-bold mb-0">
-                                        {loading ? "..." : stats?.totalOrders ?? 0}
-                                    </h2>
-                                </div>
-
-                                <div className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center 
-                                    justify-content-center foodhub-icon--48">
-                                    <i className="bi bi-receipt fs-5" />
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {/* Pending Orders */}
-
-                <div className="col-sm-6 col-xl-3">
-
-                    <div className="card border-0 shadow-sm rounded-4 h-100">
-
-                        <div className="card-body p-4">
-
-                            <div className="d-flex justify-content-between align-items-start">
-
-                                <div>
-                                    <p className="text-secondary mb-2">
-                                        Pending Orders
-                                    </p>
-
-                                    <h2 className="fw-bold mb-0">
-                                        {loading ? "..." : stats?.pendingOrders ?? 0}
-                                    </h2>
-                                </div>
-
-                                <div className="bg-warning bg-opacity-10 text-warning rounded-3 d-flex align-items-center 
-                                    justify-content-center foodhub-icon--48">
-                                    <i className="bi bi-clock-history fs-5" />
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {/* Paid Orders */}
-
-                <div className="col-sm-6 col-xl-3">
-
-                    <div className="card border-0 shadow-sm rounded-4 h-100">
-
-                        <div className="card-body p-4">
-
-                            <div className="d-flex justify-content-between align-items-start">
-
-                                <div>
-
-                                    <p className="text-secondary mb-2">
-                                        Paid Orders
-                                    </p>
-
-                                    <h2 className="fw-bold mb-0">
-                                        {loading
-                                            ? "..."
-                                            : stats?.paidOrders ?? 0
-                                        }
-                                    </h2>
-
-                                </div>
-
-                                <div
-                                    className="bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center foodhub-icon--48"
-                                >
-                                    <i className="bi bi-credit-card fs-5" />
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {/* Total Customers */}
-
-                <div className="col-sm-6 col-xl-3">
-
-                    <div className="card border-0 shadow-sm rounded-4 h-100">
-
-                        <div className="card-body p-4">
-
-                            <div className="d-flex justify-content-between align-items-start">
-
-                                <div>
-
-                                    <p className="text-secondary mb-2">
-                                        Total Customers
-                                    </p>
-
-                                    <h2 className="fw-bold mb-0">
-                                        {loading
-                                            ? "..."
-                                            : stats?.totalCustomers ?? 0
-                                        }
-                                    </h2>
-
-                                </div>
-
-                                <div
-                                    className="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center foodhub-icon--48"
-                                >
-                                    <i className="bi bi-people fs-5" />
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {/* Refunded Amount */}
-
-                <div className="col-sm-6 col-xl-3">
-
-                    <div className="card border-0 shadow-sm rounded-4 h-100">
-
-                        <div className="card-body p-4">
-
-                            <div className="d-flex justify-content-between align-items-start">
-
-                                <div>
-
-                                    <p className="text-secondary mb-2">
-                                        Refunded Amount
-                                    </p>
-
-                                    <h2 className="fw-bold mb-0">
-                                        {loading
-                                            ? "..."
-                                            : `₹ ${Number(
-                                                stats?.refundedAmount ?? 0
-                                            ).toFixed(2)}`
-                                        }
-                                    </h2>
-
-                                </div>
-
-                                <div
-                                    className="bg-danger bg-opacity-10 text-danger rounded-3 d-flex align-items-center justify-content-center foodhub-icon--48"
-                                >
-                                    <i className="bi bi-arrow-counterclockwise fs-5" />
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {/* Menu Items */}
-
-                <div className="col-sm-6 col-xl-3">
-
-                    <div className="card border-0 shadow-sm rounded-4 h-100">
-
-                        <div className="card-body p-4">
-
-                            <div className="d-flex justify-content-between align-items-start">
-
-                                <div>
-                                    <p className="text-secondary mb-2">
-                                        Menu Items
-                                    </p>
-
-                                    <h2 className="fw-bold mb-0">
-                                        {loading ? "..." : stats?.menuItems ?? 0}
-                                    </h2>
-                                </div>
-
-                                <div className="bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center 
-                                    justify-content-center foodhub-icon--48">
-                                    <i className="bi bi-menu-button-wide fs-5" />
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {/* Revenue */}
-
-                <div className="col-sm-6 col-xl-3">
-
-                    <div className="card border-0 shadow-sm rounded-4 h-100">
-
-                        <div className="card-body p-4">
-
-                            <div className="d-flex justify-content-between align-items-start">
-
-                                <div>
-                                    <p className="text-secondary mb-2">
-                                        Total Revenue
-                                    </p>
-
-                                    <h2 className="fw-bold mb-0">
-                                        {loading ? "..." : `₹ ${Number(stats?.revenue ?? 0).toFixed(2)}`}
-                                    </h2>
-                                </div>
-
-                                <div className="bg-info bg-opacity-10 text-info rounded-3 d-flex align-items-center 
-                                    justify-content-center foodhub-icon--48">
-                                    <i className="bi bi-currency-rupee fs-5" />
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
             </div>
-
-            <div className="row g-4 mt-1">
-
-                {/* Order Overview */}
-
-                <div className="col-lg-5">
-
-                    <div className="card border-0 shadow-sm rounded-4 h-100">
-
-                        <div className="card-body p-4">
-
-                            <div className="mb-4">
-                                <h4 className="fw-bold mb-1">
-                                    Order Overview
-                                </h4>
-
-                                <p className="text-secondary small mb-0 fs-6">
-                                    Current order status breakdown
-                                </p>
-                            </div>
-
-                            <div className="d-flex flex-column gap-4">
-
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <span className="dashboard-status-label">
-                                        <span className="badge text-bg-primary me-4 dashboard-status-count">
-                                            {stats?.orderStatus.APPROVED ?? 0}
-                                        </span>
-                                        Approved
-                                    </span>
-
-                                    <i className="bi bi-check-circle text-primary fs-5" />
-                                </div>
-
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <span className="dashboard-status-label">
-                                        <span className="badge text-bg-info me-4 dashboard-status-count">
-                                            {stats?.orderStatus.OUT_FOR_DELIVERY ?? 0}
-                                        </span>
-                                        Out for Delivery
-                                    </span>
-
-                                    <i className="bi bi-bicycle text-info fs-5" />
-                                </div>
-
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <span className="dashboard-status-label">
-                                        <span className="badge text-bg-success me-3 dashboard-status-count">
-                                            {stats?.orderStatus.DELIVERED ?? 0}
-                                        </span>
-                                        Delivered
-                                    </span>
-
-                                    <i className="bi bi-house-check text-success fs-5" />
-                                </div>
-
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <span className="dashboard-status-label">
-                                        <span className="badge text-bg-danger me-4 dashboard-status-count">
-                                            {stats?.orderStatus.REJECTED ?? 0}
-                                        </span>
-                                        Rejected
-                                    </span>
-
-                                    <i className="bi bi-x-circle text-danger fs-5" />
-                                </div>
-
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <span className="dashboard-status-label">
-                                        <span className="badge text-bg-secondary me-4 dashboard-status-count">
-                                            {stats?.orderStatus.CANCELLED ?? 0}
-                                        </span>
-                                        Cancelled
-                                    </span>
-
-                                    <i className="bi bi-x-circle text-secondary fs-5" />
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {/* Recent Orders */}
-
-                <div className="col-lg-7">
-
-                    <div className="card border-0 shadow-sm rounded-4 h-100">
-
-                        <div className="card-body">
-
-                            <div className="d-flex justify-content-between align-items-center mb-4">
-
-                                <div>
-                                    <h4 className="fw-bold mb-1">
-                                        Recent Orders
-                                    </h4>
-
-                                    <p className="text-secondary small mb-0 fs-6">
-                                        Latest orders placed by customers
-                                    </p>
-                                </div>
-
-                                <Link
-                                    to="/admin/orders"
-                                    className="btn btn-sm btn-outline-primary view-all-button"
-                                >
-                                    View All
-                                    <i className="bi bi-arrow-right ms-2" />
-                                </Link>
-
-                            </div>
-
-                            <div className="d-flex flex-column gap-3">
-
-                                {stats?.recentOrders.map((order) => (
-
-                                    <div key={order.id} className="d-flex align-items-center justify-content-between p-3 bg-light 
-                                        rounded-3 dashboard-recent-order" >
-
-                                        <div className="dashboard-frontline">
-                                            <div className="dashboard-recent-order-summary">
-
-                                                <div className="fw-semibold">
-                                                    Order #{order.id}
-                                                </div>
-
-                                                <small className="text-secondary">
-                                                    {order.user.name}
-                                                    {" • "}
-                                                    {new Date(
-                                                        order.createdAt
-                                                    ).toLocaleDateString()}
-                                                </small>
-
-                                            </div>
-                                            <div className="fw-semibold">
-                                                ₹{Number(order.totalAmount).toFixed(2)}
-                                            </div>
-                                        </div>
-
-                                        <div className="text-end dashboard-recent-order-status">
-
-                                            <div className="d-flex gap-3 dashboard-recent-order-badges">
-
-                                                <span
-                                                    className={`badge rounded-pill ${getStatusPaymentClass(
-                                                        order.status
-                                                    )}`}
-                                                >
-                                                    {formatStatus(order.status)}
-                                                </span>
-
-                                                <span
-                                                    className={`badge rounded-pill ${getStatusPaymentClass(
-                                                        order.paymentStatus
-                                                    )}`}
-                                                >
-                                                    {formatStatus(order.paymentStatus)}
-                                                </span>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                ))}
-
-                                {stats?.recentOrders.length === 0 && (
-                                    <div className="text-center py-4 text-secondary">
-                                        No orders yet.
-                                    </div>
-                                )}
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
+        </section>
     );
 }
 
+function RevenueTrend({ orders }: { orders: DashboardOrder[] }) {
+    const dailyPaidOrders = new Map<string, { date: Date; total: number }>();
+    orders
+        .filter((order) => order.paymentStatus.toUpperCase() === "PAID")
+        .forEach((order) => {
+            const date = new Date(order.createdAt);
+            const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+            const entry = dailyPaidOrders.get(key);
+            const total = Number(order.totalAmount);
+            if (entry) {
+                entry.total += total;
+            } else {
+                dailyPaidOrders.set(key, { date, total });
+            }
+        });
+
+    const points = Array.from(dailyPaidOrders.values()).sort(
+        (left, right) => left.date.getTime() - right.date.getTime()
+    );
+    const chart = { width: 540, height: 224, left: 70, right: 16, top: 14, bottom: 42 };
+    const plotWidth = chart.width - chart.left - chart.right;
+    const plotHeight = chart.height - chart.top - chart.bottom;
+    const maxValue = Math.max(...points.map((point) => point.total), 0);
+    const yMaximum = maxValue > 0 ? Math.ceil(maxValue / 100) * 100 : 100;
+    const chartPoints = points.map((point, index) => ({
+        ...point,
+        x: chart.left + (points.length <= 1 ? plotWidth / 2 : (index / (points.length - 1)) * plotWidth),
+        y: chart.top + plotHeight - (point.total / yMaximum) * plotHeight,
+    }));
+    const linePath = chartPoints
+        .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+        .join(" ");
+    const areaPath = chartPoints.length > 0
+        ? `${linePath} L ${chartPoints[chartPoints.length - 1].x} ${chart.top + plotHeight} L ${chartPoints[0].x} ${chart.top + plotHeight} Z`
+        : "";
+    const yTicks = [0, yMaximum / 2, yMaximum];
+    const dateLabel = (date: Date) => new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date);
+
+    return (
+        <section className="card admin-dashboard-panel" aria-labelledby="admin-revenue-trend-title">
+            <div className="card-body">
+                <div className="admin-dashboard-panel-heading">
+                    <div>
+                        <h2 id="admin-revenue-trend-title">Revenue Trend</h2>
+                        <p>Daily totals from recent paid orders</p>
+                    </div>
+                </div>
+
+                {chartPoints.length === 0 ? (
+                    <div className="admin-dashboard-chart-empty">
+                        Revenue trend is unavailable until recent paid orders are recorded.
+                    </div>
+                ) : (
+                    <div className="admin-dashboard-chart-wrap">
+                        <svg
+                            className="admin-dashboard-revenue-chart"
+                            viewBox={`0 0 ${chart.width} ${chart.height}`}
+                            role="img"
+                            aria-label="Daily totals from recent paid orders"
+                        >
+                            <defs>
+                                <linearGradient id="adminRevenueArea" x1="0" x2="0" y1="0" y2="1">
+                                    <stop offset="0%" stopColor="#EA7418" stopOpacity="0.22" />
+                                    <stop offset="100%" stopColor="#EA7418" stopOpacity="0.015" />
+                                </linearGradient>
+                            </defs>
+                            {yTicks.map((tick) => {
+                                const y = chart.top + plotHeight - (tick / yMaximum) * plotHeight;
+                                return (
+                                    <g key={tick}>
+                                        <line
+                                            x1={chart.left}
+                                            x2={chart.width - chart.right}
+                                            y1={y}
+                                            y2={y}
+                                            className="admin-dashboard-chart-gridline"
+                                        />
+                                        <text x={chart.left - 10} y={y + 4} textAnchor="end" className="admin-dashboard-chart-axis-label">
+                                            {formatCurrency(tick)}
+                                        </text>
+                                    </g>
+                                );
+                            })}
+                            <path d={areaPath} fill="url(#adminRevenueArea)" />
+                            {chartPoints.length > 1 && <path d={linePath} className="admin-dashboard-revenue-line" />}
+                            {chartPoints.map((point) => (
+                                <g key={point.date.toISOString()}>
+                                    <circle cx={point.x} cy={point.y} r="4.5" className="admin-dashboard-revenue-point" />
+                                    <text
+                                        x={point.x}
+                                        y={chart.height - 13}
+                                        textAnchor="middle"
+                                        className="admin-dashboard-chart-axis-label"
+                                    >
+                                        {dateLabel(point.date)}
+                                    </text>
+                                </g>
+                            ))}
+                        </svg>
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+}
+
+function AdminDashboard() {
+    const dispatch = useAppDispatch();
+    const { stats, loading, error } = useAppSelector((state) => state.adminDashboard);
+
+    useEffect(() => {
+        dispatch(fetchAdminDashboard());
+    }, [dispatch]);
+
+    useEffect(() => {
+        const handleOrderChange = () => dispatch(fetchAdminDashboard());
+        socket.on("order:new", handleOrderChange);
+        socket.on("order:statusUpdated", handleOrderChange);
+        socket.on("order:cancelled", handleOrderChange);
+
+        return () => {
+            socket.off("order:new", handleOrderChange);
+            socket.off("order:statusUpdated", handleOrderChange);
+            socket.off("order:cancelled", handleOrderChange);
+        };
+    }, [dispatch]);
+
+    const kpis = [
+        {
+            label: "Total Orders",
+            value: loading ? "..." : formatCount(stats?.totalOrders),
+            icon: "bi-receipt",
+            tone: "orange",
+        },
+        {
+            label: "Total Revenue",
+            value: loading ? "..." : formatCurrency(stats?.revenue),
+            icon: "bi-currency-rupee",
+            tone: "green",
+        },
+        {
+            label: "Pending Orders",
+            value: loading ? "..." : formatCount(stats?.pendingOrders),
+            icon: "bi-clock-history",
+            tone: "blue",
+        },
+        {
+            label: "Menu Items",
+            value: loading ? "..." : formatCount(stats?.menuItems),
+            icon: "bi-menu-button-wide",
+            tone: "purple",
+        },
+    ];
+
+    return (
+        <div className="admin-page admin-dashboard-page">
+            <header className="admin-page-header">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>Overview of your restaurant activity.</p>
+                </div>
+            </header>
+
+            {error && (
+                <div className="alert alert-danger" role="alert">
+                    <i className="bi bi-exclamation-circle me-2" aria-hidden="true" />
+                    Unable to load dashboard: {error}
+                </div>
+            )}
+
+            <section className="admin-dashboard-kpis" aria-label="Restaurant metrics">
+                {kpis.map((kpi) => (
+                    <article className="card admin-dashboard-kpi" key={kpi.label}>
+                        <div className="card-body">
+                            <div>
+                                <p>{kpi.label}</p>
+                                <strong>{kpi.value}</strong>
+                            </div>
+                            <span className={`admin-dashboard-kpi-icon is-${kpi.tone}`} aria-hidden="true">
+                                <i className={`bi ${kpi.icon}`} />
+                            </span>
+                        </div>
+                    </article>
+                ))}
+            </section>
+
+            <section className="admin-dashboard-analytics" aria-label="Order and revenue analytics">
+                <OrdersOverview stats={stats} />
+                <RevenueTrend orders={stats?.recentOrders ?? []} />
+            </section>
+
+            <section className="card admin-dashboard-recent" aria-labelledby="admin-recent-orders-title">
+                <div className="card-body">
+                    <div className="admin-dashboard-recent-heading">
+                        <div>
+                            <h2 id="admin-recent-orders-title">Recent Orders</h2>
+                            <p>Latest orders placed by customers</p>
+                        </div>
+                        <Link to="/admin/orders" className="admin-dashboard-view-all">
+                            View All Orders
+                            <i className="bi bi-arrow-right" aria-hidden="true" />
+                        </Link>
+                    </div>
+
+                    <div className="admin-dashboard-recent-table-wrap">
+                        <table className="table admin-dashboard-recent-table">
+                            <caption className="visually-hidden">Recent customer orders</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Order #</th>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">Items</th>
+                                    <th scope="col">Total</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {stats?.recentOrders.map((order) => (
+                                    <tr key={order.id}>
+                                        <th scope="row">#{order.id}</th>
+                                        <td>{order.user.name}</td>
+                                        <td>{order.itemCount ?? "—"}</td>
+                                        <td className="text-nowrap">{formatCurrency(order.totalAmount)}</td>
+                                        <td>
+                                            <span className={`badge rounded-pill ${getStatusPaymentClass(order.status)}`}>
+                                                {formatStatus(order.status)}
+                                            </span>
+                                        </td>
+                                        <td className="text-nowrap">
+                                            {new Date(order.createdAt).toLocaleDateString()}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {!loading && stats?.recentOrders.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} className="admin-dashboard-no-orders">No orders yet.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    );
+}
 
 export default AdminDashboard;

@@ -9,6 +9,7 @@ import { formatStatus, getStatusPaymentClass } from "../../utils/commonFunction.
 import ConfirmModal from "../../components/common/ConfirmModal.js";
 import { getMenuImageSrc } from "../../utils/menuImage";
 import OrderReviewSection from "../../components/common/OrderReviewSection.js";
+import "./OrderDetails.css";
 
 function OrderDetails() {
 
@@ -132,7 +133,7 @@ function OrderDetails() {
 
     if (loading) {
         return (
-            <div className="container py-5">
+            <div className="container py-5 fh-order-details">
 
                 <div className="text-center py-5">
 
@@ -157,7 +158,7 @@ function OrderDetails() {
 
     if (error) {
         return (
-            <div className="container py-5">
+            <div className="container py-5 fh-order-details">
 
                 <div className="text-center py-5">
 
@@ -187,7 +188,7 @@ function OrderDetails() {
 
     if (!selectedOrder) {
         return (
-            <div className="container py-5">
+            <div className="container py-5 fh-order-details">
 
                 <div className="text-center py-5">
 
@@ -216,13 +217,18 @@ function OrderDetails() {
     }
 
     const order = selectedOrder;
+    const itemCount = order.items.reduce((total, item) => total + item.quantity, 0);
+    const itemsSubtotal = order.items.reduce(
+        (total, item) => total + Number(item.price) * item.quantity,
+        0
+    );
 
     return (
-        <div className="container py-5">
+        <main className="container py-5 fh-order-details">
 
             {/* Header */}
 
-            <div className="mb-5">
+            <header className="fh-order-details-header mb-4">
 
                 <Link to="/orders" className="text-decoration-none text-secondary" >
                     <i className="bi bi-arrow-left me-2" />
@@ -231,9 +237,10 @@ function OrderDetails() {
 
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mt-3">
 
-                    <div>
+                    <div className="fh-order-details-heading">
 
-                        <span className="badge text-bg-primary mb-3">
+                        <span className="fh-order-details-eyebrow mb-3">
+                            <i className="bi bi-receipt-cutoff" aria-hidden="true" />
                             Order Details
                         </span>
 
@@ -241,10 +248,12 @@ function OrderDetails() {
                             Order #{order.id}
                         </h1>
 
-                        <p className="text-secondary mb-0">
-                            Placed on{" "}
-                            {new Date(order.createdAt).toLocaleString()}
-                        </p>
+                        <time className="text-secondary mb-0" dateTime={order.createdAt}>
+                            Placed on {new Date(order.createdAt).toLocaleString(undefined, {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                            })}
+                        </time>
 
                     </div>
 
@@ -254,125 +263,72 @@ function OrderDetails() {
 
                 </div>
 
-            </div>
+            </header>
 
-            <div className="row g-4">
+            <section className="card fh-order-details-panel fh-order-timeline-panel mb-4" aria-labelledby="fh-order-progress-title">
+                <div className="card-body">
+                    <div className="fh-order-section-heading">
+                        <span className="fh-order-section-icon" aria-hidden="true">
+                            <i className="bi bi-signpost-split" />
+                        </span>
+                        <div>
+                            <h2 id="fh-order-progress-title">Order Progress</h2>
+                            <p>Follow the current status of this order.</p>
+                        </div>
+                    </div>
+                    <OrderStatusTimeline
+                        status={order.status}
+                        createdAt={order.createdAt}
+                        rejectionReason={order.rejectionReason}
+                    />
 
-                {/* Left side */}
+                    {(order.status === "CANCELLED" || order.status === "REJECTED") && (
+                        <div
+                            className={`alert ${order.status === "CANCELLED" ? "alert-secondary" : "alert-danger"} mt-4 mb-0`}
+                        >
+                            <div className="d-flex align-items-start gap-2">
+                                <i className="bi bi-info-circle mt-1" aria-hidden="true" />
+                                <div>
+                                    <strong>{order.status === "CANCELLED" ? "Order Cancelled" : "Order Rejected"}</strong>
+                                    <div className="mt-1">
+                                        {order.paymentStatus === "REFUNDED"
+                                            ? "Your payment has been refunded."
+                                            : order.paymentStatus === "PAID"
+                                                ? "Your payment refund is being processed."
+                                                : "This order is no longer being processed."}
+                                    </div>
+                                    {(order.status === "CANCELLED" ? order.cancellationReason : order.rejectionReason) && (
+                                        <div className="mt-3 pt-3 border-top">
+                                            <strong>{order.status === "CANCELLED" ? "Cancellation reason" : "Rejection reason"}</strong>
+                                            <p className="mb-0 mt-1">
+                                                {order.status === "CANCELLED" ? order.cancellationReason : order.rejectionReason}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            <div className="row g-4 fh-order-details-grid">
 
                 <div className="col-lg-8">
-
-                    {/* Status Timeline */}
-
-                    <div className="card shadow-sm mb-4">
-
-                        <div className="card-body">
-
-                            <h5 className="mb-4">
-                                Order Status
-                            </h5>
-
-                            <OrderStatusTimeline status={order.status} rejectionReason={order.rejectionReason} />
-
-
-                            {(order.status === "CANCELLED" || order.status === "REJECTED") && (
-                                <div
-                                    className={`alert ${order.status === "CANCELLED"
-                                        ? "alert-secondary"
-                                        : "alert-danger"
-                                        } mt-4 mb-0`}
-                                >
-                                    <div className="d-flex align-items-start gap-2">
-                                        <i
-                                            className={`bi ${order.status === "CANCELLED"
-                                                ? "bi-x-circle"
-                                                : "bi-x-circle"
-                                                }`}
-                                        />
-
-                                        <div className="grow">
-                                            <strong>
-                                                {order.status === "CANCELLED"
-                                                    ? "Order Cancelled"
-                                                    : "Order Rejected"}
-                                            </strong>
-
-                                            <div className="mt-1">
-                                                {order.paymentStatus === "REFUNDED" ? (
-                                                    <>
-                                                        Your order has been{" "}
-                                                        {order.status === "CANCELLED"
-                                                            ? "cancelled"
-                                                            : "rejected"}{" "}
-                                                        successfully. Your payment has been refunded.
-                                                    </>
-                                                ) : order.paymentStatus === "PAID" ? (
-                                                    <>
-                                                        Your order has been{" "}
-                                                        {order.status === "CANCELLED"
-                                                            ? "cancelled"
-                                                            : "rejected"}{" "}
-                                                        successfully. Your payment refund is being processed.
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        Your order has been{" "}
-                                                        {order.status === "CANCELLED"
-                                                            ? "cancelled"
-                                                            : "rejected"}{" "}
-                                                        successfully.
-                                                    </>
-                                                )}
-                                            </div>
-
-                                            {(order.status === "CANCELLED"
-                                                ? order.cancellationReason
-                                                : order.rejectionReason) && (
-                                                    <div className="mt-3 pt-3 border-top">
-                                                        <strong>
-                                                            {order.status === "CANCELLED"
-                                                                ? "Cancellation reason"
-                                                                : "Rejection reason"}
-                                                        </strong>
-
-                                                        <p className="mb-0 mt-1">
-                                                            {order.status === "CANCELLED"
-                                                                ? order.cancellationReason
-                                                                : order.rejectionReason}
-                                                        </p>
-                                                    </div>
-                                                )}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-
-                        </div>
-
-                    </div>
-
                     {/* Items */}
 
-                    <div className="card border-0 shadow-sm rounded-4">
+                    <div className="card fh-order-details-panel fh-order-items-panel">
 
                         <div className="card-body p-4">
 
-                            <div className="d-flex justify-content-between align-items-center mb-4">
-
+                            <div className="fh-order-section-heading">
+                                <span className="fh-order-section-icon" aria-hidden="true">
+                                    <i className="bi bi-basket3" />
+                                </span>
                                 <div>
-                                    <h5 className="fw-bold mb-1">
-                                        Ordered Items
-                                    </h5>
-
-                                    <p className="text-secondary small mb-0">
-                                        {order.items.reduce((total, item) => total + item.quantity, 0)}
-                                        {" "} items in this order
-                                    </p>
+                                    <h2>Ordered Items</h2>
+                                    <p>{itemCount} {itemCount === 1 ? "item" : "items"} in this order</p>
                                 </div>
-
-                                <i className="bi bi-basket3 fs-4 text-primary" />
-
                             </div>
 
                             <div className="d-flex flex-column gap-3 order-details-items">
@@ -437,91 +393,56 @@ function OrderDetails() {
 
                     </div>
 
+                    <section className="card fh-order-details-panel fh-order-payment-panel" aria-labelledby="fh-payment-information">
+                        <div className="card-body">
+                            <div className="fh-order-section-heading">
+                                <span className="fh-order-section-icon" aria-hidden="true">
+                                    <i className="bi bi-credit-card" />
+                                </span>
+                                <div>
+                                    <h2 id="fh-payment-information">Payment Information</h2>
+                                    <p>Payment status recorded for this order.</p>
+                                </div>
+                            </div>
+                            <div className="fh-order-payment-status">
+                                <span>Payment status</span>
+                                <span className={`badge rounded-pill px-3 py-2 ${getStatusPaymentClass(order.paymentStatus)}`}>
+                                    {formatStatus(order.paymentStatus)}
+                                </span>
+                            </div>
+                        </div>
+                    </section>
+
                 </div>
 
                 {/* Right side */}
 
                 <div className="col-lg-4">
 
-                    <div className="card border-0 shadow-sm rounded-4">
+                    <div className="card fh-order-details-panel fh-order-summary-panel">
 
                         <div className="card-body p-4">
 
-                            <div className="d-flex align-items-center gap-3 mb-4">
-
-                                <div className="bg-primary bg-opacity-10 text-primary rounded-3 
-                                    d-flex align-items-center justify-content-center foodhub-icon--46">
-                                    <i className="bi bi-receipt fs-5" />
-                                </div>
-
+                            <div className="fh-order-section-heading">
+                                <span className="fh-order-section-icon" aria-hidden="true">
+                                    <i className="bi bi-receipt" />
+                                </span>
                                 <div>
-                                    <h5 className="fw-bold mb-0">
-                                        Order Summary
-                                    </h5>
-
-                                    <small className="text-secondary">
-                                        Order #{order.id}
-                                    </small>
+                                    <h2>Order Summary</h2>
+                                    <p>Order #{order.id}</p>
                                 </div>
-
                             </div>
 
-                            {/* Items */}
-
-                            <div className="d-flex justify-content-between mb-3">
-
-                                <span className="text-secondary">
-                                    Items
-                                </span>
-
-                                <strong>
-                                    {order.items.reduce((total, item) => total + item.quantity, 0)}
-                                </strong>
-
-                            </div>
-
-                            {/* Subtotal */}
-
-                            <div className="d-flex justify-content-between mb-3">
-
-                                <span className="text-secondary">
-                                    Subtotal
-                                </span>
-
-                                <strong>
-                                    ₹{Number(order.totalAmount).toFixed(2)}
-                                </strong>
-
-                            </div>
-
-                            {/* Delivery */}
-
-                            <div className="d-flex justify-content-between mb-3">
-
-                                <span className="text-secondary">
-                                    Delivery
-                                </span>
-
-                                <span className="text-success fw-semibold">
-                                    Free
-                                </span>
-
+                            <div className="fh-order-summary-line">
+                                <span>Items ({itemCount})</span>
+                                <strong>₹{itemsSubtotal.toFixed(2)}</strong>
                             </div>
 
                             <hr className="my-4" />
 
-                            {/* Total */}
-
-                            <div className="d-flex justify-content-between align-items-center">
-
-                                <span className="fw-bold fs-5">
-                                    Total
-                                </span>
-
-                                <span className="fw-bold fs-4 text-primary">
-                                    ₹{Number(order.totalAmount).toFixed(2)}
-                                </span>
-
+                            <div className="fh-order-summary-total">
+                                <span>Order Total</span>
+                                <strong>₹{Number(order.totalAmount).toFixed(2)}</strong>
                             </div>
 
                             {order.status === "PENDING" && (
@@ -551,20 +472,19 @@ function OrderDetails() {
 
                     </div>
 
+                    {order.status === "DELIVERED" && (
+                        <div className="fh-order-review-panel">
+                            <OrderReviewSection
+                                key={`${order.id}-${order.review?.id ?? "none"}-${order.review?.updatedAt ?? "new"}`}
+                                orderId={order.id}
+                                initialReview={order.review ?? null}
+                            />
+                        </div>
+                    )}
+
                 </div>
 
             </div>
-
-            {order.status === "DELIVERED" && (
-                <div className="mt-4">
-                    <OrderReviewSection
-                        key={`${order.id}-${order.review?.id ?? "none"}-${order.review?.updatedAt ?? "new"}`}
-                        orderId={order.id}
-                        initialReview={order.review ?? null}
-                    />
-                </div>
-            )}
-
 
             <ConfirmModal
                 show={showCancelModal}
@@ -664,105 +584,74 @@ function OrderDetails() {
             </ConfirmModal>
 
 
-        </div>
+        </main>
     );
 }
 
-function OrderStatusTimeline({ status, }: { status: string; rejectionReason?: string | null; }) {
-
-    const statuses = [
-        {
-            value: "PENDING",
-            label: "Order Placed",
-            icon: "bi-receipt",
-        },
-        {
-            value: "APPROVED",
-            label: "Order Approved",
-            icon: "bi-check-circle",
-        },
-        {
-            value: "OUT_FOR_DELIVERY",
-            label: "Out for Delivery",
-            icon: "bi-bicycle",
-        },
-        {
-            value: "DELIVERED",
-            label: "Delivered",
-            icon: "bi-house-check",
-        },
+function OrderStatusTimeline({
+    status,
+    createdAt,
+}: {
+    status: OrderStatus;
+    createdAt: string;
+    rejectionReason?: string | null;
+}) {
+    const lifecycle = [
+        { value: "PENDING", label: "Order Placed", icon: "bi-receipt" },
+        { value: "APPROVED", label: "Approved", icon: "bi-check2-circle" },
+        { value: "OUT_FOR_DELIVERY", label: "Out for Delivery", icon: "bi-bicycle" },
+        { value: "DELIVERED", label: "Delivered", icon: "bi-house-check" },
     ];
-
-    const currentIndex = statuses.findIndex((item) => item.value === status);
-
-    if (status === "REJECTED") {
-        return
-    }
-
-    if (status === "CANCELLED") {
-        return null;
-    }
+    const terminal = status === "CANCELLED" || status === "REJECTED";
+    const steps = terminal
+        ? [
+            lifecycle[0],
+            {
+                value: status,
+                label: status === "CANCELLED" ? "Order Cancelled" : "Order Rejected",
+                icon: "bi-x-circle",
+            },
+        ]
+        : lifecycle;
+    const currentIndex = terminal
+        ? steps.length - 1
+        : steps.findIndex((step) => step.value === status);
 
     return (
-        <div className="d-flex flex-column">
-
-            {statuses.map((item, index) => {
-
-                const completed = index <= currentIndex;
-
+        <ol className={`fh-order-timeline ${terminal ? "is-terminal" : ""}`}>
+            {steps.map((step, index) => {
                 const isCurrent = index === currentIndex;
+                const isComplete = index < currentIndex ||
+                    (status === "DELIVERED" && index === currentIndex);
+                const stepClass = isCurrent
+                    ? `is-current${isComplete ? " is-complete" : ""}`
+                    : isComplete
+                        ? "is-complete"
+                        : "is-upcoming";
 
                 return (
-                    <div key={item.value} className="d-flex" >
-
-                        {/* Timeline indicator */}
-                        <div className="d-flex flex-column align-items-center">
-
-                            <div className={`rounded-circle d-flex align-items-center justify-content-center 
-                                ${completed ? "bg-primary text-white" : "bg-light text-secondary"} foodhub-icon--46 shrink-0`}>
-                                <i className={`bi ${item.icon} fs-5`} />
-                            </div>
-
-                            {index < statuses.length - 1 && (
-                                <div className={`${completed ? "bg-primary" : "bg-light"} order-status-indicator`} />
+                    <li key={step.value} className={`fh-order-timeline-step ${stepClass}`}>
+                        <span className="fh-order-timeline-marker" aria-hidden="true">
+                            <i className={`bi ${isComplete && !isCurrent ? "bi-check-lg" : step.icon}`} />
+                        </span>
+                        <span className="fh-order-timeline-copy">
+                            <strong>{step.label}</strong>
+                            <span className="fh-order-timeline-state">
+                                {isCurrent ? "Current status" : isComplete ? "Completed" : "Upcoming"}
+                            </span>
+                            {index === 0 && (
+                                <time dateTime={createdAt}>
+                                    {new Date(createdAt).toLocaleString(undefined, {
+                                        dateStyle: "medium",
+                                        timeStyle: "short",
+                                    })}
+                                </time>
                             )}
-
-                        </div>
-
-                        {/* Timeline content */}
-                        <div className="ms-3 pb-4">
-
-                            <div className="d-flex align-items-center gap-2">
-
-                                <strong>
-                                    {item.label}
-                                </strong>
-
-                                {isCurrent && (
-                                    <span className="badge text-bg-primary rounded-pill">
-                                        Current
-                                    </span>
-                                )}
-
-                            </div>
-
-                            {completed ?
-                                (<div className="small text-secondary mt-1">
-                                    Completed
-                                </div>)
-                                :
-                                (<div className="small text-secondary mt-1">
-                                    Waiting
-                                </div>)
-                            }
-
-                        </div>
-
-                    </div>
+                        </span>
+                    </li>
                 );
             })}
-
-        </div>
+        </ol>
     );
 }
 

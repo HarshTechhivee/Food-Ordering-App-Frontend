@@ -25,6 +25,7 @@ import PublicRoute from "./PublicRoutes";
 
 import Payment from "../pages/user/Payment";
 import PaymentSuccess from "../pages/user/PaymentSuccess";
+import DesignSystemGuide from "../pages/dev/DesignSystemGuide";
 
 import { useAppSelector } from "../store/hooks.js";
 
@@ -46,6 +47,9 @@ export default function AppRoutes() {
     return (
         <Routes>
 
+            {__FOODHUB_DEV__ && (
+                <Route path="/__design-system" element={<DesignSystemGuide />} />
+            )}
 
             {/* Customer-facing application */}
             <Route element={<PublicRoute />}>

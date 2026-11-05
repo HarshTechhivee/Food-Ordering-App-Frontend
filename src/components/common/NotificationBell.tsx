@@ -166,9 +166,14 @@ function NotificationBell() {
                                         </span>
 
                                         <span className="notification-time">
-                                            {new Date(
-                                                notification.createdAt
-                                            ).toLocaleString()}
+                                            <time dateTime={notification.createdAt}>
+                                                {new Date(
+                                                    notification.createdAt
+                                                ).toLocaleString(undefined, {
+                                                    dateStyle: "medium",
+                                                    timeStyle: "short",
+                                                })}
+                                            </time>
                                         </span>
                                     </span>
                                 </button>

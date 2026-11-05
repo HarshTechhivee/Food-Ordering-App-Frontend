@@ -1,0 +1,797 @@
+:root {
+    --fh-orange: #EA7418;
+    --fh-orange-action: #C25308;
+    --fh-orange-action-hover: #B24800;
+    --fh-orange-soft: #FFF0E2;
+    --fh-charcoal: #25211D;
+    --fh-cream: #FFF3E6;
+    --fh-white: #FFFFFF;
+    --fh-text-muted: #746C64;
+    --fh-border: #E8DED3;
+    --fh-success: #198754;
+    --fh-success-soft: #E8F4EC;
+    --fh-warning: #9A6500;
+    --fh-warning-soft: #FFF4D8;
+    --fh-danger: #B93832;
+    --fh-danger-soft: #FCEBE9;
+    --fh-info: #16758A;
+    --fh-info-soft: #E7F4F6;
+    --fh-font-heading: "Manrope", "Inter", sans-serif;
+    --fh-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --fh-space-1: 0.25rem;
+    --fh-space-2: 0.5rem;
+    --fh-space-3: 0.75rem;
+    --fh-space-4: 1rem;
+    --fh-space-5: 1.5rem;
+    --fh-space-6: 2rem;
+    --fh-space-7: 3rem;
+    --fh-radius-sm: 0.625rem;
+    --fh-radius-md: 0.875rem;
+    --fh-radius-lg: 1.125rem;
+    --fh-radius-xl: 1.5rem;
+    --fh-radius-pill: 999px;
+    --fh-focus-ring: 0 0 0 0.22rem rgba(194, 83, 8, 0.28);
+    --fh-shadow-soft: 0 12px 32px rgba(58, 39, 20, 0.08);
+}
+
+body {
+    color: var(--fh-charcoal);
+    font-family: var(--fh-font-body);
+    text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--fh-font-heading);
+}
+
+.foodhub-customer-app {
+    --fh-app-bg: #FFF8F1;
+    --fh-app-surface: var(--fh-white);
+    --fh-app-text: var(--fh-charcoal);
+    --fh-app-muted: var(--fh-text-muted);
+    --fh-app-border: #EFDFCE;
+    --fh-app-shadow: 0 14px 36px rgba(112, 67, 25, 0.08);
+    --bs-primary: var(--fh-orange-action);
+    --bs-primary-rgb: 194, 83, 8;
+    --bs-link-color: var(--fh-orange-action-hover);
+    --bs-link-hover-color: var(--fh-orange-action);
+    min-height: 100vh;
+    color: var(--fh-app-text);
+    background:
+        radial-gradient(ellipse at 92% 10%, rgba(255, 232, 207, 0.42), transparent 30rem),
+        var(--fh-app-bg);
+}
+
+.admin-shell {
+    --fh-app-bg: #F4F5F6;
+    --fh-app-surface: var(--fh-white);
+    --fh-app-text: var(--fh-charcoal);
+    --fh-app-muted: #6F6C68;
+    --fh-app-border: #E6E5E3;
+    --fh-app-shadow: 0 8px 24px rgba(37, 33, 29, 0.055);
+    --bs-primary: var(--fh-orange-action);
+    --bs-primary-rgb: 194, 83, 8;
+    --bs-link-color: var(--fh-orange-action-hover);
+    --bs-link-hover-color: var(--fh-orange-action);
+    color: var(--fh-app-text);
+    background: var(--fh-app-bg);
+    font-family: var(--fh-font-body);
+}
+
+.foodhub-customer-app :focus-visible,
+.admin-shell :focus-visible,
+.foodhub-styleguide :focus-visible {
+    outline: 3px solid var(--fh-orange-action);
+    outline-offset: 3px;
+}
+
+.foodhub-customer-app .btn-primary,
+.admin-shell .btn-primary,
+.foodhub-button-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--fh-orange-action);
+    --bs-btn-border-color: var(--fh-orange-action);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--fh-orange-action-hover);
+    --bs-btn-hover-border-color: var(--fh-orange-action-hover);
+    --bs-btn-active-bg: #A94400;
+    --bs-btn-active-border-color: #A94400;
+    --bs-btn-disabled-color: var(--fh-charcoal);
+    --bs-btn-disabled-bg: #E6A16E;
+    --bs-btn-disabled-border-color: #E6A16E;
+    border-color: var(--fh-orange-action);
+    border-radius: var(--fh-radius-sm);
+    background-color: var(--fh-orange-action);
+    color: #fff;
+    font-weight: 650;
+    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.foodhub-customer-app .btn-primary:hover,
+.admin-shell .btn-primary:hover,
+.foodhub-button-primary:hover {
+    border-color: var(--fh-orange-action-hover);
+    background-color: var(--fh-orange-action-hover);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.foodhub-customer-app .btn-primary:disabled,
+.foodhub-customer-app .btn-primary.disabled,
+.admin-shell .btn-primary:disabled,
+.admin-shell .btn-primary.disabled,
+.foodhub-button-primary:disabled,
+.foodhub-button-primary.disabled {
+    border-color: #E6A16E;
+    background-color: #E6A16E;
+    color: var(--fh-charcoal);
+}
+
+.foodhub-customer-app .btn-outline-primary,
+.admin-shell .btn-outline-primary,
+.foodhub-button-secondary {
+    border: 1px solid var(--fh-orange-action-hover);
+    border-radius: var(--fh-radius-sm);
+    background: transparent;
+    color: var(--fh-orange-action-hover);
+    font-weight: 600;
+    transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+}
+
+.foodhub-customer-app .btn-outline-primary:hover,
+.admin-shell .btn-outline-primary:hover,
+.foodhub-button-secondary:hover {
+    border-color: var(--fh-orange-action-hover);
+    background: var(--fh-orange-soft);
+    color: var(--fh-orange-action-hover);
+}
+
+.foodhub-button-primary,
+.foodhub-button-secondary {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: var(--fh-space-2);
+    padding: 0.65rem 1rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.foodhub-surface,
+.foodhub-styleguide-card {
+    border: 1px solid var(--fh-app-border, var(--fh-border));
+    border-radius: var(--fh-radius-lg);
+    background: var(--fh-app-surface, var(--fh-white));
+    box-shadow: var(--fh-app-shadow, var(--fh-shadow-soft));
+}
+
+.foodhub-input {
+    width: 100%;
+    min-height: 46px;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid #9B8D7E;
+    border-radius: var(--fh-radius-sm);
+    background: var(--fh-app-surface, var(--fh-white));
+    color: var(--fh-app-text, var(--fh-charcoal));
+    font: inherit;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.foodhub-input::placeholder {
+    color: #70675F;
+}
+
+.foodhub-input:focus {
+    border-color: var(--fh-orange-action);
+    outline: 0;
+    box-shadow: var(--fh-focus-ring);
+}
+
+.foodhub-customer-app .form-control:not(.is-invalid):not(.is-valid),
+.foodhub-customer-app .form-select:not(.is-invalid):not(.is-valid),
+.admin-shell .form-control:not(.is-invalid):not(.is-valid),
+.admin-shell .form-select:not(.is-invalid):not(.is-valid) {
+    border-color: #9B8D7E;
+}
+
+.foodhub-customer-app .form-control:focus,
+.foodhub-customer-app .form-select:focus,
+.admin-shell .form-control:focus,
+.admin-shell .form-select:focus {
+    border-color: var(--fh-orange-action);
+    box-shadow: var(--fh-focus-ring);
+}
+
+.foodhub-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid rgba(234, 116, 24, 0.16);
+    border-radius: var(--fh-radius-pill);
+    background: var(--fh-orange-soft);
+    color: #9E4A0D;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.foodhub-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.34rem 0.65rem;
+    border-radius: var(--fh-radius-pill);
+    font-size: 0.75rem;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.foodhub-status--success {
+    background: var(--fh-success-soft);
+    color: #176B42;
+}
+
+.foodhub-status--pending {
+    background: var(--fh-warning-soft);
+    color: #805500;
+}
+
+.foodhub-status--attention {
+    background: var(--fh-danger-soft);
+    color: #9F302B;
+}
+
+.foodhub-status--info {
+    background: var(--fh-info-soft);
+    color: #126276;
+}
+
+/* Customer shell */
+.foodhub-customer-app .public-navbar {
+    border-color: var(--fh-app-border) !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    box-shadow: 0 5px 22px rgba(112, 67, 25, 0.045);
+    backdrop-filter: blur(14px);
+}
+
+.foodhub-customer-app .public-navbar-brand {
+    color: var(--fh-charcoal);
+    font-family: var(--fh-font-heading);
+    letter-spacing: -0.045em;
+}
+
+.foodhub-customer-app .public-navbar-brand .text-primary {
+    color: var(--fh-orange-action) !important;
+}
+
+.foodhub-customer-app .public-navbar-links .nav-link {
+    border-radius: var(--fh-radius-pill);
+    color: #635B53;
+    font-weight: 550;
+    transition: color 160ms ease, background-color 160ms ease;
+}
+
+.foodhub-customer-app .public-navbar-links .nav-link:hover,
+.foodhub-customer-app .public-navbar-links .nav-link:focus-visible,
+.foodhub-customer-app .public-navbar-links .nav-link.active {
+    color: var(--fh-orange-action-hover);
+    background: var(--fh-orange-soft);
+}
+
+.foodhub-customer-app .public-navbar .btn-dark.foodhub-button-primary {
+    border-color: var(--fh-orange-action);
+    background: var(--fh-orange-action);
+}
+
+.foodhub-customer-app .public-navbar .btn-dark.foodhub-button-primary:hover {
+    border-color: var(--fh-orange-action-hover);
+    background: var(--fh-orange-action-hover);
+}
+
+.foodhub-customer-app .public-navbar-avatar {
+    background: var(--fh-orange-action) !important;
+}
+
+.foodhub-customer-app .public-navbar-logout {
+    border-color: #9B8D7E;
+    color: #8A4A1A;
+}
+
+.foodhub-customer-app .public-navbar-logout:hover {
+    border-color: #9B8D7E;
+    background: #FFF5EB;
+    color: #713708;
+}
+
+.foodhub-customer-app .public-navbar-toggler {
+    border-color: #9B8D7E;
+    color: #554C43;
+}
+
+.foodhub-customer-app .cart-button {
+    border-color: #9B8D7E;
+}
+
+.foodhub-customer-app .public-navbar-toggler:hover,
+.foodhub-customer-app .public-navbar-toggler:focus-visible {
+    border-color: #9B8D7E;
+    background: var(--fh-orange-soft);
+    color: #9E4A0D;
+}
+
+.foodhub-customer-app .public-mobile-menu {
+    border-color: var(--fh-app-border);
+    background: #FFFCF8;
+}
+
+.foodhub-customer-app .public-mobile-menu .nav-link.active,
+.foodhub-customer-app .public-mobile-menu .nav-link:not(.active):hover,
+.foodhub-customer-app .public-mobile-menu .nav-link:not(.active):focus-visible {
+    background: var(--fh-orange-soft);
+    color: var(--fh-orange-action-hover);
+}
+
+.foodhub-customer-app .public-mobile-menu-heading {
+    color: #746C64;
+}
+
+.foodhub-customer-app > footer {
+    border-color: var(--fh-app-border) !important;
+    background-color: #FFFCF8 !important;
+}
+
+.foodhub-customer-app > footer .text-primary {
+    color: var(--fh-orange-action) !important;
+}
+
+/* Admin shell */
+.admin-shell .admin-header {
+    border-bottom-color: var(--fh-app-border);
+    background: #fff;
+    color: var(--fh-charcoal);
+    box-shadow: 0 4px 18px rgba(37, 33, 29, 0.045);
+}
+
+.admin-shell .admin-brand,
+.admin-shell .admin-brand:hover {
+    color: var(--fh-charcoal);
+}
+
+.admin-shell .admin-brand-icon {
+    background: linear-gradient(135deg, #D96511, var(--fh-orange-action));
+    box-shadow: 0 5px 14px rgba(194, 83, 8, 0.22);
+}
+
+.admin-shell .admin-brand-caption,
+.admin-shell .admin-header-user-role {
+    color: #70675F;
+}
+
+.admin-shell .admin-header-user-name {
+    color: var(--fh-charcoal);
+}
+
+.admin-shell .admin-header-divider {
+    background: #E5E1DD;
+}
+
+.admin-shell .admin-mobile-toggle {
+    border-color: #9B8D7E;
+    color: #544D46;
+}
+
+.admin-shell .admin-mobile-toggle:hover,
+.admin-shell .admin-mobile-toggle:focus {
+    border-color: #9B8D7E;
+    background: #FFF7EF;
+    color: #9E4A0D;
+}
+
+.admin-shell .admin-avatar,
+.admin-shell .admin-profile-avatar {
+    border-color: #F1D2B7;
+    background: var(--fh-orange-soft);
+    color: #A65011;
+}
+
+.admin-shell .admin-logout-btn {
+    border-color: #9B8D7E;
+    background: #fff;
+    color: #5B544E;
+}
+
+.admin-shell .admin-logout-btn:hover {
+    border-color: #9B8D7E;
+    background: #FFF5F4;
+    color: #A72E28;
+}
+
+.admin-shell .admin-sidebar {
+    border-right-color: var(--fh-app-border);
+    background: #fff;
+}
+
+.admin-shell .admin-sidebar-heading {
+    color: #746C64;
+}
+
+.admin-shell .admin-nav-link {
+    color: #5F5A55;
+}
+
+.admin-shell .admin-nav-link:not(.active):hover {
+    background: #FFF8F1;
+    color: #9E4A0D;
+}
+
+.admin-shell .admin-nav-link.active {
+    background: var(--fh-orange-action);
+    color: #fff;
+    box-shadow: 0 5px 12px rgba(194, 83, 8, 0.19);
+}
+
+.admin-shell .admin-sidebar-profile {
+    border-top-color: var(--fh-app-border);
+}
+
+.admin-shell .admin-profile-name {
+    color: var(--fh-charcoal);
+}
+
+.admin-shell .admin-profile-email {
+    color: #70675F;
+}
+
+.admin-shell .admin-content {
+    background: var(--fh-app-bg);
+}
+
+/* Shared notification control colors, without changing its interaction model. */
+.foodhub-customer-app .notification-bell-button:hover,
+.foodhub-customer-app .notification-bell-button:focus-visible,
+.admin-shell .notification-bell-button:hover,
+.admin-shell .notification-bell-button:focus-visible,
+.admin-header .notification-bell-button:hover,
+.admin-header .notification-bell-button:focus-visible {
+    border-color: #9B8D7E;
+    background: var(--fh-orange-soft);
+    color: #9E4A0D;
+}
+
+.foodhub-customer-app .notification-bell-button:focus-visible,
+.admin-shell .notification-bell-button:focus-visible,
+.admin-header .notification-bell-button:focus-visible {
+    outline: 3px solid var(--fh-orange-action);
+    outline-offset: 2px;
+}
+
+.foodhub-customer-app .notification-bell-button:active,
+.admin-shell .notification-bell-button:active {
+    border-color: #9B8D7E;
+    background: #FFEAD5;
+    color: var(--fh-orange-action-hover);
+}
+
+.foodhub-customer-app .notification-bell-button,
+.admin-shell .notification-bell-button {
+    border-color: #9B8D7E;
+}
+
+.foodhub-customer-app .notification-item.unread,
+.admin-shell .notification-item.unread {
+    background: #FFF5EB;
+}
+
+.foodhub-customer-app .notification-item.unread:hover,
+.admin-shell .notification-item.unread:hover {
+    background: #FFEAD5;
+}
+
+.foodhub-customer-app .notification-item-icon.unread,
+.admin-shell .notification-item-icon.unread {
+    background: #FFEAD5;
+    color: var(--fh-orange-action-hover);
+}
+
+.foodhub-customer-app .notification-unread-dot,
+.admin-shell .notification-unread-dot {
+    background: var(--fh-orange-action);
+}
+
+.foodhub-customer-app .notification-message,
+.admin-shell .notification-message {
+    color: #5A6470;
+}
+
+.foodhub-customer-app .notification-time,
+.admin-shell .notification-time {
+    color: #70675F;
+}
+
+/* Temporary internal style guide */
+.foodhub-styleguide {
+    --fh-app-bg: #FFF8F1;
+    --fh-app-surface: #fff;
+    --fh-app-text: var(--fh-charcoal);
+    --fh-app-muted: var(--fh-text-muted);
+    --fh-app-border: var(--fh-border);
+    --fh-app-shadow: var(--fh-shadow-soft);
+    min-height: 100vh;
+    padding: clamp(1.25rem, 4vw, 3.5rem);
+    background: var(--fh-app-bg);
+    color: var(--fh-charcoal);
+    font-family: var(--fh-font-body);
+}
+
+.foodhub-styleguide h1,
+.foodhub-styleguide h2,
+.foodhub-styleguide h3 {
+    color: var(--fh-charcoal);
+    font-family: var(--fh-font-heading);
+    letter-spacing: -0.035em;
+}
+
+.foodhub-styleguide-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    max-width: 1440px;
+    margin: 0 auto 2rem;
+}
+
+.foodhub-eyebrow,
+.foodhub-styleguide-label {
+    color: #9E4A0D;
+    font-size: 0.75rem;
+    font-weight: 750;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.foodhub-styleguide-section,
+.foodhub-styleguide-theme {
+    max-width: 1440px;
+    margin: 0 auto 1.5rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border: 1px solid var(--fh-border);
+    border-radius: var(--fh-radius-xl);
+    background: #fff;
+    box-shadow: var(--fh-shadow-soft);
+}
+
+.foodhub-styleguide-section > h2,
+.foodhub-styleguide-theme > h2 {
+    margin-bottom: 0.5rem;
+    font-size: clamp(1.25rem, 2vw, 1.65rem);
+}
+
+.foodhub-styleguide-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.9rem;
+    margin-top: 1.25rem;
+}
+
+.foodhub-styleguide-swatch-card {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.foodhub-styleguide-swatch {
+    height: 74px;
+    border: 1px solid rgba(37, 33, 29, 0.08);
+    border-radius: var(--fh-radius-md);
+}
+
+.foodhub-styleguide-swatch-card code {
+    color: #756C64;
+}
+
+.foodhub-styleguide-swatch--orange {
+    background: var(--fh-orange);
+}
+
+.foodhub-styleguide-swatch--charcoal {
+    background: var(--fh-charcoal);
+}
+
+.foodhub-styleguide-swatch--cream {
+    background: var(--fh-cream);
+}
+
+.foodhub-styleguide-swatch--peach {
+    background: #FFF8F1;
+}
+
+.foodhub-styleguide-swatch--neutral {
+    background: #F4F5F6;
+}
+
+.foodhub-styleguide-type {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid #EEE8E2;
+}
+
+.foodhub-styleguide-type h3 {
+    margin: 0.45rem 0 0;
+    font-size: clamp(1.35rem, 2.4vw, 2rem);
+}
+
+.foodhub-styleguide-type p {
+    margin-top: 0.45rem;
+    color: #635B53;
+    line-height: 1.7;
+}
+
+.foodhub-styleguide-themes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.5rem;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.foodhub-styleguide-theme {
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.foodhub-styleguide-theme > p:not(.foodhub-eyebrow) {
+    color: #71685F;
+    line-height: 1.65;
+}
+
+.foodhub-styleguide-theme--customer {
+    background: linear-gradient(145deg, #FFF3E6, #FFF8F1 65%, #FFF0E2);
+}
+
+.foodhub-styleguide-card {
+    padding: 1.35rem;
+}
+
+.foodhub-styleguide-card h3 {
+    font-size: 1.3rem;
+}
+
+.foodhub-styleguide-card p {
+    color: #746C64;
+}
+
+.foodhub-styleguide-theme--admin {
+    background: #F4F5F6;
+}
+
+.foodhub-styleguide-admin-preview {
+    display: grid;
+    grid-template-columns: minmax(118px, 0.7fr) minmax(0, 1.4fr);
+    overflow: hidden;
+    min-height: 245px;
+    border: 1px solid #E5E3E1;
+    border-radius: var(--fh-radius-lg);
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(37, 33, 29, 0.055);
+}
+
+.foodhub-styleguide-admin-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1rem 0.75rem;
+    border-right: 1px solid #ECEAE8;
+    background: #fff;
+}
+
+.foodhub-styleguide-admin-brand {
+    display: grid;
+    margin-bottom: 0.65rem;
+    color: var(--fh-charcoal);
+    font-family: var(--fh-font-heading);
+    font-weight: 800;
+}
+
+.foodhub-styleguide-admin-brand small {
+    color: #70675F;
+    font: 700 0.58rem var(--fh-font-body);
+    letter-spacing: 0.08em;
+}
+
+.foodhub-styleguide-admin-link {
+    padding: 0.55rem 0.65rem;
+    border-radius: var(--fh-radius-sm);
+    color: #665F58;
+    font-size: 0.82rem;
+}
+
+.foodhub-styleguide-admin-link.is-active {
+    background: var(--fh-orange-action);
+    color: #fff;
+    font-weight: 650;
+}
+
+.foodhub-styleguide-admin-content {
+    align-self: start;
+    padding: 1rem;
+}
+
+.foodhub-styleguide-admin-kpi {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.85rem;
+    margin-bottom: 0.9rem;
+    border: 1px solid #ECEAE8;
+    border-radius: var(--fh-radius-md);
+    background: #FCFCFB;
+    font-size: 0.8rem;
+}
+
+.foodhub-styleguide-admin-kpi span {
+    color: #756E67;
+}
+
+.foodhub-styleguide-admin-kpi strong {
+    color: var(--fh-charcoal);
+    font-family: var(--fh-font-heading);
+    font-size: 1.05rem;
+}
+
+.foodhub-styleguide-admin-content .foodhub-input {
+    min-height: 40px;
+    font-size: 0.82rem;
+}
+
+.foodhub-styleguide-note {
+    max-width: 1440px;
+    margin: 1.25rem auto 0;
+    color: #756C64;
+    font-size: 0.82rem;
+}
+
+@media (max-width: 767.98px) {
+    .foodhub-styleguide-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .foodhub-styleguide-type,
+    .foodhub-styleguide-themes {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 479.98px) {
+    .foodhub-styleguide-admin-preview {
+        grid-template-columns: 1fr;
+    }
+
+    .foodhub-styleguide-admin-nav {
+        border-right: 0;
+        border-bottom: 1px solid #ECEAE8;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .foodhub-customer-app *,
+    .foodhub-customer-app *::before,
+    .foodhub-customer-app *::after,
+    .admin-shell *,
+    .admin-shell *::before,
+    .admin-shell *::after,
+    .foodhub-styleguide *,
+    .foodhub-styleguide *::before,
+    .foodhub-styleguide *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

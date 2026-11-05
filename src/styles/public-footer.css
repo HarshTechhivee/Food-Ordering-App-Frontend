@@ -1,0 +1,81 @@
+.foodhub-customer-app .public-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--fh-app-border);
+    background: #FFFCF8;
+}
+
+.public-footer-inner {
+    display: flex;
+    min-height: 116px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-top: 1.4rem;
+    padding-bottom: 1.4rem;
+}
+
+.public-footer-brand {
+    min-width: 0;
+}
+
+.public-footer-logo {
+    color: var(--fh-charcoal);
+    font-family: var(--fh-font-heading);
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    text-decoration: none;
+}
+
+.public-footer-logo span {
+    color: var(--fh-orange-action);
+}
+
+.public-footer-brand p {
+    margin: 0.25rem 0 0;
+    color: #70665D;
+    font-size: 0.86rem;
+}
+
+.public-footer-links {
+    display: flex;
+    align-items: center;
+    gap: 1.35rem;
+}
+
+.public-footer-links a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    color: #5F554B;
+    font-size: 0.9rem;
+    font-weight: 650;
+    text-decoration: none;
+    transition: color 160ms ease;
+}
+
+.public-footer-links a:hover,
+.public-footer-links a:focus-visible {
+    color: var(--fh-orange-action-hover);
+}
+
+.public-footer-copyright {
+    color: #70665D;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+    .public-footer-inner {
+        min-height: 0;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding-top: 1.3rem;
+        padding-bottom: 1.3rem;
+    }
+
+    .public-footer-links {
+        gap: 1.1rem;
+    }
+}

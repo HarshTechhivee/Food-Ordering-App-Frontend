@@ -75,7 +75,7 @@ function MenuManagement() {
     };
 
     return (
-        <div>
+        <div className="admin-page admin-menu-page">
 
             <ConfirmModal
                 show={deleteItemId !== null}
@@ -88,7 +88,7 @@ function MenuManagement() {
                 loading={loading}
             />
 
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-5">
+            <div className="admin-page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-5">
 
                 <div>
 
@@ -166,20 +166,36 @@ function MenuManagement() {
                         </div>
 
                         <h4 className="fw-bold mb-2">
-                            No menu items yet
+                            {search || category ? "No menu items match these filters" : "No menu items yet"}
                         </h4>
 
                         <p className="text-secondary mb-4">
-                            Start building your restaurant menu by adding your first item.
+                            {search || category
+                                ? "Try another search or category, or clear the current filters."
+                                : "Start building your restaurant menu by adding your first item."}
                         </p>
 
-                        <Link
-                            to="/admin/menu/create"
-                            className="btn btn-primary"
-                        >
-                            <i className="bi bi-plus-lg me-2" />
-                            Add Menu Item
-                        </Link>
+                        {search || category ? (
+                            <button
+                                type="button"
+                                className="btn btn-outline-primary"
+                                onClick={() => {
+                                    setSearch("");
+                                    setCategory("");
+                                    setPage(1);
+                                }}
+                            >
+                                Clear filters
+                            </button>
+                        ) : (
+                            <Link
+                                to="/admin/menu/create"
+                                className="btn btn-primary"
+                            >
+                                <i className="bi bi-plus-lg me-2" />
+                                Add Menu Item
+                            </Link>
+                        )}
 
                     </div>
 
@@ -187,7 +203,7 @@ function MenuManagement() {
             )}
 
             {/* Filters */}
-            <div className="card border-0 shadow-sm rounded-4 mb-5">
+            <div className="card border-0 shadow-sm rounded-4 mb-5 admin-menu-toolbar">
                 <div className="card-body p-4">
 
                     <div className="row g-3">
@@ -282,7 +298,91 @@ function MenuManagement() {
                 </div>
             </div>
 
-            <div className="row g-4">
+            <div className="admin-menu-table-wrap mb-4">
+                <table className="table admin-menu-table">
+                    <caption className="visually-hidden">Menu items and inventory actions</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Menu item</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Availability</th>
+                            <th scope="col">Listing status</th>
+                            <th scope="col" className="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {items.map((item) => {
+                            const imageSrc = getMenuImageSrc(item.image);
+
+                            return (
+                                <tr key={item.id}>
+                                    <td>
+                                        <div className="d-flex align-items-center gap-3">
+                                            <div className="admin-menu-thumb d-flex align-items-center justify-content-center">
+                                                {imageSrc ? (
+                                                    <img src={imageSrc} alt="" />
+                                                ) : (
+                                                    <i className="bi bi-image fs-4" aria-hidden="true" />
+                                                )}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="admin-menu-item-name">{item.name}</div>
+                                                <div className="admin-menu-item-description">{item.description}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span className="admin-menu-category">{item.category}</span></td>
+                                    <td className="fw-bold text-nowrap">₹{Number(item.price).toFixed(2)}</td>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            className={`admin-availability-toggle ${item.isAvailable ? "is-available" : ""}`}
+                                            role="switch"
+                                            aria-checked={item.isAvailable}
+                                            aria-label={`${item.isAvailable ? "Mark unavailable" : "Mark available"}: ${item.name}`}
+                                            disabled={!item.isActive}
+                                            onClick={() => handleAvailabilityChange(item.id, !item.isAvailable)}
+                                        >
+                                            <span aria-hidden="true" />
+                                            <span>{item.isAvailable ? "Available" : "Unavailable"}</span>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <span className={`badge ${item.isActive ? "text-bg-success" : "text-bg-secondary"}`}>
+                                            {item.isActive ? "Active" : "Inactive"}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div className="admin-menu-actions">
+                                            <Link
+                                                to={`/admin/menu/edit/${item.id}`}
+                                                className="btn"
+                                                aria-label={`Edit ${item.name}`}
+                                                title="Edit item"
+                                            >
+                                                <i className="bi bi-pencil" aria-hidden="true" />
+                                            </Link>
+                                            <button
+                                                type="button"
+                                                className="btn"
+                                                onClick={() => handleDelete(item.id)}
+                                                disabled={!item.isActive}
+                                                aria-label={`Delete ${item.name}`}
+                                                title="Delete item"
+                                            >
+                                                <i className="bi bi-trash3" aria-hidden="true" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+
+            <div className="admin-menu-mobile-list row g-4">
 
                 {items.map((item) => (
                     <div
@@ -290,7 +390,7 @@ function MenuManagement() {
                         key={item.id}
                     >
                         <div
-                            className="card h-100 border-0 overflow-hidden menu-item-card"
+                            className="card h-100 border-0 overflow-hidden menu-item-card admin-menu-mobile-card"
                         >
 
                             {/* Image + Overlay */}

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useAppDispatch } from "../../store/hooks";
 import { clearCart } from "../../store/slices/cartSlice";
+import "./Payment.css";
 
 function PaymentSuccess() {
 
@@ -27,72 +28,63 @@ function PaymentSuccess() {
     }, [isSuccess, dispatch]);
 
     return (
-        <div className="container py-5">
-            <div className="row justify-content-center">
-                <div className="col-lg-6">
-                    <div className="card border-0 shadow-sm text-center">
-                        <div className="card-body p-5">
+        <main className="fh-payment-page">
+            <div className="container fh-payment-invalid">
+                <section
+                    className={`fh-payment-result ${
+                        isSuccess
+                            ? "fh-payment-result--success"
+                            : "fh-payment-result--error"
+                    }`}
+                    aria-labelledby="fh-payment-result-title"
+                >
+                    <span className="fh-payment-result-icon" aria-hidden="true">
+                        <i
+                            className={`bi ${
+                                isSuccess
+                                    ? "bi-check2-circle"
+                                    : "bi-x-circle"
+                            }`}
+                        />
+                    </span>
+                    <span className="fh-payment-eyebrow">
+                        {isSuccess ? "PAYMENT CONFIRMED" : "PAYMENT UPDATE"}
+                    </span>
+                    <h1 id="fh-payment-result-title">
+                        {isSuccess ? "Payment successful." : "Payment failed."}
+                    </h1>
+                    <p>
+                        {isSuccess
+                            ? "Your payment was completed successfully and your order is being created."
+                            : "Your payment could not be completed. Your cart has been kept so you can try again."}
+                    </p>
 
-                            {isSuccess ? (
-                                <>
-                                    <div className="mb-4">
-                                        <i className="bi bi-check-circle-fill fs-1 text-success" />
-                                    </div>
-
-                                    <h2 className="mb-3">
-                                        Payment Successful
-                                    </h2>
-
-                                    <p className="text-muted">
-                                        Your payment has been completed
-                                        successfully and your order is
-                                        being created.
-                                    </p>
-
-                                    {paymentIntentId && (
-                                        <p className="small text-muted">
-                                            Payment ID:{" "}
-                                            {paymentIntentId}
-                                        </p>
-                                    )}
-
-                                    <Link
-                                        to="/orders"
-                                        className="btn btn-primary mt-3"
-                                    >
-                                        View Orders
-                                    </Link>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="mb-4">
-                                        <i className="bi bi-x-circle-fill fs-1 text-danger" />
-                                    </div>
-
-                                    <h2 className="mb-3">
-                                        Payment Failed
-                                    </h2>
-
-                                    <p className="text-muted">
-                                        Your payment could not be
-                                        completed. Your cart has been
-                                        kept so you can try again.
-                                    </p>
-
-                                    <Link
-                                        to="/cart"
-                                        className="btn btn-primary mt-3"
-                                    >
-                                        Back to Cart
-                                    </Link>
-                                </>
-                            )}
-
+                    {paymentIntentId && (
+                        <div className="fh-payment-reference">
+                            <span>Payment ID</span>
+                            <code>{paymentIntentId}</code>
                         </div>
-                    </div>
-                </div>
+                    )}
+
+                    {isSuccess ? (
+                        <Link to="/orders" className="foodhub-button-primary">
+                            View orders
+                            <i className="bi bi-arrow-right" aria-hidden="true" />
+                        </Link>
+                    ) : (
+                        <Link to="/cart" className="foodhub-button-primary">
+                            <i className="bi bi-arrow-left" aria-hidden="true" />
+                            Back to Cart
+                        </Link>
+                    )}
+                    {isSuccess && (
+                        <Link to="/menu" className="fh-payment-secondary-link">
+                            Return to the menu
+                        </Link>
+                    )}
+                </section>
             </div>
-        </div>
+        </main>
     );
 }
 

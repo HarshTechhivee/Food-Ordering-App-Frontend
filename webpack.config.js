@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
-export default {
+const config = {
     mode: "development",
 
     entry: "./src/main.tsx",
@@ -128,4 +128,20 @@ export default {
     },
 
     devtool: "source-map",
+};
+
+export default (_env, argv) => {
+    const mode = argv.mode ?? config.mode;
+
+    return {
+        ...config,
+        mode,
+        devtool: mode === "production" ? false : config.devtool,
+        plugins: [
+            new webpack.DefinePlugin({
+                __FOODHUB_DEV__: JSON.stringify(mode === "development"),
+            }),
+            ...config.plugins,
+        ],
+    };
 };

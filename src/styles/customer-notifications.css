@@ -1,0 +1,191 @@
+.foodhub-customer-app .notification-bell-button {
+    border-color: #D9C6B3;
+    border-radius: 0.8rem;
+    background: #fff;
+    color: #5D5147;
+}
+
+.foodhub-customer-app .notification-bell-button:hover,
+.foodhub-customer-app .notification-bell-button:focus-visible {
+    border-color: #B7662A;
+    background: #FFF0E2;
+    color: #713708;
+}
+
+.foodhub-customer-app .notification-bell-button:focus-visible {
+    outline: 3px solid rgba(194, 83, 8, 0.28);
+    outline-offset: 2px;
+}
+
+.foodhub-customer-app .notification-count {
+    border-color: #fff;
+    background: #A8322C;
+}
+
+.foodhub-customer-app .notification-dropdown {
+    border-color: #EADDD0;
+    border-radius: var(--fh-radius-lg);
+    background: #fff;
+    color: var(--fh-charcoal);
+    box-shadow: 0 20px 55px rgba(67, 43, 23, 0.18);
+}
+
+.foodhub-customer-app .notification-header {
+    gap: 0.75rem;
+    padding: 1rem 1.05rem;
+    border-bottom-color: #EFE2D6;
+    background: #FFFCF8;
+}
+
+.foodhub-customer-app .notification-header h6 {
+    color: var(--fh-charcoal);
+    font-family: var(--fh-font-heading);
+    font-size: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.foodhub-customer-app .notification-toolbar .btn {
+    min-height: 36px;
+    color: #8A3E07;
+    font-weight: 700;
+}
+
+.foodhub-customer-app .notification-toolbar .btn:hover:not(:disabled) {
+    color: #713708;
+    text-decoration: underline !important;
+}
+
+.foodhub-customer-app .notification-toolbar .btn:disabled {
+    color: #746C64;
+    opacity: 0.75;
+}
+
+.foodhub-customer-app .notification-dropdown .btn-close {
+    min-width: 36px;
+    min-height: 36px;
+    background-size: 0.7rem;
+}
+
+.foodhub-customer-app .notification-list::-webkit-scrollbar-track {
+    background: #FFF8F1;
+}
+
+.foodhub-customer-app .notification-list::-webkit-scrollbar-thumb {
+    background: #D8C6B5;
+}
+
+.foodhub-customer-app .notification-list::-webkit-scrollbar-thumb:hover {
+    background: #B79B82;
+}
+
+.foodhub-customer-app .notification-item {
+    min-height: 96px;
+    gap: 0.75rem;
+    padding: 0.95rem 1.05rem;
+    border-bottom-color: #F0E7DF;
+    background: #fff;
+    color: var(--fh-charcoal);
+    cursor: pointer;
+    text-align: left;
+}
+
+.foodhub-customer-app .notification-item:hover {
+    background: #FFFCF8;
+}
+
+.foodhub-customer-app .notification-item.unread {
+    background: #FFF8F1;
+}
+
+.foodhub-customer-app .notification-item.unread:hover {
+    background: #FFF0E2;
+}
+
+.foodhub-customer-app .notification-item-icon.read {
+    background: #F5F0EB;
+    color: #655A50;
+}
+
+.foodhub-customer-app .notification-item-icon.unread {
+    background: #FFEAD5;
+    color: #8A3E07;
+}
+
+.foodhub-customer-app .notification-item-title {
+    color: var(--fh-charcoal);
+    font-size: 0.88rem;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.foodhub-customer-app .notification-message {
+    color: #66594E;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.foodhub-customer-app .notification-time {
+    color: #70665D;
+    font-size: 0.72rem;
+}
+
+.foodhub-customer-app .notification-unread-dot {
+    background: var(--fh-orange-action);
+}
+
+.foodhub-customer-app .notification-empty {
+    padding: 2.25rem 1rem;
+}
+
+.foodhub-customer-app .notification-empty-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 1rem;
+    background: #FFF0E2;
+    color: #8A4719;
+}
+
+.foodhub-customer-app .notification-empty h6 {
+    color: var(--fh-charcoal);
+}
+
+.foodhub-customer-app .notification-footer {
+    padding: 0.75rem;
+    border-top-color: #EFE2D6;
+    background: #FFFCF8;
+}
+
+.foodhub-customer-app .notification-footer .btn {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    border-color: #C9847C;
+    border-radius: var(--fh-radius-sm);
+    color: #8F2B27;
+    font-weight: 650;
+}
+
+.foodhub-customer-app .notification-footer .btn:hover {
+    border-color: #B93832;
+    background: #FCEBE9;
+    color: #8F2B27;
+}
+
+@media (max-width: 575.98px) {
+    .foodhub-customer-app .notification-dropdown {
+        top: 76px;
+        right: 12px;
+        left: 12px;
+        border-radius: var(--fh-radius-lg);
+    }
+
+    .foodhub-customer-app .notification-header {
+        padding: 0.9rem;
+    }
+
+    .foodhub-customer-app .notification-item {
+        min-height: 92px;
+        padding: 0.85rem 0.9rem;
+    }
+}

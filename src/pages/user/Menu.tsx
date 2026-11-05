@@ -1,32 +1,40 @@
-import { useEffect, useState, } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addToCart, decreaseQuantity } from "../../store/slices/cartSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchMenu } from "../../store/slices/menuSlice";
 import { getMenuImageSrc } from "../../utils/menuImage";
 import Toast from "../../components/common/Toast";
-import type { MenuItem, MenuQuery, MenuSort, } from "../../types/menu.types";
+import type { MenuItem, MenuQuery, MenuSort } from "../../types/menu.types";
 import Pagination from "../../components/common/Pagination";
 import MenuReviewsModal from "../../components/common/MenuReviewsModal";
+import "./Menu.css";
+
+const categories = ["", "Burger", "Pizza", "Drinks"];
 
 export function Menu() {
-
     const dispatch = useAppDispatch();
-
-    const navigate = useNavigate()
-
-    const { data, loading, error, } = useAppSelector((state) => state.menu);
-
+    const navigate = useNavigate();
+    const { data, loading, error } = useAppSelector((state) => state.menu);
     const user = useAppSelector((state) => state.auth.user);
+    const cartItems = useAppSelector((state) => state.cart.items);
 
     const [showLoginToast, setShowLoginToast] = useState(false);
+    const [search, setSearch] = useState("");
+    const [category, setCategory] = useState("");
+    const [sort, setSort] = useState<MenuSort>("newest");
+    const [page, setPage] = useState(1);
+    const [selectedReviewItem, setSelectedReviewItem] =
+        useState<MenuItem | null>(null);
+
+    const limit = 8;
 
     const handleAddToCart = (item: MenuItem) => {
         if (!user) {
             setShowLoginToast(true);
 
             setTimeout(() => {
-                navigate("/login", { state: { from: "/menu", }, });
+                navigate("/login", { state: { from: "/menu" } });
             }, 3000);
 
             return;
@@ -43,23 +51,8 @@ export function Menu() {
         );
     };
 
-    const [search, setSearch] = useState("");
-
-    const [category, setCategory] = useState("");
-
-    const [sort, setSort] = useState<MenuSort>("newest");
-
-    const [page, setPage] = useState(1);
-
-    const [selectedReviewItem, setSelectedReviewItem] = useState<MenuItem | null>(null);
-
-    const limit = 8;
-
-    const cartItems = useAppSelector((state) => state.cart.items);
-
     useEffect(() => {
-
-        const query: MenuQuery = { page, limit, sort, };
+        const query: MenuQuery = { page, limit, sort };
 
         if (search.trim()) {
             query.search = search.trim();
@@ -70,374 +63,362 @@ export function Menu() {
         }
 
         dispatch(fetchMenu(query));
-
-    }, [dispatch, page, search, category, sort,]);
+    }, [dispatch, page, search, category, sort]);
 
     const items = data?.items ?? [];
-
     const pagination = data?.pagination;
 
+    const clearFilters = () => {
+        setSearch("");
+        setCategory("");
+        setSort("newest");
+        setPage(1);
+    };
+
     return (
+        <div className="fh-menu-page">
+            <Toast
+                message="Please login first to add items to your cart."
+                show={showLoginToast}
+                onClose={() => setShowLoginToast(false)}
+                type="warning"
+            />
 
-        <div className="container py-5">
-
-            <Toast message="Please login first to add items to your cart." show={showLoginToast}
-                onClose={() => setShowLoginToast(false)} type="warning" />
-
-            <div className="mb-5">
-                <div className="text-center">
-                    <span className="badge text-bg-primary mb-3">
-                        Fresh & Delicious
-                    </span>
-
-                    <h1 className="display-5 fw-bold mb-2">
-                        Our Menu
-                    </h1>
-
-                    <p className="text-secondary mb-0">
-                        Discover something delicious and order your favorite meal.
-                    </p>
-                </div>
-            </div>
-
-            {/* Filters */}
-
-            <div className="card border-0 shadow-sm rounded-4 mb-5">
-                <div className="card-body p-4">
-                    <div className="row g-3">
-
-                        <div className="col-md-5">
-                            <label className="form-label fw-semibold">
-                                Search
-                            </label>
-
-                            <div className="input-group">
-                                <span className="input-group-text bg-white">
-                                    <i className="bi bi-search" />
-                                </span>
-
-                                <input type="text" className="form-control" placeholder="Search for food..." value={search}
-                                    onChange={(event) => {
-                                        setSearch(event.target.value);
-                                        setPage(1);
-                                    }}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="col-md-3">
-                            <label className="form-label fw-semibold">
-                                Category
-                            </label>
-
-                            <select className="form-select menu-filter-select" value={category}
+            <header className="fh-menu-hero">
+                <div className="container fh-menu-hero-layout">
+                    <div className="fh-menu-hero-copy">
+                        <span className="fh-menu-eyebrow">
+                            <span aria-hidden="true" />
+                            FIND YOUR NEXT FAVORITE
+                        </span>
+                        <h1>
+                            A menu full of
+                            <br />
+                            {" "}
+                            <span>good ideas.</span>
+                        </h1>
+                        <p>
+                            Explore the FoodHub menu and find a dish that sounds
+                            just right.
+                        </p>
+                        <label className="fh-menu-search">
+                            <i className="bi bi-search" aria-hidden="true" />
+                            <span className="visually-hidden">Search menu</span>
+                            <input
+                                type="search"
+                                value={search}
+                                placeholder="Search dishes..."
+                                aria-label="Search dishes"
                                 onChange={(event) => {
-                                    setCategory(event.target.value);
+                                    setSearch(event.target.value);
                                     setPage(1);
                                 }}
-                            >
-                                <option value="">All Categories</option>
-                                <option value="Burger">Burger</option>
-                                <option value="Pizza">Pizza</option>
-                                <option value="Drinks">Drinks</option>
-                            </select>
+                            />
+                            {search && (
+                                <button
+                                    type="button"
+                                    aria-label="Clear search"
+                                    onClick={() => {
+                                        setSearch("");
+                                        setPage(1);
+                                    }}
+                                >
+                                    <i className="bi bi-x-lg" aria-hidden="true" />
+                                </button>
+                            )}
+                        </label>
+                    </div>
+                    <div className="fh-menu-hero-visual" aria-hidden="true">
+                        <img
+                            src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=1100&q=85"
+                            alt=""
+                        />
+                        <span className="fh-menu-hero-sticker">
+                            <i className="bi bi-egg-fried" />
+                            GOOD FOOD
+                        </span>
+                        <span className="fh-menu-hero-sparkle">✳</span>
+                    </div>
+                </div>
+            </header>
+
+            <div className="fh-menu-main">
+                <div className="container">
+                    <section className="fh-menu-category-section" aria-labelledby="fh-menu-category-heading">
+                        <div>
+                            <span className="fh-menu-eyebrow">BROWSE BY CATEGORY</span>
+                            <h2 id="fh-menu-category-heading">What are you in the mood for?</h2>
                         </div>
+                        <div className="fh-menu-category-list" role="group" aria-label="Filter menu by category">
+                            {categories.map((itemCategory) => (
+                                <button
+                                    type="button"
+                                    className={`fh-menu-category-chip ${
+                                        category === itemCategory ? "is-active" : ""
+                                    }`}
+                                    key={itemCategory || "all"}
+                                    aria-pressed={category === itemCategory}
+                                    onClick={() => {
+                                        setCategory(itemCategory);
+                                        setPage(1);
+                                    }}
+                                >
+                                    {itemCategory || "All dishes"}
+                                </button>
+                            ))}
+                        </div>
+                    </section>
 
-                        <div className="col-md-4">
-                            <label className="form-label fw-semibold">
-                                Sort By
-                            </label>
-
-                            <select className="form-select menu-filter-select" value={sort}
+                    <section className="fh-menu-toolbar" aria-label="Menu controls">
+                        <div className="fh-menu-result-count" aria-live="polite">
+                            {loading
+                                ? "Updating the menu..."
+                                : pagination
+                                  ? `${pagination.total} ${
+                                        pagination.total === 1 ? "dish" : "dishes"
+                                    }`
+                                  : "Menu"}
+                        </div>
+                        <label className="fh-menu-sort">
+                            <span>Sort by</span>
+                            <select
+                                value={sort}
                                 onChange={(event) => {
                                     setSort(event.target.value as MenuSort);
                                     setPage(1);
                                 }}
                             >
                                 <option value="newest">Newest</option>
-                                <option value="price_asc">
-                                    Price: Low to High
-                                </option>
-                                <option value="price_desc">
-                                    Price: High to Low
-                                </option>
+                                <option value="price_asc">Price: Low to High</option>
+                                <option value="price_desc">Price: High to Low</option>
                             </select>
+                            <i className="bi bi-chevron-down" aria-hidden="true" />
+                        </label>
+                    </section>
+
+                    {loading && (
+                        <div className="fh-menu-state" role="status" aria-live="polite">
+                            <span className="fh-menu-spinner" aria-hidden="true" />
+                            <h2>Loading the menu</h2>
+                            <p>Just a moment while we bring up the dishes.</p>
                         </div>
+                    )}
 
-                    </div>
-                </div>
-            </div>
-
-            {/* Loading */}
-
-            {loading && (
-                <div className="py-5">
-                    <div className="text-center py-5">
-                        <div
-                            className="spinner-border text-primary mb-3"
-                            role="status"
-                        >
-                            <span className="visually-hidden">
-                                Loading...
+                    {!loading && error && (
+                        <div className="fh-menu-state fh-menu-state--error" role="alert">
+                            <span className="fh-menu-state-icon" aria-hidden="true">
+                                <i className="bi bi-exclamation-circle" />
                             </span>
+                            <h2>We couldn’t load the menu.</h2>
+                            <p>{error}</p>
                         </div>
+                    )}
 
-                        <p className="text-secondary mb-0">
-                            Loading delicious food...
-                        </p>
-                    </div>
-                </div>
-            )}
-
-            {/* Error */}
-
-            {!loading && error && (
-                <div className="py-5">
-                    <div className="text-center">
-                        <div className="mb-3">
-                            <i className="bi bi-exclamation-triangle fs-1 text-danger" />
-                        </div>
-
-                        <h4 className="fw-bold">
-                            Something went wrong
-                        </h4>
-
-                        <p className="text-secondary mb-0">
-                            {error}
-                        </p>
-                    </div>
-                </div>
-            )}
-
-            {/* Empty */}
-
-            {!loading && !error &&
-                items.length === 0 && (
-                    <div className="py-5">
-                        <div className="text-center py-5">
-
-                            <div className="mb-4">
-                                <i className="bi bi-search fs-1 text-secondary" />
-                            </div>
-
-                            <h4 className="fw-bold">
-                                No food found
-                            </h4>
-
-                            <p className="text-secondary mb-4">
-                                We couldn't find anything matching your
-                                search or filters.
+                    {!loading && !error && items.length === 0 && (
+                        <div className="fh-menu-state fh-menu-state--empty">
+                            <span className="fh-menu-state-icon" aria-hidden="true">
+                                <i className="bi bi-search" />
+                            </span>
+                            <h2>
+                                {category
+                                    ? `No ${category.toLowerCase()} dishes found.`
+                                    : "No matching dishes found."}
+                            </h2>
+                            <p>
+                                Try another search or clear the filters to browse
+                                the full menu.
                             </p>
-
-                            <button type="button" className="btn btn-outline-dark"
-                                onClick={() => {
-                                    setSearch("");
-                                    setCategory("");
-                                    setSort("newest");
-                                    setPage(1);
-                                }}
+                            <button
+                                type="button"
+                                className="foodhub-button-secondary"
+                                onClick={clearFilters}
                             >
-                                <i className="bi bi-arrow-counterclockwise me-2" />
-                                Clear Filters
+                                <i className="bi bi-arrow-counterclockwise" aria-hidden="true" />
+                                Clear filters
                             </button>
-
                         </div>
-                    </div>
-                )}
+                    )}
 
-            {/* Menu */}
+                    {!loading && !error && items.length > 0 && (
+                        <div className="fh-menu-grid" aria-live="polite">
+                            {items.map((item) => {
+                                const cartItem = cartItems.find(
+                                    (currentItem) =>
+                                        currentItem.menuItemId === item.id
+                                );
+                                const imageSrc = getMenuImageSrc(item.image);
+                                const hasReviews = (item.totalReviews ?? 0) > 0;
 
-            {!loading && !error && items.length > 0 &&
-                (<div className="row g-4">
-
-                    {items.map((item) => {
-
-                        const cartItem = cartItems.find((cartItem) => cartItem.menuItemId === item.id);
-
-                        return (
-                            <div className="col-sm-6 col-lg-4 col-xl-3" key={item.id} >
-
-                                <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-
-                                    {/* Image */}
-                                    <div
-                                        className="position-relative menu-item-image"
-                                    >
-
-                                        {/* Image */}
-                                        {getMenuImageSrc(item.image) ? (
-                                            <img
-                                                src={getMenuImageSrc(item.image)!}
-                                                alt={item.name}
-                                                className="w-100 h-100"
-                                            />
-                                        ) : (
-                                            <div
-                                                className="bg-light d-flex align-items-center justify-content-center w-100 h-100"
-                                            >
-                                                <i className="bi bi-image text-secondary fs-1" />
-                                            </div>
-                                        )}
-
-                                        {/* Image gradient */}
-                                        <div
-                                            className="position-absolute bottom-0 start-0 w-100 menu-item-image-overlay"
-                                        />
-
-                                        {cartItem && (
-                                            <span className="position-absolute top-0 start-0 m-3 badge rounded-pill px-3 py-2 text-bg-success">
-                                                In Cart
-                                            </span>
-                                        )}
-
-                                        {/* Availability */}
-                                        <span
-                                            className={`position-absolute top-0 end-0 m-3 badge rounded-pill px-3 py-2 ${item.isAvailable
-                                                ? "text-bg-primary"
-                                                : "text-bg-danger"
+                                return (
+                                    <article className="fh-menu-card" key={item.id}>
+                                        <div className="fh-menu-card-image-wrap">
+                                            {imageSrc ? (
+                                                <img
+                                                    src={imageSrc}
+                                                    alt={item.name}
+                                                    className="fh-menu-card-image"
+                                                    loading="lazy"
+                                                />
+                                            ) : (
+                                                <div
+                                                    className="fh-menu-card-image-placeholder"
+                                                    role="img"
+                                                    aria-label={`No image available for ${item.name}`}
+                                                >
+                                                    <i className="bi bi-egg-fried" aria-hidden="true" />
+                                                </div>
+                                            )}
+                                            <span
+                                                className={`fh-menu-card-availability ${
+                                                    item.isAvailable
+                                                        ? ""
+                                                        : "is-unavailable"
                                                 }`}
-                                        >
-                                            <i
-                                                className={`bi ${item.isAvailable
-                                                    ? "bi-circle-fill"
-                                                    : "bi-eye-slash-fill"
-                                                    } me-1`}
-                                            />
-                                            {item.isAvailable
-                                                ? "Available"
-                                                : "Unavailable"}
-                                        </span>
+                                            >
+                                                <span
+                                                    className={
+                                                        item.isAvailable
+                                                            ? "fh-menu-status-dot"
+                                                            : "fh-menu-status-dot is-unavailable"
+                                                    }
+                                                    aria-hidden="true"
+                                                />
+                                                {item.isAvailable
+                                                    ? "Available"
+                                                    : "Unavailable"}
+                                            </span>
+                                            {cartItem && (
+                                                <span className="fh-menu-card-in-cart">
+                                                    <i className="bi bi-check2" aria-hidden="true" />
+                                                    In your cart
+                                                </span>
+                                            )}
+                                        </div>
 
-                                        {/* Image Bottom Content */}
-                                        <div className="position-absolute bottom-0 start-0 w-100 p-4 text-white">
-
-                                            <div className="mb-2">
-                                                <span className="badge bg-black bg-opacity-50 text-white rounded-pill px-3 py-2">
-                                                    {item.category}
+                                        <div className="fh-menu-card-body">
+                                            <span className="fh-menu-card-category">
+                                                {item.category}
+                                            </span>
+                                            <div className="fh-menu-card-title-row">
+                                                <h3>{item.name}</h3>
+                                                <span className="fh-menu-card-price">
+                                                    ₹{Number(item.price).toFixed(2)}
                                                 </span>
                                             </div>
-
-                                            <div className="d-flex justify-content-between align-items-end gap-3">
-
-                                                <h4 className="fw-bold mb-0 menu-item-title">
-                                                    {item.name}
-                                                </h4>
-
-                                                <strong className="fs-5 text-nowrap">
-                                                    ₹{Number(item.price).toFixed(2)}
-                                                </strong>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                    {/* Content */}
-                                    <div className="card-body d-flex flex-column p-4">
-
-
-                                        <button type="button"
-                                            className="btn btn-link link-dark text-decoration-none p-0 mb-3 d-inline-flex 
-                                            align-items-center gap-2 align-self-start menu-rating-button"
-                                            onClick={() => setSelectedReviewItem(item)} aria-label={`View reviews for ${item.name}`}
-                                            disabled={item.totalReviews === 0}
-                                        >
-                                            {(item.totalReviews ?? 0) > 0 ? (
-                                                <>
-                                                    <i className="bi bi-star-fill text-warning" aria-hidden="true" />
-
-                                                    <strong>
-                                                        {Number(item.averageRating ?? 0).toFixed(1)}
-                                                    </strong>
-
-                                                    <span className="text-secondary small">
-                                                        · {item.totalReviews}{" "}
-                                                        {item.totalReviews === 1 ? "review" : "reviews"}
-                                                    </span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <i className="bi bi-star text-warning" aria-hidden="true" />
-
-                                                    <span className="text-secondary small">
-                                                        No reviews yet
-                                                    </span>
-                                                </>
-                                            )}
-                                        </button>
-
-                                        <p className="text-secondary small mb-3 fs-6">
-                                            {item.description}
-                                        </p>
-
-                                        <div className="mt-auto">
-
-                                            {/* Cart Actions */}
-                                            {cartItem ?
-                                                (<div className="d-flex gap-2">
-
-                                                    <button type="button" className="btn btn-success grow w-50"
+                                            <button
+                                                type="button"
+                                                className="fh-menu-rating"
+                                                onClick={() =>
+                                                    setSelectedReviewItem(item)
+                                                }
+                                                aria-label={
+                                                    hasReviews
+                                                        ? `View reviews for ${item.name}`
+                                                        : `No reviews yet for ${item.name}`
+                                                }
+                                                disabled={!hasReviews}
+                                            >
+                                                <i
+                                                    className={`bi ${
+                                                        hasReviews
+                                                            ? "bi-star-fill"
+                                                            : "bi-star"
+                                                    }`}
+                                                    aria-hidden="true"
+                                                />
+                                                {hasReviews ? (
+                                                    <>
+                                                        <strong>
+                                                            {Number(
+                                                                item.averageRating ?? 0
+                                                            ).toFixed(1)}
+                                                        </strong>
+                                                        <span>
+                                                            {item.totalReviews}{" "}
+                                                            {item.totalReviews === 1
+                                                                ? "review"
+                                                                : "reviews"}
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <span>No reviews yet</span>
+                                                )}
+                                            </button>
+                                            <p className="fh-menu-card-description">
+                                                {item.description}
+                                            </p>
+                                            <div className="fh-menu-card-actions">
+                                                {cartItem ? (
+                                                    <>
+                                                        <button
+                                                            type="button"
+                                                            className="foodhub-button-primary fh-menu-cart-add"
+                                                            disabled={!item.isAvailable}
+                                                            aria-label={`Add another ${item.name} to cart`}
+                                                            onClick={() =>
+                                                                handleAddToCart(item)
+                                                            }
+                                                        >
+                                                            <i
+                                                                className="bi bi-plus-lg"
+                                                                aria-hidden="true"
+                                                            />
+                                                            Add
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="fh-menu-cart-remove"
+                                                            aria-label={`Remove one ${item.name} from cart`}
+                                                            onClick={() =>
+                                                                dispatch(
+                                                                    decreaseQuantity(item.id)
+                                                                )
+                                                            }
+                                                        >
+                                                            <i
+                                                                className="bi bi-dash-lg"
+                                                                aria-hidden="true"
+                                                            />
+                                                            Remove
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <button
+                                                        type="button"
+                                                        className="foodhub-button-primary fh-menu-cart-add fh-menu-cart-add--full"
                                                         disabled={!item.isAvailable}
-                                                        onClick={() => {
-                                                            dispatch(
-                                                                addToCart({
-                                                                    menuItemId: item.id,
-                                                                    name: item.name,
-                                                                    price: Number(item.price),
-                                                                    image: item.image,
-                                                                    quantity: 1,
-                                                                })
-                                                            );
-                                                        }}
+                                                        onClick={() =>
+                                                            handleAddToCart(item)
+                                                        }
                                                     >
-                                                        <i className="bi bi-plus-lg me-1" />
-                                                        Add
+                                                        <i
+                                                            className="bi bi-bag-plus"
+                                                            aria-hidden="true"
+                                                        />
+                                                        Add to Cart
                                                     </button>
-
-                                                    <button type="button" className="btn btn-outline-danger grow w-50"
-                                                        onClick={() => {
-                                                            dispatch(
-                                                                decreaseQuantity(item.id)
-                                                            );
-                                                        }}
-                                                    >
-                                                        <i className="bi bi-dash-lg me-1" />
-                                                        Remove
-                                                    </button>
-
-                                                </div>)
-                                                :
-                                                (<button type="button" className="btn btn-primary w-100" disabled={!item.isAvailable}
-                                                    onClick={() => handleAddToCart(item)} >
-                                                    <i className="bi bi-cart-plus me-2" />
-                                                    Add to Cart
-                                                </button>
-                                                )
-                                            }
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>)
-            }
+                                    </article>
+                                );
+                            })}
+                        </div>
+                    )}
 
-            {/* Pagination */}
-
-            <Pagination
-                currentPage={page}
-                totalPages={pagination?.totalPages ?? 0}
-                onPageChange={setPage}
-            />
+                    <Pagination
+                        currentPage={page}
+                        totalPages={pagination?.totalPages ?? 0}
+                        onPageChange={setPage}
+                    />
+                </div>
+            </div>
 
             <MenuReviewsModal
                 key={selectedReviewItem?.id ?? "closed"}
                 menuItem={selectedReviewItem}
                 onClose={() => setSelectedReviewItem(null)}
             />
-
         </div>
     );
 }
