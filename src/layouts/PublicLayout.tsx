@@ -148,7 +148,7 @@ function PublicLayout() {
                 </div>
             </nav>
 
-            <main className="grow">
+            <main className="flex-grow-1">
                 <Outlet />
             </main>
 
